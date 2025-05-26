@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>OCR - Extraction de texte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      padding: 30px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input[type="file"] {
+      margin-top: 20px;
+      width: 100%;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #0c4da2;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0c4da2;
+    }
+    .loading {
+      color: #0c4da2;
+      margin-top: 10px;
+      font-style: italic;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      resize: vertical;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Extraction de texte depuis une image </h2>
+    <input type="file" id="fileInput" accept="image/*,.pdf" />
+    <button onclick="uploadFile()">Analyser le fichier</button>
+
+    <div id="loading" class="loading" style="display: none;">Traitement en cours...</div>
+    <textarea id="result" placeholder="Le texte extrait s'affichera ici..."></textarea>
+  </div>
+
+  <script>
+    function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const result = document.getElementById('result');
+      const loading = document.getElementById('loading');
+
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Veuillez sélectionner un fichier image .");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      loading.style.display = "block";
+      result.value = "";
+
+      fetch("http://localhost:8080/ocr/extract-text", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Erreur HTTP " + response.status);
+        }
+        return response.text();
+      })
+      .then(text => {
+        loading.style.display = "none";
+        result.value = text;
+      })
+      .catch(error => {
+        loading.style.display = "none";
+        result.value = "Erreur : " + error.message;
+      });
+    }
+  </script>
+</body>
+</html>

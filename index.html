@@ -1,0 +1,2693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Parc Informatique OACA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0c4da2;
+            --secondary: #2c82c9;
+            --accent: #f39c12;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --text: #333;
+            --transition: all 0.3s ease;
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #f0f4f8;
+            color: var(--text);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Header avec effet de verre */
+        header {
+            background: rgba(12, 77, 162, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Bouton hamburger */
+        .menu-toggle {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background-color: white;
+            margin: 2px 0;
+            transition: var(--transition);
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: translateY(6px) rotate(45deg);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+
+        /* Horloge moderne */
+        .modern-clock-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .clock-analog {
+            position: relative;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-right: 10px;
+        }
+
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .clock-hour, .clock-minute, .clock-second {
+            position: absolute;
+            background: #333;
+            transform-origin: bottom center;
+            top: 50%;
+            left: 50%;
+            border-radius: 10px;
+        }
+
+        .clock-hour {
+            width: 2px;
+            height: 8px;
+            margin-left: -1px;
+            margin-top: -8px;
+        }
+
+        .clock-minute {
+            width: 2px;
+            height: 12px;
+            margin-left: -1px;
+            margin-top: -12px;
+            background: #555;
+        }
+
+        .clock-second {
+            width: 1px;
+            height: 14px;
+            margin-left: -0.5px;
+            margin-top: -14px;
+            background: #f00;
+            animation: ticktock 1s linear infinite;
+        }
+
+        .clock-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 3px;
+            margin-left: -1.5px;
+            margin-top: -1.5px;
+            background: #f00;
+            border-radius: 50%;
+        }
+
+        .clock-digital {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .clock-time {
+            display: flex;
+            align-items: center;
+        }
+
+        .clock-unit {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .clock-separator {
+            animation: blink 1s infinite;
+            margin: 0 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Header controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-item {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .icon-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .icon-button i {
+            font-size: 18px;
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Navigation latérale cachée */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            transition: var(--transition);
+            overflow-y: auto;
+            padding-top: 70px;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .sidebar-header-info h4 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .sidebar-header-info p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Menu avec icônes */
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            position: relative;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        .nav-link i {
+            margin-right: 15px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .nav-link .badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        /* Sous-menu */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .submenu-active {
+            max-height: 500px;
+        }
+
+        .submenu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px 12px 55px;
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .submenu-link:hover {
+            background: #edf2f7;
+            color: var(--primary);
+        }
+
+        .submenu-link i {
+            margin-right: 10px;
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        /* Overlay pour fermer le menu */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(3px);
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            margin-top: 70px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        /* Cartes de tableau de bord */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .card-icon.blue {
+            background: linear-gradient(135deg, #0c4da2, #2c82c9);
+        }
+
+        .card-icon.orange {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+        }
+
+        .card-icon.green {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .card-icon.red {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .card-content {
+            margin-top: 15px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .stat-change i {
+            margin-right: 5px;
+        }
+
+        /* Graphique simplifié */
+        .chart-container {
+            height: 60px;
+            margin-top: 15px;
+            position: relative;
+        }
+
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            border-radius: 3px 3px 0 0;
+            background: var(--primary);
+            transition: height 0.5s ease;
+        }
+
+        /* Carte avec liste */
+        .list-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .list-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .list-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .list-card-action {
+            color: var(--primary);
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .list-card-action i {
+            margin-left: 5px;
+        }
+
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f1f7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .list-item-icon i {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .list-item-content {
+            flex: 1;
+        }
+
+        .list-item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0 0 3px 0;
+        }
+
+        .list-item-subtitle {
+            font-size: 13px;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .list-item-action {
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .list-item-action:hover {
+            color: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        /* Carte de calendrier */
+        .calendar-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .calendar-nav-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f1f7ff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: var(--transition);
+        }
+
+        .calendar-nav-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-month {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-day-name {
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            padding: 5px 0;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .calendar-day:hover {
+            background: #f1f7ff;
+        }
+
+        .calendar-day.today {
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.has-event {
+            position: relative;
+        }
+
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* Carte de tâches */
+        .tasks-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tasks-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .tasks-filter {
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-btn {
+            background: none;
+            border: none;
+            color: #6c757d;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 15px;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .task-item:last-child {
+            border-bottom: none;
+        }
+
+        .task-checkbox {
+            margin-right: 15px;
+            position: relative;
+        }
+
+        .task-checkbox input {
+            opacity: 0;
+            position: absolute;
+        }
+
+        .task-checkbox label {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            display: block;
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .task-checkbox input:checked + label {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .task-checkbox input:checked + label::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 15px;
+            color: var(--dark);
+            margin: 0 0 3px 0;
+            transition: var(--transition);
+        }
+
+        .task-checkbox input:checked ~ .task-content .task-title {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .task-date {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .task-date i {
+            margin-right: 5px;
+        }
+
+        .task-priority {
+            display: flex;
+            align-items: center;
+        }
+
+        .task-priority i {
+            margin-right: 5px;
+        }
+
+        .task-priority.high {
+            color: var(--danger);
+        }
+
+        .task-priority.medium {
+            color: var(--accent);
+        }
+
+        .task-priority.low {
+            color: var(--success);
+        }
+
+        /* Bouton flottant d'action */
+        .fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: var(--secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s forwards;
+            opacity: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-left .app-title {
+                display: none;
+            }
+            
+            .modern-clock-container {
+                display: none;
+            }
+        }
+
+        /* Symboles flottants */
+        .floating-symbols {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-symbol {
+            position: absolute;
+            color: rgba(12, 77, 162, 0.05);
+            font-size: 30px;
+            animation: float-symbol 20s infinite linear;
+        }
+
+        @keyframes float-symbol {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                transform: translate(100vw, -100vh) rotate(360deg);
+            }
+        }
+
+        /* Notification toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .toast-icon i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0 0 3px 0;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .toast-close {
+            color: #6c757d;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            color: var(--dark);
+            transform: scale(1.1);
+        }
+
+        /* Carte de météo */
+        .weather-card {
+            background: linear-gradient(135deg, #0c4da2, #2c82c9);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .weather-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-location {
+            display: flex;
+            align-items: center;
+        }
+
+        .weather-location i {
+            margin-right: 8px;
+        }
+
+        .weather-date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .weather-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-temp {
+            font-size: 48px;
+            font-weight: 700;
+        }
+
+        .weather-icon {
+            font-size: 60px;
+            margin-right: 20px;
+        }
+
+        .weather-details {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .weather-detail {
+            text-align: center;
+        }
+
+        .weather-detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .weather-detail-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+/* Notifications dropdown */
+.notifications-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 320px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1002;
+    overflow: hidden;
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.notifications-dropdown.show {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--primary);
+    color: white;
+}
+
+.notifications-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.notifications-clear {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.notifications-clear:hover {
+    opacity: 1;
+}
+
+.notifications-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: flex-start;
+    transition: var(--transition);
+}
+
+.notification-item:hover {
+    background: #f8f9fa;
+}
+
+.notification-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.notification-icon.info {
+    background: #e3f2fd;
+    color: #2196f3;
+}
+
+.notification-icon.success {
+    background: #e8f5e9;
+    color: #4caf50;
+}
+
+.notification-icon.warning {
+    background: #fff8e1;
+    color: #ff9800;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.notification-message {
+    margin: 0;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #adb5bd;
+    margin-top: 5px;
+}
+
+.notifications-footer {
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.notifications-footer a {
+    color: var(--primary);
+    font-size: 14px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.notifications-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Profile modal */
+.profile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    backdrop-filter: blur(5px);
+}
+
+.profile-modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.profile-modal-content {
+    width: 90%;
+    max-width: 400px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.profile-modal.show .profile-modal-content {
+    transform: scale(1);
+}
+
+.profile-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--primary);
+    color: white;
+}
+
+.profile-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.profile-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.profile-modal-close:hover {
+    transform: scale(1.2);
+}
+
+.profile-modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f1f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.profile-avatar i {
+    font-size: 50px;
+    color: var(--primary);
+}
+
+.profile-info {
+    width: 100%;
+    text-align: center;
+}
+
+.profile-info h4 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    color: var(--dark);
+}
+
+.profile-info p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+
+.profile-info p i {
+    margin-right: 8px;
+    color: var(--primary);
+    width: 20px;
+}
+
+.profile-modal-footer {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #eee;
+}
+
+.profile-action-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    background: #f1f7ff;
+    color: var(--primary);
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+}
+
+.profile-action-btn i {
+    margin-right: 5px;
+}
+
+.profile-action-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Weather mini in header */
+.weather-mini {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-right: 15px;
+    color: white;
+    font-size: 14px;
+}
+
+.weather-mini i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+.weather-mini-temp {
+    font-weight: bold;
+}
+
+/* Bannière d'aviation */
+.aviation-banner {
+    background: linear-gradient(135deg, #0c4da2, #1a3a6c);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.aviation-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M50,30 L55,45 L70,50 L55,55 L50,70 L45,55 L30,50 L45,45 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+    background-size: 100px 100px;
+    z-index: 0;
+}
+
+.aviation-banner-content {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+}
+
+.aviation-banner h2 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.aviation-banner p {
+    margin: 0;
+    opacity: 0.8;
+    max-width: 600px;
+}
+
+.aviation-banner-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    flex-shrink: 0;
+}
+
+.aviation-banner-icon i {
+    font-size: 40px;
+    color: white;
+}
+
+/* Carte de statut des aéroports */
+.airport-status-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.airport-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.airport-status-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.airport-status-title i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.airport-status-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.airport-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.airport-item:last-child {
+    border-bottom: none;
+}
+
+.airport-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f1f7ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.airport-icon i {
+    font-size: 18px;
+    color: var(--primary);
+}
+
+.airport-content {
+    flex: 1;
+}
+
+.airport-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0 0 3px 0;
+}
+
+.airport-info {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.airport-info i {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.airport-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-operational {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-delayed {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+.status-closed {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* Carte de vol */
+.flight-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.flight-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.flight-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.flight-card-title i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.flight-tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.flight-tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition);
+}
+
+.flight-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.flight-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.flight-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.flight-item:last-child {
+    border-bottom: none;
+}
+
+.flight-time {
+    width: 80px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.flight-route {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    margin: 0 15px;
+}
+
+.flight-city {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.flight-route-line {
+    flex: 1;
+    height: 2px;
+    background: #eee;
+    margin: 0 10px;
+    position: relative;
+}
+
+.flight-route-line::after {
+    content: '\f072';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.flight-status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.flight-status.on-time {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.flight-status.delayed {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+.flight-status.cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* Carte de météo aéronautique */
+.aviation-weather-card {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.aviation-weather-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.aviation-weather-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 15px;
+}
+
+.aviation-weather-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.aviation-weather-title i {
+    margin-right: 10px;
+}
+
+.metar-data {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.aviation-weather-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.aviation-weather-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.aviation-weather-item-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.aviation-weather-item-value {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.aviation-weather-item-label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+/*image et texte */
+.section {
+  display: flex;
+  align-items: center; /* Aligne verticalement l'image et le texte */
+  gap: 40px; /* Espacement entre l'image et le texte */
+  margin-bottom: 60px; /* Marge en bas pour séparer les sections */
+}
+
+.section .image-container {
+  flex-shrink: 0; /* Empêche le conteneur de l'image de rétrécir */
+}
+
+.section .image-container img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  display: block; /* Supprime l'espace en bas de l'image */
+}
+
+.section .text-container {
+  flex-grow: 1; /* Permet au conteneur de texte de prendre l'espace restant */
+}
+
+.section h2 {
+  color: #004080;
+  margin-bottom: 10px;
+}
+
+.section p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Pour la première section : image à gauche, texte à droite */
+.section:first-of-type {
+  flex-direction: row; /* Ordre par défaut, l'image en premier puis le texte */
+}
+
+/* Pour les sections suivantes : image à droite, texte à gauche */
+.section:not(:first-of-type) {
+  flex-direction: row-reverse; /* Inverse l'ordre des éléments */
+}
+
+.section:not(:first-of-type) .text-container {
+  text-align: right; /* Aligne le texte à droite dans ce cas */
+}
+
+.section:nth-of-type(2) h2 {
+  text-align: center;
+  color: #004080;
+  margin-bottom: 30px;
+}
+.sectionAer h2 {
+  text-align: center;
+  color: #004080; /* Assurez-vous que la couleur est bien celle-ci */
+  margin-bottom: 30px;
+}
+
+/*slider */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.section {
+  margin-bottom: 60px;
+}
+
+/* Partie 1 : Image à gauche, texte à droite */
+.section:first-of-type {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.section:first-of-type .image-container img {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+}
+
+.section:first-of-type h2 {
+  margin-bottom: 10px;
+  color: #004080;
+}
+
+.section:first-of-type p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.section:nth-of-type(2) h2 {
+  text-align: center;
+  color: #004080;
+  margin-bottom: 30px;
+}
+
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  height: auto; /* Ajuster la hauteur automatiquement */
+}
+
+.carousel {
+  display: flex;
+  transition: transform 0.5s ease-in-out; /* Animation fluide */
+}
+
+.carousel .slide {
+  display: flex;
+  flex: 1 0 100%;
+}
+
+.carousel .image-container {
+  flex: 0 0 33.33%; /* 3 images par slide */
+  text-align: center;
+  margin: 0 10px; /* Espacement entre les images */
+}
+
+.carousel .image-container img {
+  width: 100%; /* Largeur de chaque image à 100% de son container */
+  max-width: 350px; /* Largeur maximale des images */
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Navigation buttons */
+.prev-button, .next-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 5px;
+}
+
+.prev-button {
+  left: 10px;
+}
+
+.next-button {
+  right: 10px;
+}
+
+.prev-button:hover, .next-button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+h2 {
+  text-align: center;
+}
+
+
+ /* notification*/
+
+
+    </style>
+</head>
+<body>
+    <!-- Symboles flottants en arrière-plan -->
+    <div class="floating-symbols" id="floating-symbols"></div>
+
+    <!-- Header avec menu hamburger -->
+    <header>
+        <div class="header-left">
+            <div class="menu-toggle" id="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo-container">
+                <img src="OACA Tunisia.jpg" alt="OACA" class="logo">
+                <div class="app-title">Gestion du Parc Informatique</div>
+            </div>
+        </div>
+
+        <!-- Horloge moderne -->
+        <div class="modern-clock-container">
+            <div class="clock-analog">
+                <div class="clock-face">
+                    <div class="clock-hour" id="hour-hand"></div>
+                    <div class="clock-minute" id="minute-hand"></div>
+                    <div class="clock-second" id="second-hand"></div>
+                    <div class="clock-center"></div>
+                </div>
+            </div>
+            <div class="clock-digital">
+                <div class="clock-time">
+                    <span class="clock-unit" id="hours">00</span>
+                    <span class="clock-separator">:</span>
+                    <span class="clock-unit" id="minutes">00</span>
+                    <span class="clock-separator">:</span>
+                    <span class="clock-unit" id="seconds">00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini météo dans l'en-tête -->
+        <div class="weather-mini" id="weather-mini">
+            <i class="fas fa-sun"></i>
+            <span class="weather-mini-temp">24°C</span>
+        </div>
+
+        <!-- Contrôles d'en-tête -->
+        <div class="header-controls">
+            <div class="control-item">
+                <div class="icon-button" id="notification-toggle">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">3</div>
+                </div>
+            </div>
+            <div class="control-item">
+                <div class="icon-button" id="profile-toggle">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+<!-- Dropdown de notifications -->
+<div class="notifications-dropdown" id="notifications-dropdown">
+    <div class="notifications-header">
+        <h3>Notifications</h3>
+        <button class="notifications-clear">Tout effacer</button>
+    </div>
+    <div class="notifications-list">
+        <!-- Les notifications seront ajoutées ici par JavaScript -->
+    </div>
+    <div class="notifications-footer">
+        <a href="#">Voir toutes les notifications</a>
+    </div>
+</div>
+
+
+
+    <!-- Navigation latérale cachée -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="office.jpg" alt="OACA" class="logo">
+            
+            <div class="sidebar-header-info">
+                <h4>Admin DNA</h4>
+                <p>admin@dna.tn</p>
+            </div>
+        </div>
+        <ul class="nav-menu">
+          
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="equipment-toggle">
+                    <i class="fas fa-box"></i>
+                    <span>Gestion des Équipements</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                </a>
+                <div class="submenu" id="equipment-submenu">
+                    <a href="inventory.html" class="submenu-link">
+                        <i class="fas fa-box"></i>
+                        <span>Inventaire des Équipements</span>
+                    </a>
+                  
+                    <a href="Equipement_Reforme.html" class="submenu-link">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Équipements Réformés</span>
+                    </a>
+                    <a href="Equipement_Reparation.html" class="submenu-link">
+                        <i class="fas fa-tools"></i>
+                        <span>Équipements en Réparation</span>
+                    </a>
+                    <a href="Equipement_Transfere.html" class="submenu-link">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Transferts d'Équipements</span>
+                    </a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link" id="doc-toggle">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Gestion des documents</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto;"></i>
+                </a>
+                <div class="submenu" id="doc-submenu">
+                    <a href="Proposition de Réforme d'Immobilisation.html" class="submenu-link">
+                        <i class="fas fa-file-contract"></i>
+                        <span>Proposition de Réforme</span>
+                    </a>
+                    <a href="Bon de Transfert d'Immobilisations.html" class="submenu-link">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Bon de Transfert</span>
+                    </a>
+                    <a href="Formulaire de Demande d'Achats.html" class="submenu-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Demande d'Achats</span>
+                    </a>
+                    <a href="demande_sortie_consommables.html" class="submenu-link">
+                        <i class="fas fa-print"></i>
+                        <span>Sortie consommables</span>
+                    </a>
+                    <a href="decharge.html" class="submenu-link">
+                        <i class="fas fa-laptop"></i>
+                        <span>Décharge PC</span>
+                    </a>
+                    <a href="demande.html" class="submenu-link">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Bon de sortie</span>
+                    </a>
+                  
+                    
+                      
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="statistique.html" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistiques</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="Agent_de_Navigation_Aerienne.html" class="nav-link">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Agent de Navigation Aérienne</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="liste_equipements_agent.html" class="nav-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Liste equipement agent</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="software.html" class="nav-link">
+                    <i class="fas fa-laptop-code"></i>
+                    <span>Liste logiciel</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="maintenance.html" class="nav-link">
+                    <i class="fas fa-wrench"></i>
+                    <span>Gestion du maintenance</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="stock.html" class="nav-link">
+                    <i class="fas fa-boxes"></i>
+                    <span>Gestion du Stock</span>
+                    <span class="badge">5</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="movement-history.html" class="nav-link">
+                    <i class="fas fa-history"></i>
+                    <span>Historique des mouvements</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="declare-fault.html" class="nav-link">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Déclaration de Panne</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="announcements.html" class="nav-link">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Ajouter une annonce</span>
+                    <span class="badge">5</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Rapports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètres</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a href="login.html" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Overlay pour fermer le menu -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Contenu principal -->
+    <div class="main-content">
+        <!-- Bannière d'aviation -->
+        <div class="aviation-banner animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="aviation-banner-content">
+                <h2>Bienvenue au système de gestion DNA</h2>
+                <p>Office de l'Aviation Civile et des Aéroports - Direction de la Navigation Aérienne</p>
+            </div>
+            <div class="aviation-banner-icon">
+                <i class="fas fa-plane"></i>
+            </div>
+        </div>
+
+       
+            </div>
+        </div>
+
+       
+        </div>
+        <div class="section">
+  <div class="image-container">
+    <img src="aeroport.webp" alt="Image 1 Description">
+  </div>
+  <div class="text-container">
+    <h2>Gestion Optimisée du Parc Informatique</h2>
+    <p>Découvrez notre plateforme de gestion de parc informatique, une solution innovante conçue et
+      développée par les stagiaires du département DNA de l'OACA. Cet outil centralisé a été spécialement pensé pour
+      optimiser la gestion de l'ensemble des ressources informatiques de l'Office. De l'inventaire précis des équipements
+      au suivi des interventions et à la planification de la maintenance, notre application offre une interface
+      intuitive et performante pour rationaliser vos processus et garantir l'efficacité de votre infrastructure IT.</p>
+  </div>
+</div>
+
+  <div class="carousel-container">
+    </div>
+</div>
+          <div class="sectionAer">
+            <h2 >Nos Aéroports</h2>
+            <div class="carousel-container">
+              <div class="carousel">
+                <div class="slide">
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/web/aeroport-tunis-carthage"><img src="tunis-carthage.jpg" alt="Tunis Carthage"></a>
+                    <p>Tunis Carthage</p>
+                  </div>
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/web/aeroport-djerba"><img src="jerba.png" alt="Djerba Zarzis"></a>
+                    <p>Djerba Zarzis</p>
+                  </div>
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/fr/web/aeroport-sfax"><img src="sfax-thyna.jpg" alt="Sfax Thyna"></a>
+                    <p>Sfax Thyna</p>
+                  </div>
+                </div>
+                <div class="slide">
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/web/aeroport-tozeur"><img src="tozeur.jpg" alt="Tozeur Nefta"></a>
+                    <p>Tozeur Nefta</p>
+                  </div>
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/web/aeroport-tabarka"><img src="tabarka.jpg" alt="Tabarka Aïn Draham"></a>
+                    <p>Tabarka Aïn Draham</p>
+                  </div>
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/web/aeroport-gafsa"><img src="gafsa-ksar.jpg" alt="Gafsa Ksar"></a>
+                    <p>Gafsa Ksar</p>
+                  </div>
+                </div>
+                <div class="slide">
+                  <div class="image-container">
+                    <a href="https://www.oaca.nat.tn/web/aeroport-gabes"><img src="gabes-matmata.jpg" alt="Gabès Matmata"></a>
+                    <p>Gabès Matmata</p>
+                  </div>
+                  </div>
+              </div>
+              <button class="prev-button"><i class="fas fa-chevron-left"></i></button>
+              <button class="next-button"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+          
+    </div>
+
+    <script>
+        // notification
+ 
+// Fonction pour récupérer les équipements en panne depuis le backend
+async function getEquipementsEnPanne() {
+  try {
+    const response = await fetch('http://localhost:8081/equipements-en-panne');
+    
+    if (!response.ok) {
+      throw new Error('Erreur lors de la récupération des équipements en panne');
+    }
+    
+    const equipements = await response.json();
+    equipements.forEach(equipement => {
+      afficherNotification(equipement);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Fonction pour afficher une notification avec un équipement en panne
+function afficherNotification(equipement) {
+  const list = document.querySelector(".notifications-list");
+  
+  const notif = document.createElement("div");
+  notif.classList.add("notification-item");
+
+  // Ajouter l'icône en fonction de l'état de l'équipement (par exemple panne = warning)
+  const notifIcon = document.createElement("div");
+  notifIcon.classList.add("notification-icon", "warning");  // Ici, j'assume qu'on a un statut "panne"
+  const icon = document.createElement("i");
+  icon.classList.add("fas", "fa-exclamation-triangle");
+  notifIcon.appendChild(icon);
+
+  // Ajouter le contenu de la notification
+  const notifContent = document.createElement("div");
+  notifContent.classList.add("notification-content");
+
+  const title = document.createElement("h4");
+  title.classList.add("notification-title");
+  title.innerText = `Équipement en panne: ${equipement.description}`;  // Nom de l'équipement en panne
+
+  const message = document.createElement("p");
+  message.classList.add("notification-message");
+  message.innerText = `L'équipement ${equipement.description} est en panne depuis ${equipement.datePanne}.`;  // Date de panne
+
+  const time = document.createElement("div");
+  time.classList.add("notification-time");
+  time.innerText = "Il y a quelques minutes";  // Le message peut être plus détaillé si tu veux calculer le temps écoulé
+
+  notifContent.appendChild(title);
+  notifContent.appendChild(message);
+  notifContent.appendChild(time);
+
+  notif.appendChild(notifIcon);
+  notif.appendChild(notifContent);
+
+  list.prepend(notif); // Ajoute la notification en haut de la liste
+}
+
+// Fonction pour effacer toutes les notifications
+document.querySelector(".notifications-clear").addEventListener("click", function() {
+  document.querySelector(".notifications-list").innerHTML = "";
+});
+
+// Appel à la fonction pour récupérer les équipements en panne au chargement de la page
+window.onload = function() {
+  getEquipementsEnPanne();  // Récupérer les équipements en panne et afficher les notifications
+};
+// not 
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+    // Éléments DOM
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const equipmentToggle = document.getElementById('equipment-toggle');
+    const equipmentSubmenu = document.getElementById('equipment-submenu');
+    const docToggle = document.getElementById('doc-toggle');
+    const docSubmenu = document.getElementById('doc-submenu');
+    const notificationToggle = document.getElementById('notification-toggle');
+    const notificationsDropdown = document.getElementById('notifications-dropdown');
+    const profileToggle = document.getElementById('profile-toggle');
+
+    // Toggle du menu latéral
+    menuToggle.addEventListener('click', function() {
+        this.classList.toggle('active');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    });
+
+    // Fermer le menu en cliquant sur l'overlay
+    overlay.addEventListener('click', function() {
+        menuToggle.classList.remove('active');
+        sidebar.classList.remove('active');
+        this.classList.remove('active');
+        
+        // Fermer aussi les modals si ouverts
+        const profileModal = document.getElementById('profile-modal');
+        if (profileModal && profileModal.classList.contains('show')) {
+            profileModal.classList.remove('show');
+        }
+    });
+
+    // Toggle des sous-menus
+    equipmentToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        equipmentSubmenu.classList.toggle('submenu-active');
+    });
+
+    docToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        docSubmenu.classList.toggle('submenu-active');
+    });
+
+    // Toggle des notifications
+    notificationToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notificationsDropdown.classList.toggle('show');
+        
+        // Fermer le profil s'il est ouvert
+        const profileModal = document.getElementById('profile-modal');
+        if (profileModal && profileModal.classList.contains('show')) {
+            profileModal.classList.remove('show');
+        }
+    });
+
+    // Fermer les notifications en cliquant ailleurs
+    document.addEventListener('click', function(e) {
+        if (!notificationsDropdown.contains(e.target) && e.target !== notificationToggle) {
+            notificationsDropdown.classList.remove('show');
+        }
+    });
+
+    // Profil admin
+    profileToggle.addEventListener('click', function() {
+        // Fermer les notifications si ouvertes
+        notificationsDropdown.classList.remove('show');
+        
+        // Créer ou afficher le modal du profil
+        let profileModal = document.getElementById('profile-modal');
+        
+        if (!profileModal) {
+            profileModal = document.createElement('div');
+            profileModal.id = 'profile-modal';
+            profileModal.className = 'profile-modal';
+            profileModal.innerHTML = `
+                <div class="profile-modal-content">
+                    <div class="profile-modal-header">
+                        <h3>Profil Administrateur</h3>
+                        <button class="profile-modal-close">&times;</button>
+                    </div>
+                    <div class="profile-modal-body">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <h4>Soufien Slama</h4>
+                            <p><i class="fas fa-envelope"></i> soufien.slama@oaca.tn</p>
+                            <p><i class="fas fa-phone"></i> +216 71 123 456</p>
+                            <p><i class="fas fa-id-badge"></i> Administrateur Système</p>
+                            <p><i class="fas fa-building"></i> Direction Navigation Aérienne</p>
+                        </div>
+                    </div>
+                    <div class="profile-modal-footer">
+                        <button class="profile-action-btn"><i class="fas fa-cog"></i> Modifier</button>
+                        <button class="profile-action-btn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(profileModal);
+            
+            // Fermer le modal
+            const closeBtn = profileModal.querySelector('.profile-modal-close');
+            closeBtn.addEventListener('click', function() {
+                profileModal.classList.remove('show');
+            });
+            
+            // Fermer le modal en cliquant à l'extérieur
+            profileModal.addEventListener('click', function(e) {
+                if (e.target === profileModal) {
+                    profileModal.classList.remove('show');
+                }
+            });
+            
+            // Boutons d'action
+            const actionBtns = profileModal.querySelectorAll('.profile-action-btn');
+            actionBtns[0].addEventListener('click', function() {
+                alert('Fonctionnalité de modification du profil');
+            });
+            
+            actionBtns[1].addEventListener('click', function() {
+                window.location.href = 'login.html';
+            });
+        }
+        
+        profileModal.classList.add('show');
+    });
+
+    // Mise à jour de l'horloge
+    function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        document.getElementById('hours').textContent = hours;
+        document.getElementById('minutes').textContent = minutes;
+        document.getElementById('seconds').textContent = seconds;
+        
+        const hourDeg = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5;
+        const minuteDeg = now.getMinutes() * 6;
+        const secondDeg = now.getSeconds() * 6;
+        
+        document.getElementById('hour-hand').style.transform = `rotate(${hourDeg}deg)`;
+        document.getElementById('minute-hand').style.transform = `rotate(${minuteDeg}deg)`;
+        document.getElementById('second-hand').style.transform = `rotate(${secondDeg}deg)`;
+        
+        // Update date in weather card
+        const options = { weekday: 'long', day: 'numeric', month: 'long' };
+        const dateStr = now.toLocaleDateString('fr-FR', options);
+        const weatherDate = document.querySelector('.weather-date');
+        if (weatherDate) {
+            weatherDate.textContent = `Aujourd'hui, ${dateStr}`;
+        }
+    }
+    
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Fonction pour obtenir les données météo réelles
+    async function fetchWeatherData() {
+        try {
+            // Simuler une réponse API pour la démo
+            // Dans un environnement réel, vous utiliseriez:
+            // const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Tunis,tn&units=metric&appid=YOUR_API_KEY');
+            
+            // Données simulées
+            const data = {
+                main: {
+                    temp: 24,
+                    humidity: 65
+                },
+                weather: [
+                    {
+                        description: "Ensoleillé",
+                        icon: "01d"
+                    }
+                ],
+                wind: {
+                    speed: 3.33 // m/s
+                }
+            };
+            
+            // Mettre à jour les éléments de la carte météo
+            const temp = Math.round(data.main.temp);
+            const humidity = data.main.humidity;
+            const windSpeed = Math.round(data.wind.speed * 3.6); // Convertir m/s en km/h
+            const description = data.weather[0].description;
+            const weatherIcon = getWeatherIcon(data.weather[0].icon);
+            
+            // Mettre à jour la carte météo principale
+            document.querySelector('.weather-temp').textContent = `${temp}°C`;
+            document.querySelector('.weather-content div:nth-child(1) div:nth-child(2)').textContent = description;
+            document.querySelector('.weather-icon').className = `fas ${weatherIcon} weather-icon`;
+            document.querySelector('.weather-details .weather-detail:nth-child(1) .weather-detail-value').textContent = `${humidity}%`;
+            document.querySelector('.weather-details .weather-detail:nth-child(2) .weather-detail-value').textContent = `${windSpeed} km/h`;
+            
+            // Mettre à jour la mini météo dans l'en-tête
+            const weatherMini = document.getElementById('weather-mini');
+            if (weatherMini) {
+                weatherMini.querySelector('i').className = `fas ${weatherIcon}`;
+                weatherMini.querySelector('.weather-mini-temp').textContent = `${temp}°C`;
+            }
+        } catch (error) {
+            console.log('Erreur lors de la récupération des données météo:', error);
+        }
+    }
+
+    function getWeatherIcon(iconCode) {
+        const iconMap = {
+            '01d': 'fa-sun',
+            '01n': 'fa-moon',
+            '02d': 'fa-cloud-sun',
+            '02n': 'fa-cloud-moon',
+            '03d': 'fa-cloud',
+            '03n': 'fa-cloud',
+            '04d': 'fa-cloud',
+            '04n': 'fa-cloud',
+            '09d': 'fa-cloud-showers-heavy',
+            '09n': 'fa-cloud-showers-heavy',
+            '10d': 'fa-cloud-sun-rain',
+            '10n': 'fa-cloud-moon-rain',
+            '11d': 'fa-bolt',
+            '11n': 'fa-bolt',
+            '13d': 'fa-snowflake',
+            '13n': 'fa-snowflake',
+            '50d': 'fa-smog',
+            '50n': 'fa-smog'
+        };
+        
+        return iconMap[iconCode] || 'fa-sun';
+    }
+
+    // Création des symboles flottants
+    function createFloatingSymbols() {
+        const symbolsContainer = document.getElementById('floating-symbols');
+        if (!symbolsContainer) return;
+        
+        symbolsContainer.innerHTML = '';
+        const symbols = [
+            'fa-plane', 'fa-plane-departure', 'fa-plane-arrival', 'fa-helicopter', 
+            'fa-tower-broadcast', 'fa-radar', 'fa-satellite-dish', 'fa-headset',
+            'fa-map-location-dot', 'fa-globe', 'fa-cloud', 'fa-wind',
+            'fa-compass', 'fa-location-dot', 'fa-route', 'fa-mountain'
+        ];
+        
+        const symbolCount = 15;
+        
+        for (let i = 0; i < symbolCount; i++) {
+            const symbol = document.createElement('i');
+            const randomSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+            symbol.className = `fas ${randomSymbol} floating-symbol`;
+            
+            // Position aléatoire
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            symbol.style.left = `${posX}%`;
+            symbol.style.top = `${posY}%`;
+            
+            // Taille et rotation aléatoires
+            const size = Math.random() * 30 + 20;
+            const rotation = Math.random() * 360;
+            symbol.style.fontSize = `${size}px`;
+            symbol.style.transform = `rotate(${rotation}deg)`;
+            
+            // Animation aléatoire
+            const duration = Math.random() * 30 + 20;
+            const delay = Math.random() * 10;
+            symbol.style.animationDuration = `${duration}s`;
+            symbol.style.animationDelay = `${delay}s`;
+            
+            symbolsContainer.appendChild(symbol);
+        }
+    }
+    
+    createFloatingSymbols();
+    
+    // Initialiser les données météo
+    fetchWeatherData();
+    
+    // Mettre à jour les données météo toutes les 30 minutes
+    setInterval(fetchWeatherData, 30 * 60 * 1000);
+});
+// slider 
+document.addEventListener('DOMContentLoaded', function() {
+  const carouselContainer = document.querySelector('.carousel-container');
+  const carousel = document.querySelector('.carousel');
+  const prevButton = document.querySelector('.prev-button');
+  const nextButton = document.querySelector('.next-button');
+  const slides = document.querySelectorAll('.slide');
+  let currentIndex = 0;
+  const slideWidth = slides[0].offsetWidth; // Largeur d'un "slide" (groupe de 3 images)
+
+  function updateCarousel() {
+    carousel.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+  }
+
+  nextButton.addEventListener('click', function() {
+    if (currentIndex < slides.length - 1) {
+      currentIndex++;
+      updateCarousel();
+    }
+  });
+
+  prevButton.addEventListener('click', function() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateCarousel();
+    }
+  });
+
+  // Initialisation (optionnel, si tu veux commencer à un index précis)
+  updateCarousel();
+});
+    </script>
+</body>
+</html>

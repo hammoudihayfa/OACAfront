@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Pannes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center; /* Centre le titre par défaut */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative; /* Nécessaire pour positionner absolument le conteneur du bouton */
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        h2 {
+            color: #0c4da2;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .alert {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #ffe0b2; /* Light orange background */
+            border: 1px solid #ff9800; /* Darker orange border */
+            border-radius: 5px;
+        }
+        .lamp {
+            color: red;
+            font-size: 1.5em;
+            margin-left: 10px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .action-icons {
+            display: flex;
+            gap: 5px;
+        }
+        .icon {
+            cursor: pointer;
+            color: #007bff; /* Couleur bleue pour l'icône d'édition */
+            font-size: 1.2em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Ajout d'ombre */
+        }
+        table:hover {
+            transform: scale(1.005); /* Légère augmentation à 1.005 pour éviter l'effet "glissant" */
+        }
+        table, th, td {
+            border: 1px solid #ced4da;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+            position: relative;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            background-color: #f8f9fa;
+        }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        /* Styles pour la timeline */
+        #timeline {
+            border: 1px solid #a7d9f7; /* Couleur de bordure plus douce */
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #eaf6fd; /* Fond clair */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #timeline h3 {
+            color: #0c4da2;
+            margin-top: 0;
+            border-bottom: 2px solid #0c4da2;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        #timeline-list li div {
+            border-left: 4px solid #2196F3; /* Bordure plus visible */
+            padding: 10px 15px;
+            margin-bottom: 12px;
+            background-color: #ffffff; /* Fond blanc pour chaque étape */
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        #timeline-list li div strong {
+            color: #333;
+        }
+        #timeline-list li div span {
+            color: #0d47a1;
+            font-weight: bold;
+        }
+        #timeline-list li div em {
+            color: #666;
+            font-style: normal; /* Pour ne pas avoir d'italique par défaut si vous préférez */
+            display: block; /* S'assure que le commentaire est sur sa propre ligne */
+            margin-top: 5px;
+        }
+        #timeline button {
+            background-color: #dc3545; /* Couleur rouge pour fermer */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Pannes</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <section>
+        <h2><i class="fas fa-bell icon"></i>Liste des Déclarations de Panne</h2>
+        <div class="alert">
+            Attention : Vérifiez les pannes signalées ! (<span id="incident-count">0</span>) <i class="fas fa-exclamation-circle lamp"></i>
+        </div>
+        <table id="incident-table">
+            <thead>
+                <tr>
+                    <th>Type de Panne</th>
+                    <th>Priorité</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Actions</th> 
+                </tr>
+            </thead>
+            <tbody id="incident-body">
+                </tbody>
+        </table>
+    </section>
+
+    <div id="timeline" style="display:none;">
+        <h3>Historique de la panne</h3>
+        <ul id="timeline-list"></ul>
+        <button onclick="document.getElementById('timeline').style.display = 'none';">Fermer Timeline</button>
+    </div>
+
+<script>
+    const API_URL = 'http://localhost:8081/equipements-en-panne';
+
+    function logout() {
+        alert("Déconnexion réussie !");
+        window.location.href = 'login.html';
+    }
+
+    function updateIncidentCount() {
+        const rows = document.querySelectorAll('#incident-body tr');
+        document.getElementById('incident-count').textContent = rows.length;
+    }
+
+    function updateStatut(id, selectElement) {
+        const newStatut = selectElement.value;
+
+        fetch(`${API_URL}/${id}/statut`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ statut: newStatut })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Erreur lors de la mise à jour du statut");
+            return response.json();
+        })
+        .then(() => {
+            alert("Statut mis à jour avec succès !");
+            loadIncidents(); 
+        })
+        .catch(error => {
+            console.error("Erreur : ", error);
+            alert("Erreur lors de la mise à jour.");
+        });
+    }
+
+    function afficherTimeline(idEquipement) {
+fetch(`http://localhost:8081/equipements-en-panne/${idEquipement}/historique`)
+        .then(response => response.json())
+        .then(data => {
+            const timelineList = document.getElementById('timeline-list');
+            timelineList.innerHTML = '';
+            const etapes = {
+                'SIGNALÉ': ' Déclaration (Signalement) de la Panne',
+                'TRIAGE': 'Création du Ticket et Triage',
+                'ASSIGNÉ': ' Assignation du Technicien',
+                'EN_COURS': ' Diagnostic et Intervention',
+                'RÉSOLU': ' Résolution de la Panne',
+                'FERMÉ': ' Vérification et Fermeture du Ticket'
+            };
+
+            data.forEach(item => {
+                const li = document.createElement('li');
+                const div = document.createElement('div');
+                const etapeLabel = etapes[item.etat] || item.etat;
+                div.innerHTML = `
+                    <strong>${etapeLabel}</strong> - <span>${new Date(item.date).toLocaleString()}</span>
+                    <em>${item.commentaire || 'Aucun commentaire'}</em>
+                `;
+                li.appendChild(div);
+                timelineList.appendChild(li);
+            });
+
+            document.getElementById('timeline').style.display = 'block';
+        })
+        .catch(error => {
+            console.error("Erreur lors du chargement de l'historique :", error);
+            alert("Impossible de charger la timeline.");
+        });
+    }
+
+    function loadIncidents() {
+        fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('incident-body');
+            tbody.innerHTML = '';
+
+            data.forEach(panne => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${panne.typeDePanne}</td>
+                    <td>${panne.priorite}</td>
+                    <td>${panne.description}</td>
+                    <td>${new Date(panne.datePanne).toLocaleDateString()}</td>
+                    <td>
+                        <select onchange="updateStatut(${panne.idEquipementEnPanne}, this)">
+                            <option value="SIGNALÉ" ${panne.statut === 'SIGNALÉ' ? 'selected' : ''}>Signalé</option>
+                            <option value="TRIAGE" ${panne.statut === 'TRIAGE' ? 'selected' : ''}>Triage</option>
+                            <option value="ASSIGNÉ" ${panne.statut === 'ASSIGNÉ' ? 'selected' : ''}>Assigné</option>
+                            <option value="EN_COURS" ${panne.statut === 'EN_COURS' ? 'selected' : ''}>En Cours</option>
+                            <option value="RÉSOLU" ${panne.statut === 'RÉSOLU' ? 'selected' : ''}>Résolu</option>
+                            <option value="FERMÉ" ${panne.statut === 'FERMÉ' ? 'selected' : ''}>Fermé</option>
+                        </select>
+                    </td>
+                    <td class="action-icons">
+                        <i class="fas fa-history icon" title="Voir l'historique" onclick="afficherTimeline(${panne.idEquipementEnPanne})"></i>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateIncidentCount();
+        })
+        .catch(error => {
+            console.error("Erreur de chargement :", error);
+        });
+    }
+
+    // Initialisation
+    loadIncidents();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Agents de Navigation Aérienne</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+         h1, h2 {
+            margin: 0;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .search-container input {
+            width: 80%;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .search-container input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .highlight {
+            background-color: #ffeb3b; /* Couleur de surbrillance */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .table-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ced4da;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+        .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Agents de Navigation Aérienne</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Rechercher un agent par nom..." onkeyup="searchAgentByNom()">
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-tools icon"></i>Ajouter un Agent</h2>
+            <form id="add-agent-form" onsubmit="saveAgent(event)">
+                <label for="matricule">Matricule :</label>
+                <input type="number" id="matricule" required>
+
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" required>
+
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" required>
+
+                <label for="unite">Unité :</label>
+                <input type="text" id="unite" required>
+
+                <label for="fonction">Fonction :</label>
+                <input type="text" id="fonction" required>
+
+                <label for="email">Email :</label>
+                <input type="email" id="email" required>
+
+                <label for="cin">CIN :</label>
+                <input type="number" id="cin" required>
+
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <h2><i class="fas fa-list icon"></i>Liste des Agents</h2>
+        <table id="agent-table">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Unité</th>
+                    <th>Fonction</th>
+                    <th>Email</th>
+                    <th>CIN</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+  <script>
+    let editingMatricule = null;
+
+    function logout() {
+        alert("Déconnexion réussie !");
+        window.location.href = 'login.html';
+    }
+
+    function editAgent(button) {
+        const row = button.closest("tr");
+        editingMatricule = row.cells[0].textContent;
+        document.getElementById('matricule').value = editingMatricule;
+        document.getElementById('nom').value = row.cells[1].textContent;
+        document.getElementById('prenom').value = row.cells[2].textContent;
+        document.getElementById('unite').value = row.cells[3].textContent;
+        document.getElementById('fonction').value = row.cells[4].textContent;
+        document.getElementById('email').value = row.cells[5].textContent;
+        document.getElementById('cin').value = row.cells[6].textContent;
+
+        const addButton = document.querySelector('#add-agent-form button[type="submit"]');
+        addButton.textContent = 'Sauvegarder les modifications';
+
+        row.classList.add('editing');
+    }
+
+    function resetEditState() {
+        editingMatricule = null;
+        document.getElementById('add-agent-form').reset();
+        const addButton = document.querySelector('#add-agent-form button[type="submit"]');
+        addButton.textContent = 'Ajouter';
+        const editingRow = document.querySelector('#agent-table tbody tr.editing');
+        if (editingRow) editingRow.classList.remove('editing');
+    }
+
+    function deleteRow(button) {
+        const row = button.closest("tr");
+        // Optionnel : Ici tu peux appeler une requête DELETE vers le backend si tu veux supprimer côté serveur aussi
+        row.remove();
+    }
+
+    function renderActionIcons() {
+        return `
+            <div class="action-icons">
+                <div class="action-icon edit" title="Modifier" onclick="editAgent(this)"><i class="fas fa-edit"></i></div>
+                <div class="action-icon delete" title="Supprimer" onclick="deleteRow(this)"><i class="fas fa-trash"></i></div>
+            </div>
+        `;
+    }
+
+    function validateForm(data) {
+        const errors = [];
+
+        if (!/^[a-zA-Z\s]+$/.test(data.nom)) errors.push("Le nom ne doit contenir que des lettres.");
+        if (!/^[a-zA-Z\s]+$/.test(data.prenom)) errors.push("Le prénom ne doit contenir que des lettres.");
+        if (!/^[a-zA-Z\s]+$/.test(data.unite)) errors.push("L'unité ne doit contenir que des lettres.");
+        if (!/^[a-zA-Z\s]+$/.test(data.fonction)) errors.push("La fonction ne doit contenir que des lettres.");
+        if (!/^[0-9]+$/.test(data.cin) || Number(data.cin) <= 0) errors.push("Le CIN doit être un nombre positif.");
+        if (!/^[0-9]+$/.test(data.matricule) || Number(data.matricule) <= 0) errors.push("Le matricule doit être un nombre positif.");
+        if (!/\S+@\S+\.\S+/.test(data.email)) errors.push("Email invalide.");
+
+        return errors;
+    }
+
+    function saveAgent(event) {
+        event.preventDefault();
+
+        const matricule = document.getElementById('matricule').value.trim();
+        const nom = document.getElementById('nom').value.trim();
+        const prenom = document.getElementById('prenom').value.trim();
+        const unite = document.getElementById('unite').value.trim();
+        const fonction = document.getElementById('fonction').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const cin = document.getElementById('cin').value.trim();
+
+        const agentData = { matricule, nom, prenom, unite, fonction, email, cin };
+
+        const errors = validateForm(agentData);
+
+        if (errors.length > 0) {
+            alert("Erreurs de validation :\n- " + errors.join("\n- "));
+            return;
+        }
+
+        // Le backend attend matricule à null pour POST (création), donc on le retire si on crée
+        if (!editingMatricule) {
+            delete agentData.matricule;  // IMPORTANT : supprimer le matricule pour la création
+        } else {
+            // En PUT, convertir matricule en nombre (car c'est un ID numérique côté backend)
+            agentData.matricule = Number(editingMatricule);
+        }
+
+        const method = editingMatricule ? 'PUT' : 'POST';
+        const url = editingMatricule ? `http://localhost:8082/agents/${editingMatricule}` : 'http://localhost:8082/agents';
+
+        fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(agentData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                // Gestion des erreurs 400, 500 etc.
+                return response.text().then(text => { 
+                    throw new Error(text || 'Erreur inconnue du serveur'); 
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const table = document.getElementById('agent-table').querySelector('tbody');
+
+            if (method === 'POST') {
+                // Ajout nouvelle ligne dans le tableau
+                const newRow = table.insertRow();
+                newRow.innerHTML = `
+                    <td>${data.matricule}</td>
+                    <td>${data.nom}</td>
+                    <td>${data.prenom}</td>
+                    <td>${data.unite}</td>
+                    <td>${data.fonction}</td>
+                    <td>${data.email}</td>
+                    <td>${data.cin}</td>
+                    <td>${renderActionIcons()}</td>
+                `;
+            } else {
+                // Mise à jour ligne existante
+                const rows = table.getElementsByTagName('tr');
+                for (let i = 0; i < rows.length; i++) {
+                    if (rows[i].cells[0].textContent === editingMatricule) {
+                        rows[i].innerHTML = `
+                            <td>${data.matricule}</td>
+                            <td>${data.nom}</td>
+                            <td>${data.prenom}</td>
+                            <td>${data.unite}</td>
+                            <td>${data.fonction}</td>
+                            <td>${data.email}</td>
+                            <td>${data.cin}</td>
+                            <td>${renderActionIcons()}</td>
+                        `;
+                        break;
+                    }
+                }
+            }
+
+            resetEditState();
+        })
+        .catch(error => {
+            alert("Erreur : " + error.message);
+            console.error("Erreur :", error);
+        });
+    }
+
+    function searchAgentByNom() {
+        const input = document.getElementById('search-input').value.toLowerCase();
+        const table = document.getElementById('agent-table').querySelector('tbody');
+        table.innerHTML = '';
+
+        const endpoint = input.trim() !== "" ?
+            `http://localhost:8082/agents/search/by-nom?nom=${input}` :
+            'http://localhost:8082/agents';
+
+        fetch(endpoint)
+            .then(response => response.json())
+            .then(agents => {
+                agents.forEach(agent => {
+                    const newRow = table.insertRow();
+                    newRow.innerHTML = `
+                        <td>${agent.matricule}</td>
+                        <td>${agent.nom}</td>
+                        <td>${agent.prenom}</td>
+                        <td>${agent.unite}</td>
+                        <td>${agent.fonction}</td>
+                        <td>${agent.email}</td>
+                        <td>${agent.cin}</td>
+                        <td>${renderActionIcons()}</td>
+                    `;
+                });
+            })
+            .catch(error => console.error('Erreur lors de la recherche :', error));
+    }
+
+    window.onload = function () {
+        fetch('http://localhost:8082/agents')
+            .then(response => response.json())
+            .then(agents => {
+                const table = document.getElementById('agent-table').querySelector('tbody');
+                agents.forEach(agent => {
+                    const newRow = table.insertRow();
+                    newRow.innerHTML = `
+                        <td>${agent.matricule}</td>
+                        <td>${agent.nom}</td>
+                        <td>${agent.prenom}</td>
+                        <td>${agent.unite}</td>
+                        <td>${agent.fonction}</td>
+                        <td>${agent.email}</td>
+                        <td>${agent.cin}</td>
+                        <td>${renderActionIcons()}</td>
+                    `;
+                });
+            })
+            .catch(error => console.error('Erreur lors du chargement :', error));
+    };
+</script>
+
+</body>

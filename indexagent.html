@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Parc Informatique - Aviation Civile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Variables de couleurs - Thème aviation */
+        :root {
+            --primary-color: #0c4da2; /* Bleu aviation */
+            --primary-light: #1a62c9;
+            --primary-dark: #083a7e;
+            --secondary-color: #00a0e3; /* Bleu ciel */
+            --accent-color: #ff7900; /* Orange */
+            --text-light: #f8fafc;
+            --text-dark: #1e293b;
+            --bg-light: #f1f5f9;
+            --bg-dark: #0f172a;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition-speed: 0.3s;
+        }
+
+        /* Styles généraux */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden;
+            transition: background-color var(--transition-speed);
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        /* Menu hamburger */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: background-color var(--transition-speed);
+        }
+
+        .menu-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Conteneur principal */
+        .main-container {
+            display: flex;
+            width: 100%;
+            height: calc(100vh - 60px);
+            position: relative;
+        }
+
+        /* Sidebar / Navigation */
+        nav {
+            width: 280px;
+            background: white;
+            box-shadow: var(--box-shadow);
+            height: 100%;
+            position: fixed;
+            left: -280px; /* Caché par défaut */
+            top: 60px;
+            transition: left var(--transition-speed);
+            z-index: 90;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        nav.active {
+            left: 0;
+        }
+
+        /* Overlay pour fermer le menu sur mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 60px);
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 80;
+            display: none;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        nav ul {
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-bottom: 5px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            transition: all var(--transition-speed);
+            border-left: 3px solid transparent;
+        }
+
+        nav ul li a:hover {
+            background: var(--bg-light);
+            border-left-color: var(--primary-light);
+        }
+
+        nav ul li a.active {
+            background: var(--primary-color);
+            color: var(--text-light);
+            border-left-color: var(--accent-color);
+        }
+
+        nav ul li a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Séparateurs */
+        .separator {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 15px 20px;
+            position: relative;
+        }
+
+        .separator::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 1px;
+            width: 50px;
+            background-color: var(--primary-light);
+        }
+
+        /* Sous-menu */
+        .doc-submenu {
+            padding-left: 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-speed);
+        }
+
+        .doc-menu.active .doc-submenu {
+            max-height: 500px;
+        }
+
+        .doc-menu > a {
+            position: relative;
+        }
+
+        .doc-menu > a::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 20px;
+            transition: transform var(--transition-speed);
+        }
+
+        .doc-menu.active > a::after {
+            transform: rotate(180deg);
+        }
+
+        /* Contenu principal */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: 0; /* Pas de marge quand le menu est caché */
+            transition: margin-left var(--transition-speed);
+            width: 100%;
+        }
+
+        .main-content.shifted {
+            margin-left: 280px; /* Marge quand le menu est visible */
+            width: calc(100% - 280px);
+        }
+
+        /* En-tête de section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: var(--text-dark);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background var(--transition-speed);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .action-button:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Horloge et contrôles d'en-tête */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .clock {
+            font-size: 16px;
+            color: var(--text-light);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .clock i {
+            font-size: 14px;
+        }
+
+        .date {
+            font-size: 12px;
+            color: var(--text-light);
+            opacity: 0.9;
+        }
+
+        /* Notifications */
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color var(--transition-speed);
+        }
+
+        .notification-icon:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--danger-color);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Bouton de déconnexion */
+        .logout-btn {
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color var(--transition-speed);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .dashboard-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-card-title i {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .dashboard-card-content {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .dashboard-card-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .card-button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color var(--transition-speed);
+        }
+
+        .card-button:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Statistiques */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .stat-icon.blue {
+            background-color: rgba(12, 77, 162, 0.1);
+            color: var(--primary-color);
+        }
+
+        .stat-icon.green {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-icon.orange {
+            background-color: rgba(255, 121, 0, 0.1);
+            color: var(--accent-color);
+        }
+
+        .stat-icon.red {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        /* Modal de déconnexion */
+        .logout-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+
+        .logout-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-content h2 {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .logout-content p {
+            margin-bottom: 20px;
+            color: #64748b;
+        }
+
+        .logout-progress {
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .logout-progress-bar {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 3s linear;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+
+        /* Badge nouveau */
+        .badge-new {
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 121, 0, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 121, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 121, 0, 0);
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--text-dark);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+            margin-bottom: 5px;
+        }
+
+        .tooltip:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--text-dark) transparent transparent transparent;
+            margin-bottom: -5px;
+            z-index: 100;
+        }
+
+        /* Bannière centrale - Aviation */
+        .aviation-banner {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+                        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center;
+            background-size: cover;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aviation-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .banner-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .banner-logo i {
+            font-size: 60px;
+            color: var(--primary-color);
+        }
+
+        .banner-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .banner-subtitle {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .banner-text {
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        .aviation-icons {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .aviation-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-speed);
+        }
+
+        .icon-circle:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-circle i {
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+
+        .icon-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .clock-container {
+                display: none;
+            }
+
+            .header-controls {
+                gap: 10px;
+            }
+
+            .main-content.shifted {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .dashboard-container,
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .aviation-icons {
+                gap: 20px;
+            }
+
+            .icon-circle {
+                width: 60px;
+                height: 60px;
+            }
+
+            .icon-circle i {
+                font-size: 24px;
+            }
+            
+        }
+        /* Style du Chatbot Modernisé et Adapté aux Couleurs du Site */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            width: 350px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .chatbot-container.visible {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .chatbot-header {
+            background: #0c4da2; /* Bleu clair de l'en-tête */
+            color: white;
+            padding: 15px;
+            border-radius: 12px 12px 0 0;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer; /* Ajout du style pour indiquer que l'en-tête est cliquable */
+        }
+        .chatbot-header i {
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        .chatbot-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chatbot-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+        }
+        .chatbot-suggestion {
+            background-color: #e0f7fa; /* Bleu très clair, presque blanc */
+            color: #00869e; /* Bleu-vert foncé */
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .chatbot-suggestion:hover {
+            background-color: #b2ebf2; /* Bleu clair au survol */
+            transform: scale(1.05);
+        }
+        .chatbot-input-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .chatbot-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid #e0e0e0;
+            transition: border-color 0.3s ease;
+            font-size: 0.95em;
+        }
+        .chatbot-input:focus {
+            border-color: #00869e; /* Bleu-vert foncé au focus */
+            box-shadow: 0 0 5px rgba(0, 134, 158, 0.3);
+            outline: none;
+        }
+        .chatbot-button {
+            background-color: #0c4da2; /* Bleu clair de l'en-tête */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 0.95em;
+            border: none;
+        }
+        .chatbot-button:hover {
+            background-color: #0c4da2; /* Bleu-vert plus soutenu au survol */
+            transform: scale(1.05);
+        }
+        .chatbot-button:active {
+            transform: scale(1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .user-message {
+            background-color: #e0f7fa; /* Bleu très clair */
+            color: #00869e; /* Bleu-vert foncé */
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            align-self: flex-end;
+            width: fit-content;
+            max-width: 80%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-size: 0.9em;
+        }
+        .bot-message {
+            background-color: #f3e5f5;
+            color: #311b92;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            align-self: flex-start;
+            width: fit-content;
+            max-width: 80%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            font-size: 0.9em;
+        }
+        .chatbot-toggle {
+            cursor: pointer;
+            font-size: 24px;
+            color: #4a148c;
+            transition: color 0.3s ease;
+        }
+        .chatbot-toggle:hover {
+            color: #7b1fa2;
+        }
+        .chatbot-container.collapsed {
+            height: auto;
+        }
+        .chatbot-container.collapsed .chatbot-messages,
+        .chatbot-container.collapsed .chatbot-input-container,
+        .chatbot-container.collapsed .chatbot-suggestions {
+            display: none;
+        }
+        .chatbot-container.collapsed .chatbot-header {
+            border-radius: 12px;
+        }
+        /*  notif */
+       .notification-icon {
+  position: relative;
+  cursor: pointer;
+  color: #333; /* Icône plus visible */
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff3b3b; /* rouge plus vif */
+  color: white;
+  border-radius: 50%;
+  padding: 3px 6px;
+  font-size: 0.75em;
+  z-index: 2;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: none; /* caché par défaut */
+}
+
+.notification-header {
+  padding: 12px 16px;
+  background-color: #0c4da2; /* bleu vif */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.notification-header a {
+  text-decoration: none;
+  color: #ffdd57; /* jaune clair */
+  font-size: 0.85em;
+}
+
+.notification-item {
+  padding: 12px 16px;
+  background-color: #fefefe;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.notification-item:hover {
+  background-color: #f1f1f1;
+}
+.notification-item-title {
+  font-weight: bold;
+  color: #333;
+}
+
+.notification-item-date {
+  font-size: 0.8em;
+  color: #777;
+}
+
+
+.notification-item-desc {
+  font-size: 0.9em;
+  color: #333;
+}
+
+.notification-item-date {
+  font-size: 0.75em;
+  color: #888;
+}
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.notification-icon-annonce {
+  color: #0c4da2;
+  font-size: 1.2em;
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <button class="menu-toggle tooltip" id="menu-toggle" data-tooltip="Menu principal">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="logo">
+                <i class="fas fa-plane"></i>
+                Gestion du Parc Informatique - DNA
+            </div>
+        </div>
+        <div class="header-controls">
+            <div class="clock-container">
+                <div class="date" id="date">Chargement...</div>
+                <div class="clock"><i class="far fa-clock"></i> <span id="clock">Chargement...</span></div>
+            </div>
+           <!-- Icône de notification -->
+<div class="notification-icon tooltip" id="notification-toggle" data-tooltip="Notifications">
+    <i class="fas fa-bell"></i>
+    <span class="notification-badge" id="notification-count">0</span>
+</div>
+
+<!-- Dropdown de notifications -->
+<div id="notification-dropdown" class="notification-dropdown">
+    <div class="notification-header">
+        <h3>Notifications</h3>
+        <a href="notification.html">Voir tout</a>
+    </div>
+    <ul id="notification-list" class="notification-list">
+        <li class="notification-item">
+            <p class="notification-item-desc">Chargement des annonces...</p>
+        </li>
+    </ul>
+</div>
+
+
+            </div>
+             <!-- Bouton pour ouvrir le chatbot -->
+<div class="chatbot-toggle"><i class="fas fa-comment-dots"></i></div>
+
+<!-- Conteneur principal du chatbot -->
+<div class="chatbot-container" id="chatbot">
+    <div class="chatbot-header" id="chatbot-header">
+        Chatbot <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="chatbot-messages" id="chatbot-messages"></div>
+    <div class="chatbot-suggestions" id="chatbot-suggestions"></div>
+    <div class="chatbot-input-container">
+        <input type="text" id="user-input" class="chatbot-input" placeholder="Tapez votre message...">
+        <button id="send-message" class="chatbot-button">Envoyer</button>
+    </div>
+</div>
+            <div class="logout-btn tooltip" id="logout-btn" data-tooltip="Déconnexion">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="logout-text">Déconnexion</span>
+            </div>
+        </div>
+       
+
+    </header>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    
+    <div class="main-container">
+        <nav id="sidebar">
+            <ul>
+                <li><a href="mes_equipements.html" id="equipment-link"><i class="fas fa-desktop"></i> Mes équipements</a></li>
+                
+                <!-- Premier séparateur -->
+                <div class="separator"></div>
+                
+                <li class="doc-menu" id="doc-menu">
+                    <a href="#" id="doc-management-link"><i class="fas fa-file-alt icon"></i>Gestion des documents</a>
+                    <ul class="doc-submenu">
+                        <li class="menu-item-animate">
+                            <a href="Proposition de Réforme d'Immobilisation.html">
+                                <i class="fas fa-file-contract"></i>Proposition de Réforme
+                            </a>
+                        </li>
+                        <li class="menu-item-animate">
+                            <a href="Bon de Transfert d'Immobilisations.html">
+                                <i class="fas fa-exchange-alt"></i>Bon de Transfert
+                            </a>
+                        </li>
+                        <li class="menu-item-animate">
+                            <a href="Formulaire de Demande d'Achats.html">
+                                <i class="fas fa-shopping-cart"></i>Demande d'Achats
+                            </a>
+                        </li>
+                        <li class="menu-item-animate">
+                            <a href="demande_sortie_consommables.html">
+                                <i class="fas fa-print"></i>Demande de consommables
+                            </a>
+                        </li>
+                        <li class="menu-item-animate">
+                            <a href="decharge.html">
+                                <i class="fas fa-laptop"></i>Décharge PC
+                                <span class="badge-new">Nouveau</span>
+                            </a>
+                        </li>
+                        <li class="menu-item-animate">
+                            <a href="demande.html">
+                                <i class="fas fa-clipboard-check"></i>Bon de sortie
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <!-- Deuxième séparateur -->
+                <div class="separator"></div>
+                
+                <li><a href="declaration.html" id="issues-link"><i class="fas fa-exclamation-triangle"></i> Déclarer une panne</a></li>
+                <li><a href="notification.html" id="notifications-link"><i class="fas fa-bell"></i> Notifications</a></li>
+                
+                <!-- Troisième séparateur -->
+                <div class="separator"></div>
+                
+                <li><a href="profil.html" id="profile-link"><i class="fas fa-user"></i> Mon profil</a></li>
+            </ul>
+        </nav>
+        
+       
+            
+            <!-- Bannière centrale personnalisée pour l'aviation civile -->
+            <div class="aviation-banner fade-in">
+                <div class="banner-logo">
+                    <i class="fas fa-plane"></i>
+                </div>
+                <h1 class="banner-title">Office de l'Aviation Civile et des Aéroports</h1>
+                <h2 class="banner-subtitle">Système de Gestion du Parc Informatique DNA </h2>
+                <p class="banner-text">
+                    Bienvenue sur la plateforme de gestion du parc informatique de l'OACA. 
+                    Ce système vous permet de gérer efficacement tous les équipements informatiques, 
+                    de déclarer des pannes et de suivre les demandes de maintenance.
+                </p>
+              
+    <!-- Modal de déconnexion -->
+    <div class="logout-modal" id="logout-modal" style="display: none;">
+        <div class="logout-content">
+            <h2>Déconnexion en cours</h2>
+            <p>Merci d'avoir utilisé notre application</p>
+            <div class="logout-progress">
+                <div class="logout-progress-bar" id="logout-progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // notif
+            document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('notification-toggle');
+    const dropdown = document.getElementById('notification-dropdown');
+    const list = document.getElementById('notification-list');
+    const count = document.getElementById('notification-count');
+
+    let isDropdownVisible = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isDropdownVisible = !isDropdownVisible;
+        dropdown.style.display = isDropdownVisible ? 'block' : 'none';
+
+        if (isDropdownVisible) {
+            // Charger les annonces
+            fetch('http://localhost:8082/annonces')
+                .then(response => response.json())
+                .then(data => {
+                    list.innerHTML = ''; // Nettoyer la liste
+
+                    if (!data || data.length === 0) {
+                        list.innerHTML = '<li class="notification-item"><p class="notification-item-desc">Aucune nouvelle annonce.</p></li>';
+                        count.innerText = '0';
+                        return;
+                    }
+
+                    count.innerText = data.length;
+
+                    data.forEach(annonce => {
+                        const item = document.createElement('li');
+                        item.className = 'notification-item';
+                     item.innerHTML = `
+    <div class="notification-content">
+        <i class="fas fa-bullhorn notification-icon-annonce"></i>
+        <div>
+            <span class="notification-item-title">${annonce.titre || 'Annonce sans titre'}</span><br>
+            <span class="notification-item-date">${annonce.datePublication || 'Date inconnue'}</span>
+        </div>
+    </div>
+`;
+
+
+                        list.appendChild(item);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des annonces :', error);
+                    list.innerHTML = '<li class="notification-item"><p class="notification-item-desc">Erreur de chargement.</p></li>';
+                    count.innerText = '!';
+                });
+        }
+    });
+
+    // Cacher le dropdown si on clique en dehors
+    document.addEventListener('click', (event) => {
+        if (!toggleBtn.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.style.display = 'none';
+            isDropdownVisible = false;
+        }
+    });
+});
+
+        // DOM Elements
+        const clock = document.getElementById('clock');
+        const dateElement = document.getElementById('date');
+        const logoutBtn = document.getElementById('logout-btn');
+        const logoutModal = document.getElementById('logout-modal');
+        const logoutProgressBar = document.getElementById('logout-progress-bar');
+        const notificationToggle = document.getElementById('notification-toggle');
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const mainContent = document.getElementById('main-content');
+        const docMenu = document.getElementById('doc-menu');
+        const docManagementLink = document.getElementById('doc-management-link');
+
+        // Horloge dynamique avec date
+        function updateClock() {
+            const now = new Date();
+            
+            // Format de l'heure
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            clock.textContent = `${hours}:${minutes}:${seconds}`;
+            
+            // Format de la date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = now.toLocaleDateString('fr-FR', options);
+            dateElement.textContent = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial update
+
+        // Toggle du menu sur mobile
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            sidebarOverlay.classList.toggle('active');
+            mainContent.classList.toggle('shifted');
+        });
+
+        // Fermer le menu quand on clique sur l'overlay
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            mainContent.classList.remove('shifted');
+        });
+
+        // Toggle du sous-menu documents
+        docManagementLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            docMenu.classList.toggle('active');
+        });
+
+        // Déconnexion
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.style.display = 'flex';
+            logoutProgressBar.style.width = '100%';
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 3000); // Redirection après 3 secondes
+        });
+
+      
+
+        // Links redirection
+        const links = document.querySelectorAll('nav ul li a:not(#doc-management-link)');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetPage = e.target.closest('a').getAttribute('href');
+                if (targetPage !== '#') {
+                    e.preventDefault();
+                    window.location.href = targetPage;
+                }
+            });
+        });
+        const chatbotToggle = document.querySelector('.chatbot-toggle');
+    const chatbotContainer = document.getElementById('chatbot');
+    const chatbotHeader = document.getElementById('chatbot-header');
+
+    chatbotToggle.addEventListener('click', () => {
+        chatbotContainer.classList.toggle('visible');
+        chatbotContainer.classList.remove('collapsed');
+    });
+
+    chatbotHeader.addEventListener('click', () => {
+        chatbotContainer.classList.toggle('collapsed');
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const userInput = document.getElementById('user-input');
+        const sendMessageButton = document.getElementById('send-message');
+        const chatMessages = document.getElementById('chatbot-messages');
+        const chatbotSuggestions = document.getElementById('chatbot-suggestions');
+
+        function addMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(sender + '-message');
+            messageDiv.textContent = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        addMessage("Bonjour ! Comment puis-je vous aider aujourd'hui ?", 'bot');
+
+        function fillSuggestions() {
+            const suggestions = [
+                "Comment déclarer une panne?",
+                "Comment modifier mes informations personnelles?",
+                "Qui contacter en cas de problème urgent?"
+            ];
+
+            chatbotSuggestions.innerHTML = '';
+            suggestions.forEach(suggestionText => {
+                const suggestionDiv = document.createElement('div');
+                suggestionDiv.classList.add('chatbot-suggestion');
+                suggestionDiv.textContent = suggestionText;
+                suggestionDiv.onclick = () => fillInput(suggestionText);
+                chatbotSuggestions.appendChild(suggestionDiv);
+            });
+        }
+
+        fillSuggestions();
+
+        sendMessageButton.addEventListener('click', function() {
+            const userQuestion = userInput.value.trim();
+            if (userQuestion) {
+                addMessage(userQuestion, 'user');
+                userInput.value = '';
+
+                fetch('http://localhost:8083/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: userQuestion }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const botResponse = data.response;
+                    addMessage(botResponse, 'bot');
+                })
+                .catch(err => {
+                    addMessage("Désolé, une erreur est survenue.", 'bot');
+                });
+            }
+        });
+
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessageButton.click();
+            }
+        });
+
+        window.fillInput = function(suggestion) {
+            userInput.value = suggestion;
+        };
+    });
+    </script>
+</body>
+</html>

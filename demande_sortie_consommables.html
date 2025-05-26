@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demande de Sortie - Consommables</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80vw;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            height: 80px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            font-size: 16px;
+        }
+        th {
+            background-color: #e0e0e0;
+        }
+        button {
+            display: block;
+            width: 100%;
+            background-color: #1ecbe1;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tête -->
+        <div class="header">
+            <div>
+                <img src="logo_oaca.png" alt="Logo OACA">
+                <p>Direction de l'approvisionnement et de la gestion des stocks</p>
+            </div>
+            <div>
+                <p>N°: <span id="numero"></span></p>
+                <p>DATE: <input type="date" id="dateInput"></p>
+            </div>
+        </div>
+
+        <!-- Titres principaux -->
+        <h1>DEMANDE DE SORTIE</h1>
+        <h2>CONSOMMABLES</h2>
+
+        <!-- Formulaire -->
+        <form>
+            <!-- Section Informations Générales -->
+            <div class="input-group">
+                <label for="direction">DIRECTION:</label>
+                <input type="text" id="direction" required>
+            </div>
+            <div class="input-group">
+                <label for="demandeur">DEMANDEUR:</label>
+                <input type="text" id="demandeur" required>
+            </div>
+            <div class="input-group">
+                <label for="code">CODE:</label>
+                <input type="text" id="code" required>
+            </div>
+            <div class="input-group">
+                <label for="nom_demandeur">NOM DU DEMANDEUR:</label>
+                <input type="text" id="nom_demandeur" required>
+            </div>
+            <div class="input-group">
+                <label for="code_projet">CODE PROJET:</label>
+                <input type="text" id="code_projet" required>
+            </div>
+
+            <!-- Tableau de Saisie -->
+            <h2>Tableau de Saisie</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>UNITE</th>
+                        <th>DESIGNATION</th>
+                        <th>AFFECTATION</th>
+                        <th>QUANTITÉ DEMANDÉE</th>
+                        <th>CODE</th>
+                        <th>NOMENCLATURE</th>
+                        <th>QUANTITÉ LIVRÉE</th>
+                        <th>CODE ANALYTIQUE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <script>
+                        // Générer dynamiquement 10 lignes pour le tableau
+                        for (let i = 0; i < 10; i++) {
+                            document.write('<tr>');
+                            for (let j = 0; j < 8; j++) {
+                                document.write('<td><input type="text"></td>');
+                            }
+                            document.write('</tr>');
+                        }
+                    </script>
+                </tbody>
+            </table>
+
+            <!-- Signatures et Validation -->
+            <h2>Le Chef du service demandeur</h2>
+            <table>
+                <tr>
+                    <th>Nom et Prénom</th>
+                    <td><input type="text" id="chef_service_demandeur_nom" required></td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td><input type="date" id="chef_service_demandeur_date" required></td>
+                </tr>
+                <tr>
+                    <th>Signature</th>
+                    <td><input type="text" id="chef_service_demandeur_signature" required></td>
+                </tr>
+            </table>
+
+            <h2>Marchandise enlevée par</h2>
+            <table>
+                <tr>
+                    <th>Nom et Prénom</th>
+                    <td><input type="text" id="marchandise_enlevee_nom" required></td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td><input type="date" id="marchandise_enlevee_date" required></td>
+                </tr>
+                <tr>
+                    <th>Signature</th>
+                    <td><input type="text" id="marchandise_enlevee_signature" required></td>
+                </tr>
+            </table>
+
+            <h2>Magasinier livreur</h2>
+            <table>
+                <tr>
+                    <th>Nom et Prénom</th>
+                    <td><input type="text" id="magasinier_nom" required></td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td><input type="date" id="magasinier_date" required></td>
+                </tr>
+                <tr>
+                    <th>Signature</th>
+                    <td><input type="text" id="magasinier_signature" required></td>
+                </tr>
+            </table>
+
+            <h2>L'Unité de Contrôle</h2>
+            <table>
+                <tr>
+                    <th>Nom et Prénom</th>
+                    <td><input type="text" id="unite_controle_nom" required></td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td><input type="date" id="unite_controle_date" required></td>
+                </tr>
+                <tr>
+                    <th>Signature</th>
+                    <td><input type="text" id="unite_controle_signature" required></td>
+                </tr>
+            </table>
+
+            <!-- Bouton de Soumission -->
+            <button type="submit">Soumettre</button>
+        </form>
+    </div>
+
+    <!-- Script pour générer un numéro aléatoire et la date actuelle -->
+    <script>
+        document.getElementById('numero').textContent = Math.floor(Math.random() * 1000) + 1;
+        document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

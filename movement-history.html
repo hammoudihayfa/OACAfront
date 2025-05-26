@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historique des Mouvements</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+       
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+         h1, h2 {
+            margin: 0;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ced4da;
+            padding: 10px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table:hover {
+            transform: scale(1.01);
+        }
+
+        th {
+            background-color: #0c4da2;
+            color: white;
+            position: relative;
+        }
+
+        th i {
+            margin-left: 5px;
+        }
+
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+
+        /* Styles pour la recherche */
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .search-icon {
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body onload="fetchMovementHistory()"> 
+    <header>
+      <h1>Historique des Mouvements</h1>
+ <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>    </header>
+  
+
+    <section>
+      <h2>Recherche par Équipement ID ou Agent</h2>
+      <input type="number" id="equipement-id" placeholder="ID Équipement">
+      <button onclick="fetchByEquipement()">Rechercher</button>
+  
+      <input type="text" id="agent-name" placeholder="Nom Agent">
+      <button onclick="fetchByAgent()">Rechercher</button>
+    </section>
+  
+   <!--  <section>
+      <h2><i class="fas fa-tools icon"></i>Ajouter un Mouvement</h2>
+      <form id="add-movement-form" onsubmit="addMouvement(event)">
+        <label>Type :</label>
+        <input type="text" id="type-mouvement" required>
+  
+        <label>Date :</label>
+        <input type="date" id="date-mouvement" required>
+  
+        <label>Utilisateur :</label>
+        <input type="text" id="utilisateur" required>
+  
+        <label>Commentaire :</label>
+        <input type="text" id="commentaire">
+  
+        <label>ID Équipement :</label>
+        <input type="number" id="equipement-id-mouvement" required>
+  
+        <button type="submit">Ajouter</button>
+      </form>
+    </section>
+   -->
+    <section>
+      <h2><i class="fas fa-list icon"></i>Liste des Mouvements</h2>
+      <table id="movement-history-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Patrimoine</th>
+            <th>Utilisateur</th>
+            <th>Commentaire</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  
+    <script>
+      const API_BASE_URL = 'http://localhost:8081/historique-mouvements';
+  
+      function logout() {
+        alert("Déconnexion réussie !");
+        window.location.href = 'login.html';
+      }
+  
+      function updateTable(data) {
+        const tbody = document.getElementById('movement-history-table').querySelector('tbody');
+        tbody.innerHTML = '';
+        data.forEach(m => {
+          const row = tbody.insertRow();
+          row.insertCell().textContent = new Date(m.dateMouvement).toLocaleDateString();
+          row.insertCell().textContent = m.typeMouvement;
+          row.insertCell().textContent = m.equipement ? m.equipement.numeroSerie || m.equipement.numeroPatrimoine || 'N/A' : 'N/A';
+          row.insertCell().textContent = m.utilisateur;
+          row.insertCell().textContent = m.commentaire;
+        });
+      }
+  
+      function fetchMovementHistory() {
+        fetch(API_BASE_URL)
+          .then(res => res.json())
+          .then(data => updateTable(data))
+          .catch(err => alert('Erreur récupération mouvements'));
+      }
+  
+      function searchHistory() {
+        const term = document.getElementById('search-input').value;
+        if (term.trim() === '') return fetchMovementHistory();
+        fetch(`${API_BASE_URL}/search?searchTerm=${term}`)
+          .then(res => res.json())
+          .then(data => updateTable(data))
+          .catch(err => alert('Erreur recherche'));
+      }
+  
+      function fetchByEquipement() {
+        const id = document.getElementById('equipement-id').value;
+        if (!id) return;
+        fetch(`${API_BASE_URL}/equipement/${id}`)
+          .then(res => res.json())
+          .then(data => updateTable(data))
+          .catch(err => alert('Erreur par équipement'));
+      }
+  
+      function fetchByAgent() {
+        const name = document.getElementById('agent-name').value;
+        if (!name) return;
+        fetch(`${API_BASE_URL}/agent/${name}`)
+          .then(res => res.json())
+          .then(data => updateTable(data))
+          .catch(err => alert('Erreur par agent'));
+      }
+  
+      function addMouvement(event) {
+        event.preventDefault();
+        const mouvement = {
+          typeMouvement: document.getElementById('type-mouvement').value,
+          dateMouvement: document.getElementById('date-mouvement').value,
+          utilisateur: document.getElementById('utilisateur').value,
+          commentaire: document.getElementById('commentaire').value,
+          equipement: {
+            idEquipement: document.getElementById('equipement-id-mouvement').value
+          }
+        };
+  
+        fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(mouvement)
+        })
+          .then(res => res.json())
+          .then(() => {
+            alert('Mouvement ajouté');
+            fetchMovementHistory();
+            document.getElementById('add-movement-form').reset();
+          })
+          .catch(err => alert('Erreur ajout mouvement'));
+      }
+    </script>
+  </body>
+  
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bon de Transfert d'Immobilisations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff; /* Fond blanc */
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 900px;
+            background: #ffffff; /* Fond blanc */
+            padding: 20px;
+            border: 2px solid #000; /* Bordure noire */
+        }
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-top: 10px;
+            border: 1px solid #000; /* Bordure des sections */
+            padding: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+        input[type="text"], input[type="date"] {
+            width: 90%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">BON DE TRANSFERT D'IMMOBILISATIONS</div>
+        <div class="section">
+            <table>
+                <tr>
+                    <td><strong>OACA</strong></td>
+                    <td><input type="text" id="oaca" name="oaca" placeholder="Entrez OACA"></td>
+                    <td><strong>Patrimoine</strong></td>
+                    <td><input type="text" id="patrimoine" name="patrimoine" placeholder="Entrez Patrimoine"></td>
+                    <td><strong>N°:</strong></td>
+                    <td><input type="text" id="numero" name="numero" placeholder="Numéro"></td>
+                    <td><strong>Date:</strong></td>
+                    <td><input type="date" id="date" name="date"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <strong>AFFECTATIONS</strong>
+            <table>
+                <tr>
+                    <td><strong>Lieu</strong></td>
+                    <td><strong>Initiale (Origine) - Code:</strong></td>
+                    <td><input type="text" id="initiale_code" name="initiale_code"></td>
+                    <td><strong>Finale (Destinataire) - Code:</strong></td>
+                    <td><input type="text" id="finale_code" name="finale_code"></td>
+                </tr>
+                <tr>
+                    <td><strong>Zone Géographique</strong></td>
+                    <td><strong>Libellé:</strong></td>
+                    <td><input type="text" id="zone_geographique_initiale" name="zone_geographique_initiale"></td>
+                    <td><strong>Libellé:</strong></td>
+                    <td><input type="text" id="zone_geographique_finale" name="zone_geographique_finale"></td>
+                </tr>
+                <tr>
+                    <td><strong>Direction</strong></td>
+                    <td colspan="2"><input type="text" id="direction_initiale" name="direction_initiale"></td>
+                    <td colspan="2"><input type="text" id="direction_finale" name="direction_finale"></td>
+                </tr>
+                <tr>
+                    <td><strong>Service</strong></td>
+                    <td colspan="2"><input type="text" id="service_initiale" name="service_initiale"></td>
+                    <td colspan="2"><input type="text" id="service_finale" name="service_finale"></td>
+                </tr>
+                <tr>
+                    <td><strong>Unité / Agent</strong></td>
+                    <td colspan="2"><input type="text" id="unite_agent_initiale" name="unite_agent_initiale"></td>
+                    <td colspan="2"><input type="text" id="unite_agent_finale" name="unite_agent_finale"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <strong>DÉTAILS DU BIEN</strong>
+            <table>
+                <thead>
+                    <tr>
+                        <th>CODE Immo</th>
+                        <th>Désignation</th>
+                        <th>N° de Série</th>
+                        <th>Observations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <script>
+                        for (let i = 0; i < 5; i++) {
+                            document.write('<tr>');
+                            document.write('<td><input type="text" name="code_immo' + i + '"></td>');
+                            document.write('<td><input type="text" name="designation' + i + '"></td>');
+                            document.write('<td><input type="text" name="numero_serie' + i + '"></td>');
+                            document.write('<td><input type="text" name="observations' + i + '"></td>');
+                            document.write('</tr>');
+                        }
+                    </script>
+                </tbody>
+            </table>
+        </div>
+        <div class="signatures">
+            <div>
+                <strong>Signataire Initial:</strong><br>
+                Nom: <input type="text" id="signataire_initial_nom" name="signataire_initial_nom"><br>
+                Date: <input type="date" id="signataire_initial_date" name="signataire_initial_date"><br>
+                Visa: <input type="text" id="signataire_initial_visa" name="signataire_initial_visa">
+            </div>
+            <div>
+                <strong>Signataire Final:</strong><br>
+                Nom: <input type="text" id="signataire_final_nom" name="signataire_final_nom"><br>
+                Date: <input type="date" id="signataire_final_date" name="signataire_final_date"><br>
+                Visa: <input type="text" id="signataire_final_visa" name="signataire_final_visa">
+            </div>
+        </div>
+        <div class="footer">
+            <button onclick="window.print()">Imprimer</button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaires Multiples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page {
+            width: 900px;
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #000;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-top: 10px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+
+.decharge {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.decharge h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.decharge p {
+    margin-bottom: 10px;
+}
+
+.decharge input[type="text"] {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    width: 80%;
+    padding: 5px;
+}
+
+.decharge input[type="text"]:focus {
+    outline: none;
+    border-bottom: 2px solid #007bff;
+}
+
+.decharge .signature {
+    text-align: right;
+    margin-top: 30px;
+}
+</style>
+<script>
+function printPage() {
+    window.print();
+}
+</script>
+</head>
+<body>
+
+
+
+
+<div class="page">
+    <div class="decharge">
+        <h2>Décharge de PC</h2>
+        <p>Je soussigné(e), <input type="text" placeholder="Nom et prénom">, déclare avoir reçu aujourd'hui le <input type="text" placeholder="Date">, un PC de marque ACER contenant les composants suivants :</p>
+        <ul>
+            <li>Unité centrale : NP <input type="text" placeholder="Numéro de série"></li>
+            <li>Écran : NP <input type="text" placeholder="Numéro de série"></li>
+            <li>Clavier + souris : <input type="text" placeholder="Numéro de série"></li>
+        </ul>
+        <p class="signature">Signature : <input type="text" placeholder="Signature"></p>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="printPage()">Imprimer</button>
+    </div>
+</div>
+
+<div class="page">
+    <div class="decharge">
+        <h2>Décharge de PC</h2>
+        <p>Je soussigné(e), <input type="text" placeholder="Nom et prénom">, déclare avoir reçu aujourd'hui le <input type="text" placeholder="Date">, un PC de marque ACER contenant les composants suivants :</p>
+        <ul>
+            <li>Unité centrale : NP <input type="text" placeholder="Numéro de série"></li>
+            <li>Écran : NP <input type="text" placeholder="Numéro de série"></li>
+            <li>Clavier + souris : <input type="text" placeholder="Numéro de série"></li>
+        </ul>
+        <p class="signature">Signature : <input type="text" placeholder="Signature"></p>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="printPage()">Imprimer</button>
+    </div>
+</div>
+
+<div class="page">
+    <div class="decharge">
+        <h2>Décharge de PC</h2>
+        <p>Je soussigné(e), <input type="text" placeholder="Nom et prénom">, déclare avoir reçu aujourd'hui le <input type="text" placeholder="Date">, un PC de marque ACER contenant les composants suivants :</p>
+        <ul>
+            <li>Unité centrale : NP <input type="text" placeholder="Numéro de série"></li>
+            <li>Écran : NP <input type="text" placeholder="Numéro de série"></li>
+            <li>Clavier + souris : <input type="text" placeholder="Numéro de série"></li>
+        </ul>
+        <p class="signature">Signature : <input type="text" placeholder="Signature"></p>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="printPage()">Imprimer</button>
+    </div>
+</div>
+</body>
+</html>

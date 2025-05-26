@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclarer une panne - Gestion du Parc Informatique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Copiez ici les styles pertinents depuis le fichier original */
+        /* Voici les styles essentiels pour la page Déclarer une panne */
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #343a40;
+        }
+
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .issue-form {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+       .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    appearance: none; /* Supprimer les styles par défaut du navigateur */
+    background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    background-color: #fff;
+}
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1ecbe1;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f49b42;
+            color: white;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #0c4da2;
+            font-weight: 600;
+            color: #f5f7fa;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .status-issue {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-icon.view {
+            background: rgba(0, 123, 255, 0.1);
+            color: #007bff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+ h2 {
+            color: #0c4da2;
+        }
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion du Parc Informatique - Déclarer une panne</h1>
+    </header>
+    <div class="main-content">
+        <section id="issues" class="section active">
+            <div class="section-header">
+                <h2 class="section-title">Déclarer une panne</h2>
+            </div>
+            <div class="issue-form">
+                <form id="issue-form">
+                    <div class="form-group">
+                        <label for="equipment-select" class="form-label">Équipement concerné</label>
+                        <select id="equipment-select" class="form-select" required>
+                            <option value="">Sélectionner un équipement</option>
+                            <option value="1">E-2301 - Ordinateur portable Dell XPS</option>
+                            <option value="2">E-2302 - Écran Dell 27"</option>
+                            <option value="3">E-2303 - Clavier sans fil Logitech</option>
+                            <option value="4">E-2304 - Souris sans fil Logitech</option>
+                            <option value="5">E-2305 - Imprimante HP LaserJet</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="issue-type" class="form-label">Type de panne</label>
+                            <select id="issue-type" class="form-select" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="hardware">Matériel</option>
+                                <option value="software">Logiciel</option>
+                                <option value="network">Réseau</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="issue-priority" class="form-label">Priorité</label>
+                            <select id="issue-priority" class="form-select" required>
+                                <option value="">Sélectionner une priorité</option>
+                                <option value="low">Basse</option>
+                                <option value="medium">Moyenne</option>
+                                <option value="high">Haute</option>
+                                <option value="critical">Critique</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue-description" class="form-label">Description de la panne</label>
+                        <textarea id="issue-description" class="form-control" rows="5" placeholder="Décrivez le problème en détail..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Soumettre</button>
+                        <button type="reset" class="btn btn-secondary">Réinitialiser</button>
+                    </div>
+                </form>
+            </div>
+            <div class="issue-history">
+                <div class="section-header">
+                    <h2>Historique des pannes déclarées</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Priorité</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issue-history-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal-overlay" id="view-issue-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails de la panne</h3>
+                <button class="modal-close" id="close-view-issue">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">ID</label>
+                    <p id="view-issue-id" class="form-control"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Équipement</label>
+                    <p id="view-issue-equipment" class="form-control"></p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <p id="view-issue-type" class="form-control"></p>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priorité</label>
+                        <p id="view-issue-priority" class="form-control"></p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <p id="view-issue-date" class="form-control"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <p id="view-issue-description" class="form-control"></p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Statut</label>
+                    <p id="view-issue-status" class="form-control"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-view-issue-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="toast-content">Opération réussie</div>
+        <div class="toast-close">&times;</div>
+    </div>
+
+    <script>
+        const issueForm = document.getElementById('issue-form');
+        const issueHistoryTableBody = document.getElementById('issue-history-table-body');
+        const viewIssueModal = document.getElementById('view-issue-modal');
+        const closeViewIssueBtn = document.getElementById('close-view-issue');
+        const closeViewIssueBtnFooter = document.getElementById('close-view-issue-btn');
+        const toast = document.getElementById('toast');
+        const toastClose = document.querySelector('.toast-close');
+
+        const backendUrl = 'http://localhost:8081/equipements-en-panne';
+
+        async function fetchIssueHistory() {
+    try {
+        const response = await fetch(backendUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const issues = await response.json();
+        issueHistoryTableBody.innerHTML = ''; // Clear existing table rows
+        issues.forEach(issue => {
+            const row = issueHistoryTableBody.insertRow();
+            row.insertCell().textContent = `P-${issue.idEquipementEnPanne}`;
+            // row.insertCell().textContent = issue.equipement ? `E-${issue.equipement.idEquipement} - ${issue.equipement.nom}` : 'Non spécifié'; // Supprimer ou commenter cette ligne
+            row.insertCell().textContent = issue.typeDePanne;
+            row.insertCell().textContent = new Date(issue.datePanne).toLocaleDateString();
+            row.insertCell().textContent = issue.priorite;
+            const statusCell = row.insertCell();
+            const statusBadge = document.createElement('span');
+            statusBadge.classList.add('status-badge');
+            statusBadge.classList.add(issue.statut === 'Résolu' ? 'status-active' : 'status-issue');
+            statusBadge.textContent = issue.statut;
+            statusCell.appendChild(statusBadge);
+
+            const actionsCell = row.insertCell();
+            const viewButton = document.createElement('div');
+            viewButton.classList.add('action-icons');
+            viewButton.innerHTML = `<div class="action-icon view" data-id="${issue.idEquipementEnPanne}"><i class="fas fa-eye"></i></div>`;
+            actionsCell.appendChild(viewButton);
+
+            const viewButtonElement = viewButton.querySelector('.action-icon.view');
+            if (viewButtonElement) {
+                viewButtonElement.addEventListener('click', () => openViewIssueModal(issue));
+            }
+        });
+    } catch (error) {
+        console.error('Erreur lors de la récupération de l\'historique des pannes:', error);
+        showToast('Erreur lors du chargement de l\'historique', 'error');
+    }
+}
+
+        async function submitIssueForm(event) {
+ event.preventDefault();
+const equipmentSelect = document.getElementById('equipment-select');
+ const issueTypeSelect = document.getElementById('issue-type');
+ const issuePrioritySelect = document.getElementById('issue-priority');
+ const issueDescriptionInput = document.getElementById('issue-description');
+
+const selectedEquipmentId = equipmentSelect.value;
+const issueType = issueTypeSelect.value; 
+ const issuePriority = issuePrioritySelect.value; 
+const issueDescription = issueDescriptionInput.value;
+
+if (!selectedEquipmentId) {
+showToast('Veuillez sélectionner un équipement', 'warning');
+ return;
+}
+
+ const newIssue = {
+ equipement: { idEquipement: parseInt(selectedEquipmentId) },
+datePanne: new Date().toISOString().split('T')[0],
+ description: issueDescription,
+statut: 'En cours',
+ priorite: issuePriority, 
+ typeDePanne: issueType 
+};
+
+try {
+const response = await fetch(backendUrl, {
+method: 'POST',
+headers: {
+ 'Content-Type': 'application/json'
+                     },
+                 body: JSON.stringify(newIssue)
+             });
+
+                 if (response.ok) {
+                showToast('Panne déclarée avec succès');
+                        issueForm.reset();
+                     fetchIssueHistory();
+                     } else {
+                 const errorData = await response.json();
+             console.error('Erreur lors de la déclaration de la panne:', errorData);
+         showToast('Erreur lors de la déclaration de la panne', 'error');
+         }
+    } catch (error) {
+     console.error('Erreur réseau lors de la déclaration de la panne:', error);
+showToast('Erreur réseau lors de la déclaration de la panne', 'error');
+}
+ }
+        function openViewIssueModal(issue) {
+            document.getElementById('view-issue-id').textContent = `P-${issue.idEquipementEnPanne}`;
+            document.getElementById('view-issue-equipment').textContent = issue.equipement ? `E-${issue.equipement.idEquipement} - ${issue.equipement.nom}` : 'Non spécifié';
+            document.getElementById('view-issue-type').textContent = issue.typeDePanne;
+            document.getElementById('view-issue-priority').textContent = issue.priorite;
+            document.getElementById('view-issue-date').textContent = new Date(issue.datePanne).toLocaleDateString();
+            document.getElementById('view-issue-description').textContent = issue.description;
+            const statusElement = document.getElementById('view-issue-status');
+            statusElement.innerHTML = `<span class="status-badge ${issue.statut === 'Résolu' ? 'status-active' : 'status-issue'}">${issue.statut}</span>`;
+            viewIssueModal.classList.add('active');
+        }
+
+        closeViewIssueBtn.addEventListener('click', () => {
+            viewIssueModal.classList.remove('active');
+        });
+
+        closeViewIssueBtnFooter.addEventListener('click', () => {
+            viewIssueModal.classList.remove('active');
+        });
+
+        function showToast(message, type = 'success') {
+            const toastContent = document.querySelector('.toast-content');
+            const toastIcon = document.querySelector('.toast-icon i');
+            toastContent.textContent = message;
+            if (type === 'success') {
+                toast.style.background = '#28a745';
+                toastIcon.className = 'fas fa-check-circle';
+            } else if (type === 'warning') {
+                toast.style.background = '#ffc107';
+                toastIcon.className = 'fas fa-exclamation-triangle';
+            } else if (type === 'error') {
+                toast.style.background = '#dc3545';
+                toastIcon.className = 'fas fa-times-circle';
+            }
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        issueForm.addEventListener('submit', submitIssueForm);
+
+        // Fetch initial issue history on page load
+        fetchIssueHistory();
+    </script>
+</body>
+</html>

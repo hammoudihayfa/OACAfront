@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Équipements en Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative; 
+        }
+        header h1 {
+            margin: 0 auto; 
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px; 
+            cursor: pointer;
+            border-radius: 5px; 
+            font-size: 0.9em; 
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        h2 {
+            color: #0c4da2;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .search-container input {
+            width: 80%;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .search-container input:focus {
+            border-color: #0c4da2;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .highlight {
+            background-color: #ffeb3b; /* Couleur de surbrillance */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .form-container button { 
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto; 
+            display: block; 
+            margin: 10px auto 0; 
+        }
+        .table-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ced4da;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+         .action-icons {
+        display: flex;
+        gap: 8px;
+    }  .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+   
+
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Équipements en Service</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Rechercher un équipement..." onkeyup="searchEquipment()">
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-tools icon"></i>Ajouter un Équipement en Service</h2>
+            <form id="add-equipment-form" onsubmit="saveEquipment(event)">
+                <label for="equipement_id">ID Équipement (Informatique) :</label>
+                <input type="text" id="equipement_id" required>
+
+                <label for="derniereDateOperationnel">Dernière Date Opérationnelle :</label>
+                <input type="date" id="derniereDateOperationnel" required>
+
+                <label for="autresCaracteristiques">Autres Caractéristiques :</label>
+                <input type="text" id="autresCaracteristiques" required>
+
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+    </div>
+    <div class="table-container">
+        <h2><i class="fas fa-list icon"></i>Liste des Équipements en Service</h2>
+        <table id="equipment-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Dernière Date Opérationnelle</th>
+                    <th>Autres Caractéristiques</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let editingEquipmentId = null;
+        let allEquipments = []; 
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        function saveEquipment(event) {
+            event.preventDefault();
+            const equipementId = document.getElementById('equipement_id').value;
+            const derniereDateOperationnel = document.getElementById('derniereDateOperationnel').value;
+            const autresCaracteristiques = document.getElementById('autresCaracteristiques').value;
+
+            const equipmentData = {
+                equipement: {
+                    idEquipementInformatique: equipementId,  // Corrected to match the back-end attribute
+                },
+                autresCaracteristiques: autresCaracteristiques,
+                derniereDateOperationnel: derniereDateOperationnel
+            };
+
+            const url = editingEquipmentId ? `http://localhost:8081/equipements-en-service/${editingEquipmentId}` : 'http://localhost:8081/equipements-en-service';
+            const method = editingEquipmentId ? 'PUT' : 'POST';
+
+            // When creating a new equipment, don't send the auto-generated ID
+            if (method === 'POST' && equipmentData.idEquipementEnService) {
+                delete equipmentData.idEquipementEnService;
+            }
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(equipmentData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw err; });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (method === 'POST') {
+                    addEquipmentToTable(data);
+                } else {
+                    updateEquipmentInTable(data);
+                }
+                resetForm();
+                loadEquipments(); // Recharger la liste pour afficher les changements
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'ajout/modification de l\'équipement:', error);
+                alert('Erreur lors de l\'ajout/modification de l\'équipement.');
+            });
+        }
+
+        function addEquipmentToTable(equipment) {
+            const table = document.getElementById('equipment-table').querySelector('tbody');
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td>${equipment.idEquipementEnService}</td>
+                <td>${equipment.derniereDateOperationnel}</td>
+                <td>${equipment.autresCaracteristiques}</td>
+              
+                  <td class="action-icons">
+                        <div class="action-icon edit" title="Modifier" onclick="editEquipment(this, ${equipment.idEquipementEnService})"><i class="fas fa-edit"></i></div>
+                        <div class="action-icon delete" title="Supprimer" onclick="deleteEquipment(this, ${equipment.idEquipementEnService})"><i class="fas fa-trash"></i></div>
+                    </td>
+            `;
+        }
+
+        function updateEquipmentInTable(equipment) {
+            const table = document.getElementById('equipment-table').querySelector('tbody');
+            const rows = table.getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].cells[0].textContent === String(equipment.idEquipementEnService)) {
+                    rows[i].innerHTML = `
+                        <td>${equipment.idEquipementEnService}</td>
+                        <td>${equipment.derniereDateOperationnel}</td>
+                        <td>${equipment.autresCaracteristiques}</td>
+                        <td>
+                            <button onclick="editEquipment(this, ${equipment.idEquipementEnService})">Modifier</button>
+                            <button onclick="deleteEquipment(this, ${equipment.idEquipementEnService})">Supprimer</button>
+                        </td>
+                    `;
+                    break;
+                }
+            }
+        }
+
+        function deleteEquipment(button, id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')) {
+                fetch(`http://localhost:8081/equipements-en-service/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const row = button.parentNode.parentNode;
+                        row.parentNode.removeChild(row);
+                        loadEquipments(); // Recharger la liste après suppression
+                    } else {
+                        console.error('Erreur lors de la suppression de l\'équipement.');
+                        alert('Erreur lors de la suppression de l\'équipement.');
+                    }
+                })
+                .catch(error => console.error('Erreur lors de la suppression de l\'équipement:', error));
+            }
+        }
+
+        function editEquipment(button, id) {
+            editingEquipmentId = id;
+            const row = button.parentNode.parentNode;
+            document.getElementById('equipement_id').value = row.cells[0].textContent; // ID Equipement Informatique
+            document.getElementById('derniereDateOperationnel').value = row.cells[1].textContent;
+            document.getElementById('autresCaracteristiques').value = row.cells[2].textContent;
+
+            const addButton = document.querySelector('#add-equipment-form button[type="submit"]');
+            addButton.textContent = 'Sauvegarder les modifications';
+        }
+
+        function resetForm() {
+            editingEquipmentId = null;
+            document.getElementById('add-equipment-form').reset();
+            const addButton = document.querySelector('#add-equipment-form button[type="submit"]');
+            addButton.textContent = 'Ajouter';
+        }
+
+        function searchEquipment() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('equipment-table');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toLowerCase().includes(filter)) {
+                        found = true;
+                        cells[j].classList.add('highlight');
+                    } else {
+                        cells[j].classList.remove('highlight');
+                    }
+                }
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+
+        function loadEquipments() {
+            fetch('http://localhost:8081/equipements-en-service')
+                .then(response => response.json())
+                .then(equipments => {
+                    allEquipments = equipments; // Stocker les équipements chargés
+                    const tableBody = document.getElementById('equipment-table').querySelector('tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+                    equipments.forEach(equipment => {
+                        addEquipmentToTable(equipment);
+                    });
+                })
+                .catch(error => console.error('Erreur lors du chargement des équipements:', error));
+        }
+
+        window.onload = loadEquipments;
+    </script>
+</body>
+
+
+
+</html>

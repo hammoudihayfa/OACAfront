@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Équipements - Gestion du Parc Informatique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Copiez ici les styles pertinents depuis le fichier original */
+        /* Voici les styles essentiels pour la page Mes Équipements */
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #343a40;
+        }
+        
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .action-button {
+            padding: 8px 15px;
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .status-inactive {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .status-maintenance {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .action-icons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-icon.view {
+            background: rgba(0, 123, 255, 0.1);
+            color: #0c4da2;
+        }
+        
+        .action-icon.edit {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+        
+        .action-icon.delete {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .action-icon.report {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4' viewBox='0 0 8 4'%3E%3Cpath fill='%23343a40' d='M0 0l4 4 4-4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 8px 4px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #0c4da2;
+            color: white;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        h2 {
+            color: #0c4da2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion du Parc Informatique - Mes Équipements</h1>
+    </header>
+    <div class="main-content">
+        <section id="equipment" class="section active">
+            <div class="section-header">
+                <h2 class="section-title">Mes équipements</h2>
+                <button class="action-button" id="add-equipment-btn">
+                    <i class="fas fa-plus"></i> Ajouter un équipement
+                </button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Marque</th>
+                            <th>Modèle</th>
+                            <th>Localisation</th>
+                            <th>Numéro de Série</th>
+                            <th>Date de Mise en Service</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="equipment-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal-overlay" id="add-equipment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Ajouter un équipement</h3>
+                <button class="modal-close" id="close-add-equipment">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="add-equipment-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="add-equipment-matricule" class="form-label">Matricule</label>
+                            <input type="number" id="add-equipment-matricule" class="form-control" placeholder="Ex: 12345" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-equipment-typeEquipement" class="form-label">Type</label>
+                            <select id="add-equipment-typeEquipement" class="form-select" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="Ordinateur">Ordinateur</option>
+                                <option value="Écran">Écran</option>
+                                <option value="Clavier">Clavier</option>
+                                <option value="Souris">Souris</option>
+                                <option value="Imprimante">Imprimante</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="add-equipment-marqueEquipement" class="form-label">Marque</label>
+                            <input type="text" id="add-equipment-marqueEquipement" class="form-control" placeholder="Ex: Dell" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-equipment-modeleEquipement" class="form-label">Modèle</label>
+                            <input type="text" id="add-equipment-modeleEquipement" class="form-control" placeholder="Ex: XPS 15" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-equipment-localisation" class="form-label">Localisation</label>
+                        <input type="text" id="add-equipment-localisation" class="form-control" placeholder="Ex: Bureau 101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-equipment-numeroSerie" class="form-label">Numéro de Série</label>
+                        <input type="text" id="add-equipment-numeroSerie" class="form-control" placeholder="Ex: ABC123XYZ" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-equipment-dateMiseEnService" class="form-label">Date de Mise en Service</label>
+                        <input type="date" id="add-equipment-dateMiseEnService" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-equipment-etat" class="form-label">État</label>
+                        <select id="add-equipment-etat" class="form-select" required>
+                            <option value="">Sélectionner un état</option>
+                            <option value="En service">En service</option>
+                            <option value="En panne">En panne</option>
+                            <option value="Réparé">Réparé</option>
+                            <option value="Réformé">Réformé</option>
+                            <option value="Transféré">Transféré</option>
+                            <option value="En cours de réparation">En cours de réparation</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-add-equipment">Annuler</button>
+                <button class="btn btn-primary" id="submit-add-equipment">Ajouter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="edit-equipment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Modifier l'équipement</h3>
+                <button class="modal-close" id="close-edit-equipment">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-equipment-form">
+                    <div class="form-group">
+                        <label for="edit-equipment-idEquipement" class="form-label">ID</label>
+                        <input type="text" id="edit-equipment-idEquipement" class="form-control" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-equipment-matricule" class="form-label">Matricule</label>
+                            <input type="number" id="edit-equipment-matricule" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-equipment-typeEquipement" class="form-label">Type</label>
+                            <select id="edit-equipment-typeEquipement" class="form-select" required>
+                                <option value="">Sélectionner un type</option>
+                                <option value="Ordinateur">Ordinateur</option>
+                                <option value="Écran">Écran</option>
+                                <option value="Clavier">Clavier</option>
+                                <option value="Souris">Souris</option>
+                                <option value="Imprimante">Imprimante</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-equipment-marqueEquipement" class="form-label">Marque</label>
+                            <input type="text" id="edit-equipment-marqueEquipement" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-equipment-modeleEquipement" class="form-label">Modèle</label>
+                            <input type="text" id="edit-equipment-modeleEquipement" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-equipment-localisation" class="form-label">Localisation</label>
+                        <input type="text" id="edit-equipment-localisation" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-equipment-numeroSerie" class="form-label">Numéro de Série</label>
+                        <input type="text" id="edit-equipment-numeroSerie" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-equipment-dateMiseEnService" class="form-label">Date de Mise en Service</label>
+                        <input type="date" id="edit-equipment-dateMiseEnService" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-equipment-etat" class="form-label">État</label>
+                        <select id="edit-equipment-etat" class="form-select" required>
+                            <option value="">Sélectionner un état</option>
+                            <option value="En service">En service</option>
+                            <option value="En panne">En panne</option>
+                            <option value="Réparé">Réparé</option>
+                            <option value="Réformé">Réformé</option>
+                            <option value="Transféré">Transféré</option>
+                            <option value="En cours de réparation">En cours de réparation</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-edit-equipment">Annuler</button>
+                <button class="btn btn-primary" id="submit-edit-equipment">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="view-equipment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Détails de l'équipement</h3>
+                <button class="modal-close" id="close-view-equipment">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">ID</label>
+                    <p id="view-equipment-idEquipement" class="form-control">E-2301</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Matricule</label>
+                    <p id="view-equipment-matricule" class="form-control">12345</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <p id="view-equipment-typeEquipement" class="form-control">Ordinateur</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Marque</label>
+                    <p id="view-equipment-marqueEquipement" class="form-control">Dell</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Modèle</label>
+                    <p id="view-equipment-modeleEquipement" class="form-control">XPS 15</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Localisation</label>
+                    <p id="view-equipment-localisation" class="form-control">Bureau 101</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Numéro de Série</label>
+                    <p id="view-equipment-numeroSerie" class="form-control">ABC123XYZ</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date de Mise en Service</label>
+                    <p id="view-equipment-dateMiseEnService" class="form-control">2023-01-15</p>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">État</label>
+                    <p id="view-equipment-etat" class="form-control"><span class="status-badge status-active">En service</span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-view-equipment-btn">Fermer</button>
+                <button class="btn btn-warning" id="report-from-view">Déclarer une panne</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="delete-equipment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmer la suppression</h3>
+                <button class="modal-close" id="close-delete-equipment">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="confirm-text">Êtes-vous sûr de vouloir supprimer cet équipement ?</p>
+                <div class="confirm-item">
+                    <p><strong>ID:</strong> <span id="delete-equipment-idEquipement">E-2301</span></p>
+                    <p><strong>Marque:</strong> <span id="delete-equipment-marqueEquipement">Dell</span></p>
+                    <p><strong>Modèle:</strong> <span id="delete-equipment-modeleEquipement">XPS 15</span></p>
+                </div>
+                <p class="warning-text"><i class="fas fa-exclamation-triangle"></i> Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-delete-equipment">Annuler</button>
+                <button class="btn btn-danger" id="confirm-delete-equipment">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="toast-content">Opération réussie</div>
+        <div class="toast-close">&times;</div>
+    </div>
+
+    <script>
+        const equipmentTableBody = document.getElementById('equipment-table-body');
+        const addEquipmentBtn = document.getElementById('add-equipment-btn');
+        const addEquipmentModal = document.getElementById('add-equipment-modal');
+        const closeAddEquipmentBtn = document.getElementById('close-add-equipment');
+        const cancelAddEquipmentBtn = document.getElementById('cancel-add-equipment');
+        const submitAddEquipmentBtn = document.getElementById('submit-add-equipment');
+
+        const editEquipmentModal = document.getElementById('edit-equipment-modal');
+        const closeEditEquipmentBtn = document.getElementById('close-edit-equipment');
+        const cancelEditEquipmentBtn = document.getElementById('cancel-edit-equipment');
+        const submitEditEquipmentBtn = document.getElementById('submit-edit-equipment');
+
+        const viewEquipmentModal = document.getElementById('view-equipment-modal');
+        const closeViewEquipmentBtn = document.getElementById('close-view-equipment');
+        const closeViewEquipmentBtnFooter = document.getElementById('close-view-equipment-btn');
+        const reportFromViewBtn = document.getElementById('report-from-view');
+
+        const deleteEquipmentModal = document.getElementById('delete-equipment-modal');
+        const closeDeleteEquipmentBtn = document.getElementById('close-delete-equipment');
+        const cancelDeleteEquipmentBtn = document.getElementById('cancel-delete-equipment');
+        const confirmDeleteEquipmentBtn = document.getElementById('confirm-delete-equipment');
+
+        const toast = document.getElementById('toast');
+        const toastClose = document.querySelector('.toast-close');
+
+        let equipments = [];
+        let selectedEquipmentId = null; 
+
+        // Function to show a toast notification
+        function showToast(message, type = 'success') {
+            const toastContent = document.querySelector('.toast-content');
+            const toastIcon = document.querySelector('.toast-icon i');
+            toastContent.textContent = message;
+            if (type === 'success') {
+                toast.style.background = '#28a745';
+                toastIcon.className = 'fas fa-check-circle';
+            } else if (type === 'warning') {
+                toast.style.background = '#ffc107';
+                toastIcon.className = 'fas fa-exclamation-triangle';
+            } else if (type === 'error') {
+                toast.style.background = '#dc3545';
+                toastIcon.className = 'fas fa-times-circle';
+            }
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to fetch all equipments from the backend
+        async function fetchEquipments() {
+            try {
+                const response = await fetch('http://localhost:8081/equipements');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                equipments = await response.json();
+                console.log("Données récupérées du backend:", equipments); // Vérification des données reçues
+                renderEquipmentTable(equipments);
+            } catch (error) {
+                console.error('Error fetching equipments:', error);
+                showToast('Erreur lors de la récupération des équipements', 'error');
+            }
+        }
+
+        // Function to render the equipment table
+        function renderEquipmentTable(equipments) {
+            equipmentTableBody.innerHTML = '';
+            equipments.forEach(equipment => {
+                const row = document.createElement('tr');
+                row.dataset.id = equipment.idEquipement;
+                row.innerHTML = `
+                    <td>${equipment.idEquipement}</td>
+                    <td>${equipment.typeEquipement}</td>
+                    <td>${equipment.marqueEquipement}</td>
+                    <td>${equipment.modeleEquipement}</td>
+                    <td>${equipment.localisation}</td>
+                    <td>${equipment.numeroSerie}</td>
+                    <td>${new Date(equipment.dateMiseEnService).toLocaleDateString('fr-FR')}</td>
+                    <td><span class="status-badge status-${getStatusClass(equipment.etat)}">${equipment.etat}</span></td>
+                    <td>
+                        <div class="action-icons">
+                            <div class="action-icon view" data-id="${equipment.idEquipement}"><i class="fas fa-eye"></i></div>
+                            <div class="action-icon edit" data-id="${equipment.idEquipement}"><i class="fas fa-edit"></i></div>
+                            <div class="action-icon delete" data-id="${equipment.idEquipement}"><i class="fas fa-trash-alt"></i></div>
+                            <div class="action-icon report" data-id="${equipment.idEquipement}"><i class="fas fa-exclamation-triangle"></i></div>
+                        </div>
+                    </td>
+                    
+                `;
+                equipmentTableBody.appendChild(row);
+
+                // Add event listeners to the action icons
+                row.querySelector('.action-icon.view').addEventListener('click', () => handleViewEquipment(equipment));
+                row.querySelector('.action-icon.edit').addEventListener('click', () => handleEditEquipment(equipment));
+                row.querySelector('.action-icon.delete').addEventListener('click', () => handleDeleteEquipment(equipment.idEquipement, equipment.marqueEquipement, equipment.modeleEquipement));
+                row.querySelector('.action-icon.report').addEventListener('click', () => handleReportIssue(equipment.idEquipement));
+            });
+        }
+
+        // Function to get the status class for styling
+        function getStatusClass(etat) {
+            switch (etat) {
+                case 'En service': return 'active';
+                case 'En panne': return 'inactive';
+                case 'En cours de réparation': return 'maintenance';
+                case 'Réparé': return 'active'; 
+                case 'Réformé': return 'inactive'; 
+                case 'Transféré': return 'maintenance'; 
+                default: return '';
+            }
+        }
+
+        // Event listeners for the "Ajouter un équipement" modal
+        addEquipmentBtn.addEventListener('click', () => {
+            document.getElementById('add-equipment-form').reset();
+            addEquipmentModal.classList.add('active');
+        });
+
+        closeAddEquipmentBtn.addEventListener('click', () => {
+            addEquipmentModal.classList.remove('active');
+        });
+
+        cancelAddEquipmentBtn.addEventListener('click', () => {
+            addEquipmentModal.classList.remove('active');
+        });
+
+        submitAddEquipmentBtn.addEventListener('click', async () => {
+            const form = document.getElementById('add-equipment-form');
+            if (form.checkValidity()) {
+                const newEquipment = {
+                    matricule: parseInt(document.getElementById('add-equipment-matricule').value),
+                    typeEquipement: document.getElementById('add-equipment-typeEquipement').value,
+                    marqueEquipement: document.getElementById('add-equipment-marqueEquipement').value,
+                    modeleEquipement: document.getElementById('add-equipment-modeleEquipement').value,
+                    localisation: document.getElementById('add-equipment-localisation').value,
+                    numeroSerie: document.getElementById('add-equipment-numeroSerie').value,
+                    dateMiseEnService: document.getElementById('add-equipment-dateMiseEnService').value,
+                    etat: document.getElementById('add-equipment-etat').value,
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8081/equipements', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(newEquipment),
+                    });
+
+                    if (response.ok) {
+                        const savedEquipment = await response.json();
+                        equipments.push(savedEquipment);
+                        renderEquipmentTable(equipments);
+                        addEquipmentModal.classList.remove('active');
+                        showToast('Équipement ajouté avec succès');
+                    } else {
+                        const errorDetails = await response.text();
+                        console.error('Error adding equipment:', errorDetails);
+                        showToast('Erreur lors de l\'ajout de l\'équipement', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error adding equipment:', error);
+                    showToast('Erreur de connexion lors de l\'ajout de l\'équipement', 'error');
+                }
+            } else {
+                form.reportValidity();
+            }
+        });
+
+        // Event listeners for the "Modifier l'équipement" modal
+        closeEditEquipmentBtn.addEventListener('click', () => {
+            editEquipmentModal.classList.remove('active');
+        });
+
+        cancelEditEquipmentBtn.addEventListener('click', () => {
+            editEquipmentModal.classList.remove('active');
+        });
+
+        submitEditEquipmentBtn.addEventListener('click', async () => {
+            const form = document.getElementById('edit-equipment-form');
+            if (form.checkValidity() && selectedEquipmentId) {
+                const updatedEquipment = {
+                    idEquipement: parseInt(document.getElementById('edit-equipment-idEquipement').value),
+                    matricule: parseInt(document.getElementById('edit-equipment-matricule').value),
+                    typeEquipement: document.getElementById('edit-equipment-typeEquipement').value,
+                    marqueEquipement: document.getElementById('edit-equipment-marqueEquipement').value,
+                    modeleEquipement: document.getElementById('edit-equipment-modeleEquipement').value,
+                    localisation: document.getElementById('edit-equipment-localisation').value,
+                    numeroSerie: document.getElementById('edit-equipment-numeroSerie').value,
+                    dateMiseEnService: document.getElementById('edit-equipment-dateMiseEnService').value,
+                    etat: document.getElementById('edit-equipment-etat').value,
+                };
+
+                try {
+                    const response = await fetch(`http://localhost:8081/equipements/update/${selectedEquipmentId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(updatedEquipment),
+                    });
+
+                    if (response.ok) {
+                        const updatedData = await response.json();
+                        equipments = equipments.map(eq => eq.idEquipement === updatedData.idEquipement ? updatedData : eq);
+                        renderEquipmentTable(equipments);
+                        editEquipmentModal.classList.remove('active');
+                        showToast('Équipement modifié avec succès');
+                    } else {
+                        const errorDetails = await response.text();
+                        console.error('Error updating equipment:', errorDetails);
+                        showToast('Erreur lors de la modification de l\'équipement', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating equipment:', error);
+                    showToast('Erreur de connexion lors de la modification de l\'équipement', 'error');
+                }
+            } else {
+                form.reportValidity();
+            }
+        });
+
+        // Function to handle viewing equipment details
+        function handleViewEquipment(equipment) {
+            document.getElementById('view-equipment-idEquipement').textContent = equipment.idEquipement;
+            document.getElementById('view-equipment-matricule').textContent = equipment.matricule;
+            document.getElementById('view-equipment-typeEquipement').textContent = equipment.typeEquipement;
+            document.getElementById('view-equipment-marqueEquipement').textContent = equipment.marqueEquipement;
+            document.getElementById('view-equipment-modeleEquipement').textContent = equipment.modeleEquipement;
+            document.getElementById('view-equipment-localisation').textContent = equipment.localisation;
+            document.getElementById('view-equipment-numeroSerie').textContent = equipment.numeroSerie;
+            document.getElementById('view-equipment-dateMiseEnService').textContent = new Date(equipment.dateMiseEnService).toLocaleDateString('fr-FR');
+            document.getElementById('view-equipment-etat').innerHTML = `<span class="status-badge status-${getStatusClass(equipment.etat)}">${equipment.etat}</span>`;
+            viewEquipmentModal.classList.add('active');
+        }
+
+        // Event listeners for the "Voir l'équipement" modal
+        closeViewEquipmentBtn.addEventListener('click', () => {
+            viewEquipmentModal.classList.remove('active');
+        });
+
+        closeViewEquipmentBtnFooter.addEventListener('click', () => {
+            viewEquipmentModal.classList.remove('active');
+        });
+
+        reportFromViewBtn.addEventListener('click', () => {
+            const equipmentId = document.getElementById('view-equipment-idEquipement').textContent;
+            viewEquipmentModal.classList.remove('active');
+            alert(`Redirection vers la déclaration de panne pour l'équipement ${equipmentId}`);
+        });
+
+        // Function to handle editing equipment
+        function handleEditEquipment(equipment) {
+            selectedEquipmentId = equipment.idEquipement;
+            document.getElementById('edit-equipment-idEquipement').value = equipment.idEquipement;
+            document.getElementById('edit-equipment-matricule').value = equipment.matricule;
+            document.getElementById('edit-equipment-typeEquipement').value = equipment.typeEquipement;
+            document.getElementById('edit-equipment-marqueEquipement').value = equipment.marqueEquipement;
+            document.getElementById('edit-equipment-modeleEquipement').value = equipment.modeleEquipement;
+            document.getElementById('edit-equipment-localisation').value = equipment.localisation;
+            document.getElementById('edit-equipment-numeroSerie').value = equipment.numeroSerie;
+            document.getElementById('edit-equipment-dateMiseEnService').value = equipment.dateMiseEnService.substring(0, 10);
+            document.getElementById('edit-equipment-etat').value = equipment.etat;
+            editEquipmentModal.classList.add('active');
+        }
+
+        // Function to handle displaying the delete confirmation modal
+        function handleDeleteEquipment(id, marque, modele) {
+            document.getElementById('delete-equipment-idEquipement').textContent = id;
+            document.getElementById('delete-equipment-marqueEquipement').textContent = marque;
+            document.getElementById('delete-equipment-modeleEquipement').textContent = modele;
+            selectedEquipmentId = id; 
+            deleteEquipmentModal.classList.add('active');
+        }
+
+        // Event listeners for the "Supprimer l'équipement" modal
+        closeDeleteEquipmentBtn.addEventListener('click', () => {
+            deleteEquipmentModal.classList.remove('active');
+            selectedEquipmentId = null;
+        });
+
+        cancelDeleteEquipmentBtn.addEventListener('click', () => {
+            deleteEquipmentModal.classList.remove('active');
+            selectedEquipmentId = null;
+        });
+
+        confirmDeleteEquipmentBtn.addEventListener('click', async () => {
+            if (selectedEquipmentId) {
+                try {
+                    const response = await fetch(`http://localhost:8081/equipements/${selectedEquipmentId}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        equipments = equipments.filter(eq => eq.idEquipement !== selectedEquipmentId);
+                        renderEquipmentTable(equipments);
+                        deleteEquipmentModal.classList.remove('active');
+                        showToast('Équipement supprimé avec succès');
+                        selectedEquipmentId = null;
+                    } else {
+                        const errorDetails = await response.text();
+                        console.error('Error deleting equipment:', errorDetails);
+                        showToast('Erreur lors de la suppression de l\'équipement', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error deleting equipment:', error);
+                    showToast('Erreur de connexion lors de la suppression de l\'équipement', 'error');
+                }
+            }
+        });
+
+        // Event listener to close the toast
+        toastClose.addEventListener('click', () => {
+            toast.classList.remove('show');
+        });
+
+        // Initial fetch of equipments when the page loads
+        fetchEquipments();
+    </script>
+</body>
+</html>

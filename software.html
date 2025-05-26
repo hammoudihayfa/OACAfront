@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Logiciels</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+         header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+          h1, h2 {
+            margin: 0;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"],
+        input[type="date"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        table:hover {
+            transform: scale(1.01);
+        }
+        table, th, td {
+            border: 1px solid #ced4da;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+            position: relative;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+        .alert {
+            color: red; /* Couleur rouge pour l'alerte */
+            font-weight: bold; /* Mettre en gras pour plus de visibilité */
+        }
+        .green-light {
+            color: green; /* Lampe verte */
+        }
+        .red-light {
+            color: red; /* Lampe rouge */
+        }
+        /* Styles pour la recherche */
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .search-icon {
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        .action-buttons button {
+            margin-right: 5px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+        .edit-button {
+            background-color: #ffc107;
+            color: #212529;
+        }
+         .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Liste des Logiciels</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>    
+    </header>
+
+    <div class="search-container">
+        <label for="search-input" class="search-icon">🔍</label>
+        <input type="text" id="search-input" placeholder="Rechercher par nom ou version..." oninput="searchSoftware()">
+    </div>
+
+    <section>
+        <h2><i class="fas fa-cogs icon"></i>Ajouter un Logiciel</h2>
+        <form id="add-software-form" onsubmit="addSoftware(event)">
+            <label for="nomLogiciel">Nom :</label>
+            <input type="text" id="nomLogiciel" required>
+
+            <label for="version">Version :</label>
+            <input type="text" id="version" required>
+
+            <label for="numeroLicence">Numéro de Licence :</label>
+            <input type="text" id="numeroLicence">
+
+            <label for="contrat">Contrat :</label>
+            <input type="text" id="contrat">
+
+            <label for="dateLimite">Date Limite :</label>
+            <input type="date" id="dateLimite" required>
+
+            <button type="submit"><i class="fas fa-plus icon"></i>Ajouter</button>
+        </form>
+
+        <h2><i class="fas fa-list icon"></i>Liste des Logiciels</h2>
+        <table id="software-table">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Version</th>
+                    <th>Numéro de Licence</th>
+                    <th>Contrat</th>
+                    <th>Date Limite</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </section>
+
+    <script>
+        const apiUrl = 'http://localhost:8084/logiciels-service';
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html'; 
+        }
+
+        async function fetchLogiciels() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const logiciels = await response.json();
+                populateTable(logiciels);
+            } catch (error) {
+                console.error("Erreur lors de la récupération des logiciels:", error);
+                alert("Erreur lors du chargement des logiciels.");
+            }
+        }
+
+        function populateTable(logiciels) {
+            const tableBody = document.getElementById('software-table').querySelector('tbody');
+            tableBody.innerHTML = ''; 
+
+            logiciels.forEach(logiciel => {
+                const row = tableBody.insertRow();
+                row.dataset.logicielId = logiciel.idLogiciel; 
+                row.dataset.dateLimiteOriginal = logiciel.dateLimite; 
+                row.innerHTML = `
+                    <td>${logiciel.nomLogiciel}</td>
+                    <td>${logiciel.version}</td>
+                    <td>${logiciel.numeroLicence || ''}</td>
+                    <td>${logiciel.contrat || ''}</td>
+                    <td>${new Date(logiciel.dateLimite).toLocaleDateString()}</td>
+                    <td class="action-icons">
+                        <div class="action-icon edit" title="Modifier" onclick="editLogicielForm(${logiciel.idLogiciel})"><i class="fas fa-edit"></i></div>
+                        <div class="action-icon delete" title="Supprimer" onclick="deleteLogiciel(${logiciel.idLogiciel})"><i class="fas fa-trash"></i></div>
+                    </td>
+                `;
+            });
+        }
+
+        async function addSoftware(event) {
+            event.preventDefault();
+            
+            // Récupérer les valeurs des champs
+            const nomLogiciel = document.getElementById('nomLogiciel').value;
+            const version = document.getElementById('version').value;
+            const numeroLicence = document.getElementById('numeroLicence').value;
+            const contrat = document.getElementById('contrat').value;
+            const dateLimite = document.getElementById('dateLimite').value;
+
+            // Validation des champs
+            if (nomLogiciel.trim().length < 2) {
+                alert("Le nom du logiciel doit contenir au moins 2 caractères.");
+                return;
+            }
+
+            const versionPattern = /^\d+(\.\d+)?$/;
+            if (!versionPattern.test(version)) {
+                alert("La version doit être au format numérique (ex: 1.0).");
+                return;
+            }
+
+            if (numeroLicence && !/^[a-zA-Z0-9\-]+$/.test(numeroLicence)) {
+                alert("Le numéro de licence ne doit contenir que des lettres, chiffres ou des tirets.");
+                return;
+            }
+
+            if (contrat && contrat.length > 100) {
+                alert("Le champ contrat ne doit pas dépasser 100 caractères.");
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            if (dateLimite < today) {
+                alert("La date limite ne peut pas être antérieure à aujourd'hui.");
+                return;
+            }
+
+            const newLogiciel = {
+                nomLogiciel: nomLogiciel,
+                version: version,
+                numeroLicence: numeroLicence,
+                contrat: contrat,
+                dateLimite: dateLimite
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newLogiciel),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const createdLogiciel = await response.json();
+                fetchLogiciels();t
+                document.getElementById('add-software-form').reset();
+                alert(`Logiciel "${createdLogiciel.nomLogiciel}" ajouté avec succès.`);
+
+            } catch (error) {
+                console.error("Erreur lors de l'ajout du logiciel:", error);
+                alert("Erreur lors de l'ajout du logiciel.");
+            }
+        }
+
+        async function deleteLogiciel(id) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer le logiciel avec l'ID ${id} ?`)) {
+                try {
+                    const response = await fetch(`${apiUrl}/${id}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    fetchLogiciels(); // Recharger la liste après la suppression
+                    alert(`Logiciel avec l'ID ${id} supprimé avec succès.`);
+
+                } catch (error) {
+                    console.error(`Erreur lors de la suppression du logiciel avec l'ID ${id}:`, error);
+                    alert(`Erreur lors de la suppression du logiciel avec l'ID ${id}.`);
+                }
+            }
+        }
+
+        function editLogicielForm(id) {
+            const row = document.querySelector(`#software-table tbody tr[data-logiciel-id="${id}"]`);
+            if (!row) return;
+
+            const cells = row.querySelectorAll('td');
+            const nom = cells[0].textContent;
+            const version = cells[1].textContent;
+            const numeroLicence = cells[2].textContent;
+            const contrat = cells[3].textContent;
+            const dateLimiteOriginal = row.dataset.dateLimiteOriginal; 
+            const formattedDate = dateLimiteOriginal.split('T')[0]; 
+
+            // Remplir le formulaire d'ajout avec les données du logiciel à modifier
+            document.getElementById('nomLogiciel').value = nom;
+            document.getElementById('version').value = version;
+            document.getElementById('numeroLicence').value = numeroLicence;
+            document.getElementById('contrat').value = contrat;
+            document.getElementById('dateLimite').value = formattedDate; // Use the original format
+
+            // Changer le bouton "Ajouter" en "Modifier" et modifier son comportement
+            const submitButton = document.querySelector('#add-software-form button[type="submit"]');
+            submitButton.textContent = 'Modifier';
+            submitButton.onclick = (event) => updateLogiciel(event, id);
+        }
+
+        async function updateLogiciel(event, id) {
+            event.preventDefault();
+            const nomLogiciel = document.getElementById('nomLogiciel').value;
+            const version = document.getElementById('version').value;
+            const numeroLicence = document.getElementById('numeroLicence').value;
+            const contrat = document.getElementById('contrat').value;
+            const dateLimite = document.getElementById('dateLimite').value;
+
+            const updatedLogiciel = {
+                idLogiciel: id,
+                nomLogiciel: nomLogiciel,
+                version: version,
+                numeroLicence: numeroLicence,
+                contrat: contrat,
+                dateLimite: dateLimite
+            };
+
+            try {
+                const response = await fetch(`${apiUrl}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedLogiciel),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const updatedData = await response.json();
+                fetchLogiciels(); // Recharger la liste après la modification
+                document.getElementById('add-software-form').reset();
+                const submitButton = document.querySelector('#add-software-form button[type="submit"]');
+                submitButton.textContent = 'Ajouter';
+                submitButton.onclick = (e) => addSoftware(e); // Restaurer le comportement d'ajout
+                alert(`Logiciel "${updatedData.nomLogiciel}" mis à jour avec succès.`);
+
+            } catch (error) {
+                console.error(`Erreur lors de la mise à jour du logiciel avec l'ID ${id}:`, error);
+                alert(`Erreur lors de la mise à jour du logiciel.`);
+            }
+        }
+
+        function searchSoftware() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const table = document.getElementById('software-table').querySelector('tbody');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const nom = row.cells[0].textContent.toLowerCase();
+                const version = row.cells[1].textContent.toLowerCase();
+                if (nom.includes(searchInput) || version.includes(searchInput)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Charger la liste des logiciels au chargement de la page
+        document.addEventListener('DOMContentLoaded', fetchLogiciels);
+    </script>
+</body>
+</html>

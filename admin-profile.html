@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Administrateur</title>
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #0c4da2;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Profil Administrateur</h1>
+        <button class="logout" onclick="logout()">Déconnexion</button>
+    </header>
+
+    <section>
+        <h2>Profil Administrateur</h2>
+        <form id="admin-profile-form">
+            <label for="admin-name">Nom :</label>
+            <input type="text" id="admin-name" value="Admin" required>
+            
+            <label for="admin-email">E-mail :</label>
+            <input type="email" id="admin-email" value="admin@example.com" required>
+            
+            <label for="admin-password">Mot de Passe :</label>
+            <input type="password" id="admin-password" required>
+            
+            <button type="submit">Modifier</button>
+        </form>
+    </section>
+
+    <script>
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

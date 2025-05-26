@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Équipements par Agent</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+         h1, h2 {
+            margin: 0;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .search-container input {
+            width: 80%;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .search-container input:focus {
+            border-color: #0c4da2;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .highlight {
+            background-color: #ffeb3b; /* Couleur de surbrillance */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .table-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ced4da;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+            .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Liste des Équipements par Agent</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+    <div class="search-container">
+        <input type="text" id="search-marque-input" placeholder="Rechercher par marque..." onkeyup="searchEquipmentByMarque()">
+    </div>
+<div class="container">
+    <div class="form-container">
+         <h2><i class="fas fa-tools icon"></i>Ajouter un Équipement</h2>
+        <form id="add-equipment-form" onsubmit="saveEquipment(event)">
+            <label for="utilisateur">Agent :</label>
+            <input type="text" id="utilisateur" required pattern="^[A-Za-zÀ-ÿ\s\-']{2,50}$" maxlength="50" minlength="2" title="Nom de l'agent (lettres, espaces, tirets, apostrophes, 2-50 caractères)">
+
+            <label for="nature">Nature :</label>
+            <input type="text" id="nature" required pattern="^[A-Za-z0-9\s\-]{2,50}$" maxlength="50" minlength="2" title="Nature (lettres, chiffres, tirets, espaces, 2-50 caractères)">
+
+            <label for="marque">Marque :</label>
+            <input type="text" id="marque" required pattern="^[A-Za-z0-9\s\-]{2,30}$" maxlength="30" minlength="2" title="Marque (lettres et chiffres, 2-30 caractères)">
+
+            <label for="modele">Modèle :</label>
+            <input type="text" id="modele" required pattern="^[A-Za-z0-9\s\-]{2,30}$" maxlength="30" minlength="2" title="Modèle (lettres et chiffres, 2-30 caractères)">
+
+            <label for="nSerie">Numéro de Série :</label>
+            <input type="text" id="nSerie" required pattern="^[A-Za-z0-9\-]{3,50}$" maxlength="50" minlength="3" title="Numéro de série (lettres, chiffres, tirets, 3-50 caractères)">
+
+            <label for="statutEquipement">Statut de l'Équipement :</label>
+            <input type="text" id="statutEquipement" required pattern="^(Fonctionnel|Défectueux|En maintenance|Perdu|En stock)$" title="Statut valide : Fonctionnel, Défectueux, En maintenance, Perdu, En stock">
+
+            <label for="direction">Direction :</label>
+            <input type="text" id="direction" required pattern="^[A-Za-zÀ-ÿ\s\-']{2,50}$" maxlength="50" minlength="2" title="Nom de direction (lettres, espaces, 2-50 caractères)">
+
+            <label for="datePos">Date de Positionnement :</label>
+            <input type="date" id="datePos" required max="<?= date('Y-m-d') ?>" title="Date de positionnement (pas de date future)">
+
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-container">
+    <h2><i class="fas fa-list icon"></i>Liste des Équipements</h2>
+    <table id="equipment-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nature</th>
+                <th>Marque</th>
+                <th>Modèle</th>
+                <th>N° Série</th>
+                <th>Statut</th>
+                <th>Agent</th>
+                <th>Direction</th>
+                <th>Date Pos.</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    let editingEquipmentId = null;
+
+    function logout() {
+        alert("Déconnexion réussie !");
+        window.location.href = 'login.html';
+    }
+
+    function editEquipment(button) {
+        const row = button.closest('tr');
+        editingEquipmentId = row.cells[0].textContent;
+        document.getElementById('utilisateur').value = row.cells[6].textContent;
+        document.getElementById('nature').value = row.cells[1].textContent;
+        document.getElementById('marque').value = row.cells[2].textContent;
+        document.getElementById('modele').value = row.cells[3].textContent;
+        document.getElementById('nSerie').value = row.cells[4].textContent;
+        document.getElementById('statutEquipement').value = row.cells[5].textContent;
+        document.getElementById('direction').value = row.cells[7].textContent;
+
+        // Convertir la date affichée (format YYYY-MM-DD) en date ISO pour input type="date"
+        let displayedDate = row.cells[8].textContent;
+        document.getElementById('datePos').value = displayedDate;
+
+        const addButton = document.querySelector('#add-equipment-form button[type="submit"]');
+        addButton.textContent = 'Sauvegarder les modifications';
+    }
+
+    function resetEditState() {
+        editingEquipmentId = null;
+        document.getElementById('add-equipment-form').reset();
+        const addButton = document.querySelector('#add-equipment-form button[type="submit"]');
+        addButton.textContent = 'Ajouter';
+    }
+
+    function saveEquipment(event) {
+        event.preventDefault();
+        const utilisateur = document.getElementById('utilisateur').value;
+        const nature = document.getElementById('nature').value;
+        const marque = document.getElementById('marque').value;
+        const modele = document.getElementById('modele').value;
+        const nSerie = document.getElementById('nSerie').value;
+        const statutEquipement = document.getElementById('statutEquipement').value;
+        const direction = document.getElementById('direction').value;
+        const datePos = document.getElementById('datePos').value;
+
+        // Envoi date au format ISO (yyyy-mm-dd) à ton backend
+        const equipmentData = {
+            utilisateur, nature, marque, modele, nSerie, statutEquipement, direction, datePos
+        };
+
+        const method = editingEquipmentId ? 'PUT' : 'POST';
+        const url = editingEquipmentId ? `http://localhost:8082/liste-equipements/${editingEquipmentId}` : 'http://localhost:8082/liste-equipements';
+
+        fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(equipmentData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (method === 'POST') {
+                addEquipmentToTable(data);
+            } else {
+                updateEquipmentInTable(data);
+            }
+            resetEditState();
+        })
+        .catch(error => console.error('Erreur lors de l\'ajout/modification de l\'équipement:', error));
+    }
+
+    function formatDate(timestampOrString) {
+        // Cette fonction gère si la date est un timestamp ou une string
+        let dateObj;
+        if (!timestampOrString) return '';
+        if (typeof timestampOrString === 'number' || /^\d+$/.test(timestampOrString)) {
+            // timestamp en ms
+            dateObj = new Date(Number(timestampOrString));
+        } else {
+            // chaîne ISO ou autre
+            dateObj = new Date(timestampOrString);
+        }
+        if (isNaN(dateObj)) return ''; // Date invalide
+        return dateObj.toISOString().slice(0, 10); // format YYYY-MM-DD
+    }
+
+    function addEquipmentToTable(equipment) {
+        const table = document.getElementById('equipment-table').querySelector('tbody');
+        const newRow = table.insertRow();
+
+        const formattedDate = formatDate(equipment.datePos);
+
+        newRow.innerHTML = `
+            <td>${equipment.idEquipementParAgent}</td>
+            <td>${equipment.nature}</td>
+            <td>${equipment.marque}</td>
+            <td>${equipment.modele}</td>
+            <td>${equipment.nSerie}</td>
+            <td>${equipment.statutEquipement}</td>
+            <td>${equipment.utilisateur}</td>
+            <td>${equipment.direction}</td>
+            <td>${formattedDate}</td>
+            <td>
+                <div class="action-icons">
+                    <div class="action-icon edit" title="Modifier" onclick="editEquipment(this)">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="action-icon delete" title="Supprimer" onclick="deleteEquipment(this, ${equipment.idEquipementParAgent})">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+            </td>
+        `;
+    }
+
+    function updateEquipmentInTable(equipment) {
+        const table = document.getElementById('equipment-table').querySelector('tbody');
+        const rows = table.getElementsByTagName('tr');
+        const formattedDate = formatDate(equipment.datePos);
+
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i].cells[0].textContent === String(equipment.idEquipementParAgent)) {
+                rows[i].innerHTML = `
+                    <td>${equipment.idEquipementParAgent}</td>
+                    <td>${equipment.nature}</td>
+                    <td>${equipment.marque}</td>
+                    <td>${equipment.modele}</td>
+                    <td>${equipment.nSerie}</td>
+                    <td>${equipment.statutEquipement}</td>
+                    <td>${equipment.utilisateur}</td>
+                    <td>${equipment.direction}</td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <div class="action-icons">
+                            <div class="action-icon edit" title="Modifier" onclick="editEquipment(this)">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="action-icon delete" title="Supprimer" onclick="deleteEquipment(this, ${equipment.idEquipementParAgent})">
+                                <i class="fas fa-trash-alt"></i>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                break;
+            }
+        }
+    }
+
+    function deleteEquipment(button, id) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')) {
+            fetch(`http://localhost:8082/liste-equipements/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    const row = button.closest('tr');
+                    row.parentNode.removeChild(row);
+                } else {
+                    console.error('Erreur lors de la suppression de l\'équipement.');
+                }
+            })
+            .catch(error => console.error('Erreur lors de la suppression de l\'équipement:', error));
+        }
+    }
+
+    function searchEquipmentByMarque() {
+        const marque = document.getElementById('search-marque-input').value.toLowerCase();
+        const tableBody = document.getElementById('equipment-table').querySelector('tbody');
+
+        if (!marque) {
+            loadEquipments();
+            return;
+        }
+
+        fetch(`http://localhost:8082/liste-equipements/marque/${marque}`)
+            .then(response => response.json())
+            .then(equipments => {
+                tableBody.innerHTML = '';
+                equipments.forEach(equipment => {
+                    addEquipmentToTable(equipment);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la recherche par marque:', error));
+    }
+
+    function loadEquipments() {
+        fetch('http://localhost:8082/liste-equipements')
+            .then(response => response.json())
+            .then(equipments => {
+                const table = document.getElementById('equipment-table').querySelector('tbody');
+                table.innerHTML = '';
+                equipments.forEach(equipment => {
+                    addEquipmentToTable(equipment);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des équipements:', error));
+    }
+
+    window.onload = function() {
+        loadEquipments();
+    };
+</script>
+</body>
+</html>

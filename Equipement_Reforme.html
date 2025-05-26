@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Équipements Réformés</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles CSS ici */
+         body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center; /* Centre le titre par défaut */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative; /* Nécessaire pour positionner absolument le conteneur du bouton */
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .search-container input {
+            width: 80%;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .search-container input:focus {
+            border-color: #0c4da2;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .highlight {
+            background-color: #ffeb3b; /* Couleur de surbrillance */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-right: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box; /* Important pour que padding ne déborde pas */
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .table-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ced4da;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+        .actions button {
+            width: auto;
+            margin-right: 5px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+        .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Équipements Réformés</h1>
+         <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Rechercher par ID Équipement..." onkeyup="searchEquipment()">
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-tools icon"></i>Ajouter/Modifier un Équipement Réformé</h2>
+            <form id="add-equipment-form" onsubmit="saveEquipment(event)">
+                <label for="equipement_id">ID Équipement (Informatique) :</label>
+                <input type="text" id="equipement_id" required>
+
+                <label for="numeroPatrimoine">Numéro de Patrimoine :</label>
+                <input type="text" id="numeroPatrimoine" required>
+
+                <label for="dateReforme">Date de Réforme :</label>
+                <input type="date" id="dateReforme" required>
+
+                <label for="description">Descriptif / Commentaire :</label>
+                <input type="text" id="description" required>
+
+                <input type="hidden" id="idEquipementReforme">
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2><i class="fas fa-list icon"></i>Liste des Équipements Réformés</h2>
+            <table id="equipment-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID Équipement</th>
+                        <th>Numéro de Patrimoine</th>
+                        <th>Date de Réforme</th>
+                        <th>Descriptif / Commentaire</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let editingId = null;
+        const apiUrl = 'http://localhost:8081/equipementsReformes';
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        async function fetchEquipments() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const equipments = await response.json();
+                populateTable(equipments);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des équipements:', error);
+                alert('Erreur lors de la récupération des équipements.');
+            }
+        }
+
+       function populateTable(equipments) {
+    const tbody = document.getElementById('equipment-table').querySelector('tbody');
+    tbody.innerHTML = '';
+    equipments.forEach(eq => {
+        const row = tbody.insertRow();
+        row.insertCell().textContent = eq.idEquipementReforme;
+        row.insertCell().textContent = eq.equipement ? eq.equipement.idEquipement : 'N/A';
+        row.insertCell().textContent = eq.equipement ? eq.equipement.numeroSerie : 'N/A';
+        row.insertCell().textContent = new Date(eq.dateReforme).toLocaleDateString();
+        row.insertCell().textContent = eq.description;
+        const actionsCell = row.insertCell();
+        actionsCell.classList.add('actions');
+        actionsCell.innerHTML = `
+            <div class="action-icons">
+                <div class="action-icon edit" title="Modifier" onclick="editEquipment(${JSON.stringify(eq).replace(/"/g, '&quot;')})"><i class="fas fa-edit"></i></div>
+                <div class="action-icon delete" title="Supprimer" onclick="deleteEquipment(${eq.idEquipementReforme})"><i class="fas fa-trash"></i></div>
+            </div>
+        `;
+    });
+}
+
+        async function saveEquipment(event) {
+            event.preventDefault();
+            const equipementIdInformatique = document.getElementById('equipement_id').value;
+            const dateReforme = document.getElementById('dateReforme').value;
+            const description = document.getElementById('description').value;
+
+            const method = editingId ? 'PUT' : 'POST';
+            const url = editingId ? `${apiUrl}/${editingId}` : apiUrl;
+
+            try {
+                const equipementData = {
+                    equipement: {
+                        idEquipement: equipementIdInformatique
+                    },
+                    dateReforme: dateReforme,
+                    description: description
+                };
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(equipementData),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${error.message || 'Erreur lors de l\'enregistrement.'}`);
+                }
+
+                await fetchEquipments();
+                resetForm();
+                alert(`Équipement ${editingId ? 'modifié' : 'ajouté'} avec succès.`);
+
+            } catch (error) {
+                console.error('Erreur lors de l\'enregistrement de l\'équipement:', error);
+                alert(`Erreur: ${error.message}`);
+            }
+        }
+
+        async function editEquipment(equipment) {
+            editingId = equipment.idEquipementReforme;
+            document.getElementById('equipement_id').value = equipment.equipement ? equipment.equipement.idEquipement : '';
+            document.getElementById('numeroPatrimoine').value = equipment.equipement ? equipment.equipement.numeroSerie : '';
+            document.getElementById('dateReforme').value = equipment.dateReforme.split('T')[0];
+            document.getElementById('description').value = equipment.description;
+            document.getElementById('idEquipementReforme').value = editingId;
+
+            document.querySelector('#add-equipment-form button[type="submit"]').textContent = 'Modifier';
+        }
+
+        async function deleteEquipment(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet équipement ?')) {
+                try {
+                    const response = await fetch(`${apiUrl}/${id}`, {
+                        method: 'DELETE',
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    await fetchEquipments();
+                    alert('Équipement supprimé avec succès.');
+                } catch (error) {
+                    console.error('Erreur lors de la suppression de l\'équipement:', error);
+                    alert('Erreur lors de la suppression de l\'équipement.');
+                }
+            }
+        }
+
+        function resetForm() {
+            editingId = null;
+            document.getElementById('add-equipment-form').reset();
+            document.getElementById('idEquipementReforme').value = '';
+            document.querySelector('#add-equipment-form button[type="submit"]').textContent = 'Ajouter';
+        }
+
+        async function searchEquipment() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.trim();
+            const tbody = document.getElementById('equipment-table').querySelector('tbody');
+            tbody.innerHTML = '';
+
+            if (filter) {
+                try {
+                    const response = await fetch(`http://localhost:8081/equipementsReformes/numeroPatrimoine/${filter}`);
+                    if (response.ok) {
+                        const equipement = await response.json();
+                        populateTable([equipement]);
+                    } else if (response.status === 404) {
+                        alert('Aucun équipement réformé trouvé avec ce numéro de patrimoine.');
+                        fetchEquipments();
+                    } else if (response.status === 400) {
+                        const error = await response.json();
+                        throw new Error(`Erreur lors de la recherche: ${response.status}, message: ${error.message || 'Erreur inconnue.'}`);
+                    } else {
+                        throw new Error(`Erreur lors de la recherche: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la recherche:', error);
+                    alert(`Erreur lors de la recherche: ${error.message}`);
+                    fetchEquipments();
+                }
+            } else {
+                fetchEquipments();
+            }
+        }
+
+        window.onload = fetchEquipments;
+    </script>
+</body>
+</html>

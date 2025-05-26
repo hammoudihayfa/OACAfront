@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion & Inscription - Gestion Parc Informatique OACA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        :root {
+            --primary: #0c4da2;
+            --secondary: #2c82c9;
+            --accent: #f39c12;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --text: #333;
+            --transition: all 0.3s ease;
+            --shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Arrière-plan avec image */
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image: url('avioon.PNG');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(120%) contrast(110%); /* Image plus claire */
+        }
+
+        /* Bande blanche améliorée */
+        .white-band {
+            position: fixed;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 400px;
+            background-color: rgba(255, 255, 255, 0.3); /* Plus opaque */
+            transform: translateY(-50%);
+            z-index: -1;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Symboles professionnels */
+        .pro-symbols {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .symbol {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: 2.5rem;
+        }
+
+        .symbol.plane1 {
+            top: 15%;
+            left: 10%;
+            font-size: 3rem;
+            transform: rotate(-15deg);
+        }
+
+        .symbol.plane2 {
+            bottom: 20%;
+            right: 15%;
+            font-size: 2.5rem;
+            transform: rotate(25deg);
+        }
+
+        .symbol.server {
+            top: 25%;
+            right: 10%;
+            font-size: 2rem;
+        }
+
+        .symbol.globe {
+            bottom: 15%;
+            left: 15%;
+            font-size: 2.8rem;
+        }
+
+        .symbol.tech {
+            top: 70%;
+            left: 50%;
+            font-size: 2.2rem;
+        }
+
+        /* Overlay pour lisibilité */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.02) 0%, transparent 70%);
+        }
+
+        /* Conteneur principal avec verre */
+        .auth-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.25); /* Fond plus clair */
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .auth-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Conteneur 3D amélioré */
+        .logo-circle {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            animation: pulse 3s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #globe-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-description {
+            text-align: center;
+            color: var(--text);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .auth-right {
+            padding: 2rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tabs de connexion/inscription */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 1rem 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.6);
+            position: relative;
+            transition: var(--transition);
+            background: transparent;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        /* Formulaire */
+        .form {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            border-radius: 0 0 10px 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: none;
+        }
+
+        .form.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(0, 0, 0, 0.5); /* Label plus clair */
+            font-weight: 500;
+            text-shadow: none;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.4); /* Bordure plus claire */
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.4); /* Fond des champs plus clair */
+            color: var(--dark);
+            backdrop-filter: blur(5px);
+        }
+
+        .form-input::placeholder {
+            color: rgba(0, 0, 0, 0.4);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(44, 130, 201, 0.2);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .form-input:focus + .form-icon {
+            color: var(--secondary);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: rgba(0, 0, 0, 0.4);
+            transition: var(--transition);
+        }
+
+        .password-toggle:hover {
+            color: var(--primary);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-container input {
+            margin: 0;
+            accent-color: var(--primary);
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+            color: var(--secondary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(12, 77, 162, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: var(--dark);
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95); /* Fond blanc pur */
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .notification.success {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--dark);
+        }
+
+        .notification.error {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--dark);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @media (max-width: 900px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .auth-left,
+            .auth-right {
+                padding: 1rem;
+            }
+
+            .logo-circle {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Particules */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            opacity: 0.1; /* Particules plus visibles */
+            pointer-events: none;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Effet de verre */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- Arrière-plan avec l'image -->
+    <div class="background"></div>
+
+    <!-- Bande blanche -->
+    <div class="white-band"></div>
+
+    <!-- Symboles professionnels -->
+    <div class="pro-symbols">
+        <i class="fas fa-plane symbol plane1"></i>
+        <i class="fas fa-plane-departure symbol plane2"></i>
+        <i class="fas fa-server symbol server"></i>
+        <i class="fas fa-globe symbol globe"></i>
+        <i class="fas fa-microchip symbol tech"></i>
+    </div>
+
+    <!-- Overlay pour lisibilité -->
+    <div class="overlay"></div>
+
+    <!-- Particules -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Conteneur principal -->
+    <div class="auth-wrapper glass-effect">
+        <!-- Section de gauche -->
+        <div class="auth-left">
+            <div class="logo-circle glass-effect">
+                <div id="globe-container"></div>
+            </div>
+            <h1 class="auth-title">Gestion Parc Informatique DNA</h1>
+            <p class="auth-description">
+                <i class="fas fa-plane-departure" style="margin-right: 8px;"></i>
+                Connectez-vous ou créez un compte pour gérer le parc informatique des aéroports.
+                <br><br>
+              
+               
+            </p>
+        </div>
+
+        <!-- Section de droite -->
+        <div class="auth-right">
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Connexion</div>
+                <div class="tab" data-tab="signup">Inscription</div>
+            </div>
+
+            <!-- Formulaire de connexion -->
+            <form class="form active glass-effect" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email professionnel</label>
+                    <div class="input-wrapper">
+                        <input type="email" id="loginEmail" class="form-input" placeholder="nom.prenom@oaca.tn" required />
+                        <i class="fas fa-user-shield form-icon"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Votre mot de passe" required />
+                        <i class="fas fa-lock form-icon"></i>
+                        <i class="fas fa-eye password-toggle" id="toggleLoginPassword"></i>
+                    </div>
+                </div>
+                <div class="remember-forgot">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Se souvenir de moi</label>
+                    </div>
+                <a href="#" id="forgotPassword">Mot de passe oublié ?</a>
+
+                </div>
+                <button type="submit" class="submit-btn">
+                    <span>Se connecter</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+
+            <!-- Formulaire d'inscription -->
+            <form class="form glass-effect" id="signupForm">
+    <div class="form-group">
+        <label for="name">Nom</label>
+        <div class="input-wrapper">
+            <input type="text" id="name" class="form-input" placeholder="Entrez votre nom" required />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prenom">Prénom</label>
+        <div class="input-wrapper">
+            <input type="text" id="prenom" class="form-input" placeholder="Entrez votre prénom" required />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="signupEmail">Email professionnel</label>
+        <div class="input-wrapper">
+            <input type="email" id="signupEmail" class="form-input" placeholder="nom.prenom@oaca.tn" required />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="aeroport">Aéroport</label>
+        <div class="input-wrapper">
+            <input type="text" id="aeroport" class="form-input" placeholder="Votre aéroport" required />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="role">Rôle</label>
+        <div class="input-wrapper">
+            <input type="text" id="role" class="form-input" placeholder="Votre rôle" required />
+        </div>
+    </div>
+    <div class="form-group">
+    <label for="phoneNumber">Numéro de téléphone</label>
+    <div class="input-wrapper">
+        <input type="tel" id="phoneNumber" class="form-input" placeholder="Votre numéro de téléphone" required />
+    </div>
+</div>
+
+    <div class="form-group">
+        <label for="signupPassword">Mot de passe</label>
+        <div class="input-wrapper">
+            <input type="password" id="signupPassword" class="form-input" placeholder="Mot de passe sécurisé" required />
+        </div>
+    </div>
+    <button type="submit" class="submit-btn">Créer un compte</button>
+</form>
+
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
+    </div>
+
+    <script>
+     
+// forget pass
+document.getElementById('forgotPassword').addEventListener('click', async function (e) {
+  e.preventDefault();
+
+  const phoneNumber = prompt("Entrez votre numéro de téléphone :");
+  if (!phoneNumber) return;
+
+  // 1. Envoi du code par SMS
+  const sendCodeRes = await fetch('http://localhost:8088/users/forgot-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumber })
+  });
+
+  const sendCodeData = await sendCodeRes.json();
+
+  if (!sendCodeRes.ok) {
+    alert("Erreur : " + (sendCodeData.message || sendCodeData));
+    return;
+  }
+
+  alert("Code envoyé par SMS. (Code pour test : " + sendCodeData.code + ")");
+
+  // 2. Demande du code et du nouveau mot de passe
+  const enteredCode = prompt("Entrez le code reçu par SMS :");
+  if (enteredCode !== sendCodeData.code) {
+    alert("Code incorrect.");
+    return;
+  }
+
+  const newPassword = prompt("Entrez votre nouveau mot de passe :");
+  if (!newPassword) return;
+
+  // 3. Envoi du nouveau mot de passe au backend
+  const resetRes = await fetch('http://localhost:8088/users/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumber: phoneNumber, newPassword: newPassword, code: enteredCode }) 
+  });
+
+  const resetData = await resetRes.text();
+  if (!resetRes.ok) {
+    alert("Erreur lors du changement de mot de passe : " + resetData);
+  } else {
+    alert("Mot de passe réinitialisé avec succès !");
+  }
+});
+       document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        const response = await fetch('http://localhost:8088/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+
+            // Stockage du token si nécessaire
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('role', data.role); // Stocker le rôle si besoin
+
+            // Redirection selon le rôle
+            if (data.role === 'admin') {
+                window.location.href = 'index.html';
+            } else if (data.role === 'agent') {
+                window.location.href = 'indexagent.html';
+            } else {
+                alert("Rôle inconnu !");
+            }
+        } else {
+            alert("Identifiants incorrects.");
+        }
+    } catch (error) {
+        console.error('Erreur lors de la connexion :', error);
+        alert("Erreur de connexion au serveur.");
+    }
+});
+
+
+// Validation du formulaire d'inscription
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const prenom = document.getElementById('prenom').value;
+            const email = document.getElementById('signupEmail').value;
+            const aeroport = document.getElementById('aeroport').value;
+            const role = document.getElementById('role').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const password = document.getElementById('signupPassword').value;
+
+            // Validation des champs
+            if (!name || !prenom || !aeroport || !role || !password) {
+                alert("Tous les champs sont obligatoires.");
+                return;
+            }
+
+            // Validation de l'email
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@oaca\.tn$/;
+            if (!emailPattern.test(email)) {
+                alert("L'email doit être au format 'nom.prenom@oaca.tn'.");
+                return;
+            }
+            // Vérification du numéro (ex : tunisien, 8 chiffres)
+            const phonePattern = /^[0-9]{8}$/;
+             if (!phonePattern.test(phoneNumber)) {
+        alert("Le numéro de téléphone doit contenir exactement 8 chiffres.");
+            return;
+            }
+
+            // Validation du mot de passe
+            if (password.length < 6) {
+                alert("Le mot de passe doit comporter au moins 6 caractères.");
+                return;
+            }
+
+            // Création du payload
+            const payload = { name, prenom, email, aeroport, role, password, phoneNumber };
+
+            try {
+                const response = await fetch('http://localhost:8088/users/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert("Inscription réussie !");
+                } else {
+                    const errorText = await response.text();
+                    alert("Erreur lors de l'inscription : " + errorText);
+                }
+            } catch (error) {
+                console.error('Erreur lors de l’inscription :', error);
+                alert("Erreur de connexion au serveur.");
+            }
+        });
+
+        // Initialisation de la scène 3D avec avions
+        function initGlobe() {
+            const container = document.getElementById('globe-container');
+            
+            // Création de la scène Three.js
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            camera.position.z = 2.5;
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(220, 220);
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+            
+            // Contrôles pour la rotation
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableZoom = false;
+            controls.enablePan = false;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+            
+            // Création du globe
+            const globeGeometry = new THREE.SphereGeometry(1, 64, 64);
+            const globeMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0c4da2,
+                shininess: 100,
+                specular: 0x2c82c9,
+                transparent: true,
+                opacity: 0.9,
+                emissive: 0x0c4da2,
+                emissiveIntensity: 0.2
+            });
+            
+            const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+            scene.add(globe);
+            
+            // Création des avions
+            const planes = [];
+            const planeCount = 10; // Plus d'avions
+            
+            for (let i = 0; i < planeCount; i++) {
+                // Créer un avion plus détaillé
+                const planeGroup = new THREE.Group();
+                
+                // Corps de l'avion
+                const bodyGeometry = new THREE.ConeGeometry(0.06, 0.25, 8);
+                const bodyMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0xf39c12,
+                    shininess: 100,
+                    emissive: 0xf39c12,
+                    emissiveIntensity: 0.5
+                });
+                const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+                body.rotation.x = Math.PI / 2;
+                planeGroup.add(body);
+                
+                // Ailes
+                const wingGeometry = new THREE.BoxGeometry(0.25, 0.02, 0.08);
+                const wingMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0xf39c12,
+                    shininess: 80
+                });
+                const wing = new THREE.Mesh(wingGeometry, wingMaterial);
+                wing.position.y = 0.02;
+                planeGroup.add(wing);
+                
+                // Queue
+                const tailGeometry = new THREE.BoxGeometry(0.08, 0.08, 0.02);
+                const tailMaterial = new THREE.MeshPhongMaterial({ 
+                    color: 0xf39c12,
+                    shininess: 80
+                });
+                const tail = new THREE.Mesh(tailGeometry, tailMaterial);
+                tail.position.z = -0.1;
+                tail.position.y = 0.04;
+                planeGroup.add(tail);
+                
+                // Traînée de l'avion (effet de vitesse)
+                const trailGeometry = new THREE.CylinderGeometry(0.01, 0.03, 0.4, 8);
+                const trailMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const trail = new THREE.Mesh(trailGeometry, trailMaterial);
+                trail.rotation.x = Math.PI / 2;
+                trail.position.z = 0.3;
+                planeGroup.add(trail);
+                
+                // Positionnement initial de l'avion
+                const radius = 1.3 + (Math.random() * 0.3); // Variation de distance
+                const angle = (i / planeCount) * Math.PI * 2;
+                const height = (Math.random() - 0.5) * 2;
+                
+                planeGroup.position.x = radius * Math.cos(angle);
+                planeGroup.position.y = height;
+                planeGroup.position.z = radius * Math.sin(angle);
+                
+                // Orientation de l'avion pour qu'il regarde dans la direction du mouvement
+                planeGroup.lookAt(0, height, 0);
+                
+                // Ajout de l'avion à la scène
+                scene.add(planeGroup);
+                
+                // Stockage des informations de l'avion pour l'animation
+                planes.push({
+                    mesh: planeGroup,
+                    angle: angle,
+                    height: height,
+                    speed: 0.005 + Math.random() * 0.01, // Vitesses variées
+                    radius: radius,
+                    trail: trail
+                });
+            }
+            
+            // Ajout des chemins de vol lumineux
+            const flightPaths = [];
+            for (let i = 0; i < 15; i++) { // Plus de chemins
+                const curve = new THREE.EllipseCurve(
+                    0, 0,                         // Centre
+                    1.2, 1.2,                     // Rayons X et Y
+                    0, Math.PI * 2,               // Angles de début et de fin
+                    false,                        // Sens horaire
+                    Math.random() * Math.PI * 2   // Rotation
+                );
+                
+                const points = curve.getPoints(50);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x2c82c9,
+                    transparent: true,
+                    opacity: 0.3 + Math.random() * 0.2
+                });
+                
+                const ellipse = new THREE.Line(geometry, material);
+                ellipse.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+                ellipse.rotation.y = Math.random() * Math.PI;
+                
+                scene.add(ellipse);
+                flightPaths.push(ellipse);
+            }
+            
+            // Ajout de points de destination (aéroports)
+            const airports = [];
+            for (let i = 0; i < 12; i++) { // Plus d'aéroports
+                const phi = Math.acos(-1 + (2 * i) / 12);
+                const theta = Math.sqrt(12 * Math.PI) * phi;
+                
+                const geometry = new THREE.SphereGeometry(0.03, 16, 16);
+                const material = new THREE.MeshPhongMaterial({
+                    color: 0xf39c12,
+                    emissive: 0xf39c12,
+                    emissiveIntensity: 0.7
+                });
+                
+                const airport = new THREE.Mesh(geometry, material);
+                airport.position.x = Math.sin(phi) * Math.cos(theta);
+                airport.position.y = Math.sin(phi) * Math.sin(theta);
+                airport.position.z = Math.cos(phi);
+                
+                scene.add(airport);
+                airports.push({
+                    mesh: airport,
+                    pulsate: Math.random() * Math.PI * 2
+                });
+            }
+            
+            // Éclairage
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(-5, 5, 5);
+            scene.add(directionalLight);
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Animation des avions
+                planes.forEach(plane => {
+                    plane.angle += plane.speed;
+                    plane.mesh.position.x = plane.radius * Math.cos(plane.angle);
+                    plane.mesh.position.z = plane.radius * Math.sin(plane.angle);
+                    plane.mesh.lookAt(0, plane.height, 0);
+                    
+                    // Animation de la traînée (effet de vitesse)
+                    plane.trail.material.opacity = 0.3 + Math.sin(plane.angle * 5) * 0.2;
+                });
+                
+                // Animation des aéroports (pulsation)
+                airports.forEach(airport => {
+                    airport.pulsate += 0.05;
+                    const scale = 1 + 0.3 * Math.sin(airport.pulsate);
+                    airport.mesh.scale.set(scale, scale, scale);
+                });
+                
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Redimensionnement
+            window.addEventListener('resize', () => {
+                renderer.setSize(220, 220);
+                camera.updateProjectionMatrix();
+            });
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            container.innerHTML = '';
+            const particleCount = Math.floor(window.innerWidth / 100) * 5;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                const duration = Math.random() * 10 + 5;
+                const delay = Math.random() * 5;
+                particle.style.animation = `float ${duration}s ${delay}s infinite ease-in-out`;
+                particle.style.opacity = Math.random() * 0.1 + 0.05;
+                container.appendChild(particle);
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            const textElement = document.getElementById('notificationText');
+            notification.className = 'notification';
+            notification.classList.add(type);
+            textElement.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function shakeForm(form) {
+            form.classList.add('shake');
+            setTimeout(() => form.classList.remove('shake'), 600);
+        }
+
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const forms = document.querySelectorAll('.form');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    forms.forEach(f => f.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}Form`).classList.add('active');
+                });
+            });
+        }
+
+        function setupPasswordToggle(buttonId, inputId) {
+            const button = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            if (button && input) {
+                button.addEventListener('click', () => {
+                    const type = input.type === 'password' ? 'text' : 'password';
+                    input.type = type;
+                    button.classList.toggle('fa-eye');
+                    button.classList.toggle('fa-eye-slash');
+                });
+            }
+        }
+
+        function setupLoginForm() {
+            const form = document.getElementById('loginForm');
+            const button = form.querySelector('.submit-btn');
+            const spinner = form.querySelector('.spinner');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = form.querySelector('#loginEmail').value;
+                const password = form.querySelector('#loginPassword').value;
+                button.disabled = true;
+                spinner.style.display = 'block';
+                setTimeout(() => {
+                    if (email === 'admin@oaca.tn' && password === 'admin123') {
+                        showNotification('Connexion réussie ! Redirection...', 'success');
+                        setTimeout(() => window.location.href = 'index.html', 1500);
+                    } else {
+                        showNotification('Identifiants incorrects', 'error');
+                        shakeForm(form);
+                        button.disabled = false;
+                        spinner.style.display = 'none';
+                    }
+                }, 1500);
+            });
+        }
+
+        function setupSignupForm() {
+            const form = document.getElementById('signupForm');
+            const button = form.querySelector('.submit-btn');
+            const spinner = form.querySelector('.spinner');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const idUser = form.querySelector('#idUser').value;
+                const name = form.querySelector('#fullName').value;
+                const email = form.querySelector('#signupEmail').value;
+                const airport = form.querySelector('#airport').value;
+                const role = form.querySelector('#role').value;
+                const password = form.querySelector('#signupPassword').value;
+                if (!idUser || !name || !email || !airport || !role || !password) {
+                    showNotification('Veuillez remplir tous les champs', 'error');
+                    return;
+                }
+                button.disabled = true;
+                spinner.style.display = 'block';
+                setTimeout(() => {
+                    showNotification('Compte créé avec succès !', 'success');
+                    setTimeout(() => {
+                        form.reset();
+                        button.disabled = false;
+                        spinner.style.display = 'none';
+                        document.querySelector('[data-tab="login"]').click();
+                    }, 1500);
+                }, 1500);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initGlobe();
+            createParticles();
+            setupTabs();
+            setupPasswordToggle('toggleLoginPassword', 'loginPassword');
+            setupPasswordToggle('toggleSignupPassword', 'signupPassword');
+            setupLoginForm();
+            setupSignupForm();
+            window.addEventListener('resize', createParticles);
+        });
+    </script>
+</body>
+</html>

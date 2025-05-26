@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications – Annonces enregistrées</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0c4da2;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #e0f2f7;
+            transition: background-color 0.3s ease;
+        }
+
+        tbody td {
+            color: #555;
+        }
+
+        /* Style pour le message d'erreur */
+        .error-message td {
+            color: #c0392b;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notifications – Annonces enregistrées</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Date de Publication</th>
+            </tr>
+        </thead>
+        <tbody id="notification-table-body">
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchNotifications() {
+            try {
+                const res = await fetch('http://localhost:8082/annonces');
+                const annonces = await res.json();
+                const tbody = document.getElementById("notification-table-body");
+                tbody.innerHTML = ''; // Effacer le contenu précédent du tableau
+
+                annonces.forEach(annonce => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${annonce.idAnnonce}</td>
+                        <td>${annonce.description}</td>
+                        <td>${annonce.datePublication}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error('Erreur lors du chargement des notifications :', err);
+                const tbody = document.getElementById("notification-table-body");
+                tbody.innerHTML = '<tr class="error-message"><td colspan="4">Erreur lors du chargement des notifications.</td></tr>';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchNotifications);
+    </script>
+</body>
+</html>

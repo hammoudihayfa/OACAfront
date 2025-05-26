@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Demande d'Achats</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f8f8f8;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 2px solid black;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header-top {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .header-top table {
+            width: 100%;
+        }
+        .oaca {
+            font-size: 1.5em;
+            font-weight: bold;
+            border: 1px solid black;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        .demande {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .table-top table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-top th, .table-top td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: lightgray;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"], input[type="number"] {
+            width: 90%;
+            padding: 5px;
+            margin-top: 5px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #0c4da2;
+            outline: none;
+        }
+        .table-demandeur {
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 2px solid black;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .section {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid black;
+        }
+        .section div {
+            width: 48%;
+        }
+        .observations {
+            padding: 10px;
+            height: 120px;
+            border-bottom: 2px solid black;
+        }
+        .textarea-field {
+            width: 100%;
+            height: 80px;
+            border: 1px solid black;
+            padding: 5px;
+            font-size: 16px;
+        }
+        .print-box {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid black;
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #f1f1f1;
+        }
+        .btn {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background-color: black;
+            color: white;
+            margin: 5px;
+        }
+    </style>
+    <script>
+        function updateNumero() {
+            const numeroInput = document.getElementById('numeroInput').value;
+            document.getElementById('numeroAffiche').innerText = numeroInput;
+        }
+        function downloadPDF() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header-top">
+            <table>
+                <tr>
+                    <td class="oaca">
+                        O.A.C.A<br>
+                        DIVISION APPROVISIONNEMENT ET<br> GESTION DES STOCKS
+                    </td>
+                    <td>
+                        <h2 class="demande">DEMANDE D'ACHATS</h2>
+                    </td>
+                    <td>
+                        N° <input type="text" id="numeroInput" oninput="updateNumero()" placeholder="Entrez le numéro"><br>
+                        du <input type="date">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="table-top">
+            <table>
+                <tr>
+                    <th>RUBRIQUE BUDGÉTAIRE</th>
+                    <th>SERVICE DEMANDEUR</th>
+                </tr>
+                <tr>
+                    <td><input type="text" placeholder="Entrez la rubrique budgétaire"></td>
+                    <td><input type="text" placeholder="Entrez le service demandeur"></td>
+                </tr>
+            </table>
+        </div>
+        <h2>DEMANDEUR</h2>
+        <div class="table-demandeur">
+            <table>
+                <tr>
+                    <th>CODES</th>
+                    <th>DESIGNATIONS</th>
+                    <th>REFERENCES</th>
+                    <th>AFFECTATIONS MACHINES</th>
+                    <th>Unités</th>
+                    <th>Quantités demandées</th>
+                    <th colspan="2">Stocks à prévoir</th>
+                </tr>
+                <tr>
+                    <th colspan="6"></th>
+                    <th>Min</th>
+                    <th>MAX</th>
+                </tr>
+                <tr>
+                    <td><input type="text" name="code1"></td>
+                    <td><input type="text" name="designation1"></td>
+                    <td><input type="text" name="reference1"></td>
+                    <td><input type="text" name="affectation1"></td>
+                    <td><input type="text" name="unite1"></td>
+                    <td><input type="number" name="quantite1"></td>
+                    <td><input type="number" name="stock_min1"></td>
+                    <td><input type="number" name="stock_max1"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <div>
+                <strong>DEMANDE D'ACHATS (ÉTABLIE) :</strong><br>
+                Le : <input type="date" class="input-field"><br>
+                Par (+ visa) : <input type="text" class="input-field"><br>
+            </div>
+            <div>
+                <strong>RESPONSABLE :</strong><br>
+                Le : <input type="date" class="input-field"><br>
+                Visa : <input type="text" class="input-field">
+            </div>
+        </div>
+        <div class="observations">
+            <strong>OBSERVATIONS (fournitures, modèles...)</strong><br>
+            <textarea class="textarea-field"></textarea>
+        </div>
+        <div class="print-box">
+            <button class="btn" onclick="window.print()">🖨️ Imprimer</button>
+            <button class="btn" onclick="downloadPDF()">📄 Télécharger PDF</button>
+        </div>
+    </div>
+</body>
+</html>

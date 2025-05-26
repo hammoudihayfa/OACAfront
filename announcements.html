@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Annonces</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+        h3{color: #083978;}
+         h1, h2, h3 {
+            margin: 0;
+        }
+        .alert {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none; /* Caché par défaut */
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #ced4da;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .action-buttons button {
+            margin-right: 5px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Annonces</h1>
+<div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>    </header>
+
+    <section>
+        <h2><i class="fas fa-bullhorn icon"></i>Ajouter une Annonce</h2>
+        <div class="announcement">
+            <i class="fas fa-bell icon"></i> Cette annonce sera visible par tous les utilisateurs !
+        </div>
+        <div class="alert" id="alert-message"></div>
+        <form id="add-announcement-form" onsubmit="addAnnouncement(event)">
+            <label for="titre">Titre :</label>
+            <input type="text" id="titre" required>
+            <label for="description">Annonce :</label>
+            <textarea id="description" rows="4" required></textarea>
+            <button type="submit"><i class="fas fa-plus icon"></i>Ajouter Annonce</button>
+        </form>
+
+        <h2><i class="fas fa-newspaper icon"></i>Liste des Annonces</h2>
+        <table id="announcement-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date de Publication</th>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </section>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8082/annonces';
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        async function fetchAnnouncements() {
+            try {
+                const response = await fetch(API_BASE_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                populateAnnouncementTable(data);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des annonces:', error);
+                displayAlert('Erreur lors du chargement des annonces.', false);
+            }
+        }
+
+        function populateAnnouncementTable(announcements) {
+            const tableBody = document.getElementById('announcement-table').querySelector('tbody');
+            tableBody.innerHTML = '';
+            announcements.forEach(annonce => {
+                const row = tableBody.insertRow();
+                row.insertCell().textContent = annonce.idAnnonce;
+                row.insertCell().textContent = new Date(annonce.datePublication).toLocaleDateString();
+                row.insertCell().textContent = annonce.titre;
+                row.insertCell().textContent = annonce.description;
+                const actionsCell = row.insertCell();
+                actionsCell.classList.add('action-buttons');
+                const deleteButton = document.createElement('button');
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i> Supprimer';
+                deleteButton.onclick = () => deleteAnnouncement(annonce.idAnnonce);
+                actionsCell.appendChild(deleteButton);
+            });
+        }
+
+        async function addAnnouncement(event) {
+            event.preventDefault();
+            const titre = document.getElementById('titre').value;
+            const description = document.getElementById('description').value;
+            const newAnnonce = { titre: titre, description: description };
+
+            try {
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(newAnnonce),
+                });
+
+                if (response.ok) {
+                    const savedAnnonce = await response.json();
+                    displayAlert('Annonce ajoutée avec succès !', true);
+                    document.getElementById('add-announcement-form').reset();
+                    fetchAnnouncements(); // Refresh the list
+                } else {
+                    const errorDetails = await response.json();
+                    console.error('Erreur lors de l\'ajout de l\'annonce:', errorDetails);
+                    displayAlert('Erreur lors de l\'ajout de l\'annonce.', false);
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi de la requête d\'ajout:', error);
+                displayAlert('Erreur réseau lors de l\'ajout de l\'annonce.', false);
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer l'annonce avec l'ID ${id} ?`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/${id}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        displayAlert(`Annonce avec l'ID ${id} supprimée avec succès !`, true);
+                        fetchAnnouncements(); // Refresh the list
+                    } else {
+                        const errorDetails = await response.json();
+                        console.error(`Erreur lors de la suppression de l'annonce avec l'ID ${id}:`, errorDetails);
+                        displayAlert(`Erreur lors de la suppression de l'annonce.`, false);
+                    }
+                } catch (error) {
+                    console.error(`Erreur lors de l'envoi de la requête de suppression pour l'ID ${id}:`, error);
+                    displayAlert('Erreur réseau lors de la suppression de l\'annonce.', false);
+                }
+            }
+        }
+
+        function displayAlert(message, isSuccess) {
+            const alertDiv = document.getElementById('alert-message');
+            alertDiv.textContent = message;
+            alertDiv.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-danger');
+            alertDiv.style.display = 'block';
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Charger les annonces au chargement de la page
+        window.onload = fetchAnnouncements;
+    </script>
+</body>
+</html>

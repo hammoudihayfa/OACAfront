@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Répartitions d'Équipements</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+       header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center; /* Centre le titre par défaut */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative; /* Nécessaire pour positionner absolument le conteneur du bouton */
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+       h2 { color: #0c4da2;}
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .form-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            flex: 2;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button.edit-btn {
+            background-color: #28a745;
+            margin-right: 5px;
+        }
+        button.delete-btn {
+            background-color: #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .actions button {
+            width: auto;
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .search-container input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Répartitions d'Équipements</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-tools icon"></i>Ajouter/Modifier une Répartition</h2>
+            <form id="repartition-form" onsubmit="saveRepartition(event)">
+                <label for="equipement">Numéro de Patrimoine de l'Équipement:</label>
+                <input type="text" id="equipement" required>
+
+                <label for="localisation">Localisation:</label>
+                <input type="text" id="localisation" required>
+
+                <label for="uniteResponsable">Unité Responsable:</label>
+                <input type="text" id="uniteResponsable" required>
+
+                <label for="dateDebut">Date de Début:</label>
+                <input type="date" id="dateDebut" required>
+
+                <label for="dateFin">Date de Fin:</label>
+                <input type="date" id="dateFin">
+
+                <input type="hidden" id="idEquipementRepartition">
+                <button type="submit" id="form-submit-button">Ajouter</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2><i class="fas fa-list icon"></i>Liste des Répartitions</h2>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Rechercher par Numéro de Patrimoine..." onkeyup="searchRepartition()">
+            </div>
+            <table id="repartition-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Numéro de Patrimoine</th>
+                        <th>Localisation</th>
+                        <th>Unité Responsable</th>
+                        <th>Date Début</th>
+                        <th>Date Fin</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8081/equipements-repartition';
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        async function fetchRepartitions() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                populateTable(data);
+            } catch (error) {
+                console.error('Erreur récupération:', error);
+            }
+        }
+
+        function populateTable(repartitions) {
+            const tbody = document.querySelector("#repartition-table tbody");
+            tbody.innerHTML = "";
+            repartitions.forEach(rep => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${rep.idEquipementRepartition}</td>
+                    <td>${rep.equipement?.idEquipement || "N/A"}</td>
+                    <td>${rep.localisation}</td>
+                    <td>${rep.uniteResponsable}</td>
+                    <td>${new Date(rep.dateDebut).toLocaleDateString()}</td>
+                    <td>${rep.dateFin ? new Date(rep.dateFin).toLocaleDateString() : "N/A"}</td>
+                     <td class="action-icons">
+                        <div class="action-icon edit" title="Modifier" onclick='editRepartition(${JSON.stringify(rep)})'><i class="fas fa-edit"></i></div>
+                        <div class="action-icon delete" title="Supprimer" onclick="deleteRepartition(${rep.idEquipementRepartition})"><i class="fas fa-trash"></i></div>
+                    </td>
+                `;
+            });
+        }
+
+        async function saveRepartition(event) {
+            event.preventDefault();
+
+            const id = document.getElementById("idEquipementRepartition").value;
+            const equipementNumeroPatrimoine = document.getElementById("equipement").value;
+            const localisation = document.getElementById("localisation").value;
+            const unite = document.getElementById("uniteResponsable").value;
+            const dateDebut = document.getElementById("dateDebut").value;
+            const dateFin = document.getElementById("dateFin").value;
+
+            try {
+                const equipementRes = await fetch(`http://localhost:8081/equipements/${equipementNumeroPatrimoine}`);
+                if (!equipementRes.ok) throw new Error("Équipement non trouvé");
+                const equipement = await equipementRes.json();
+
+                const repartition = {
+                    equipement: equipement,
+                    localisation: localisation,
+                    uniteResponsable: unite,
+                    dateDebut: dateDebut,
+                    dateFin: dateFin
+                };
+
+                const method = id ? "PUT" : "POST";
+                const url = id ? `${API_URL}/${id}` : API_URL;
+
+                if (id) repartition.idEquipementRepartition = id;
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(repartition)
+                });
+
+                if (!response.ok) throw new Error("Erreur lors de l'enregistrement");
+
+                await fetchRepartitions();
+                resetForm();
+                alert(`Répartition ${id ? "modifiée" : "ajoutée"} avec succès.`);
+            } catch (error) {
+                alert(error.message);
+                console.error(error);
+            }
+        }
+
+        function editRepartition(rep) {
+            document.getElementById("idEquipementRepartition").value = rep.idEquipementRepartition;
+            document.getElementById("equipement").value = rep.equipement?.numeroPatrimoine || "";
+            document.getElementById("localisation").value = rep.localisation;
+            document.getElementById("uniteResponsable").value = rep.uniteResponsable;
+            document.getElementById("dateDebut").value = rep.dateDebut?.split("T")[0];
+            document.getElementById("dateFin").value = rep.dateFin?.split("T")[0] || "";
+            document.getElementById("form-submit-button").textContent = "Modifier";
+        }
+
+        async function deleteRepartition(id) {
+            if (!confirm("Confirmer la suppression ?")) return;
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                if (!response.ok) throw new Error("Erreur suppression");
+                await fetchRepartitions();
+                alert("Répartition supprimée");
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function resetForm() {
+            document.getElementById("repartition-form").reset();
+            document.getElementById("idEquipementRepartition").value = "";
+            document.getElementById("form-submit-button").textContent = "Ajouter";
+        }
+
+        function searchRepartition() {
+            const search = document.getElementById("search-input").value.toLowerCase();
+            const rows = document.querySelectorAll("#repartition-table tbody tr");
+            rows.forEach(row => {
+                const content = row.cells[1]?.textContent.toLowerCase() || "";
+                row.style.display = content.includes(search) ? "" : "none";
+            });
+        }
+
+        window.onload = fetchRepartitions;
+    </script>
+</body>
+
+</html>

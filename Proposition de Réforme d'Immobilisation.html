@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposition de Réforme d'Immobilisation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .page {
+            width: 900px;
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #000;
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-top: 10px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function printPage() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <div class="page">
+        <div class="header">PROPOSITION DE RÉFORME D'IMMOBILISATION (≤ 5000)</div>
+        <div class="section">
+            <table>
+                <tr>
+                    <td><strong>CODE IMMO:</strong></td>
+                    <td><input type="text" id="code_immo" name="code_immo" required></td>
+                    <td><strong>S/H/N:</strong></td>
+                    <td><input type="text" id="shn" name="shn" required></td>
+                    <td><strong>Ordre:</strong></td>
+                    <td><input type="text" id="ordre" name="ordre" required></td>
+                </tr>
+                <tr>
+                    <td><strong>Désignation:</strong></td>
+                    <td><input type="text" id="designation" name="designation" required></td>
+                    <td><strong>N° de Série:</strong></td>
+                    <td><input type="text" id="numero_serie" name="numero_serie" required></td>
+                    <td><strong>Date de 1ère Mise en Service:</strong></td>
+                    <td><input type="date" id="date_mise_service" name="date_mise_service" required></td>
+                </tr>
+                <tr>
+                    <td><strong>Valeur d'Acquisition:</strong></td>
+                    <td><input type="number" id="valeur_acquisition" name="valeur_acquisition" step="0.01" min="0" max="5000" required></td>
+                    <td colspan="3"><strong>Justifications:</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Exploitation:</strong></td>
+                    <td colspan="5"><textarea id="justification_exploitation" name="justification_exploitation" rows="2" required></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>Maintenance:</strong></td>
+                    <td colspan="5"><textarea id="justification_maintenance" name="justification_maintenance" rows="2" required></textarea></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <strong>Observations:</strong>
+            <textarea id="observations" name="observations" rows="4"></textarea>
+        </div>
+        <div class="section">
+            <strong>Signatures:</strong>
+            <table>
+                <tr>
+                    <td><strong>Exploitation:</strong></td>
+                    <td><input type="text" id="signature_exploitation" name="signature_exploitation" required></td>
+                </tr>
+                <tr>
+                    <td><strong>Maintenance:</strong></td>
+                    <td><input type="text" id="signature_maintenance" name="signature_maintenance" required></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <strong>Patrimoine:</strong>
+            <input type="text" id="patrimoine" name="patrimoine" required>
+        </div>
+        <div class="footer">
+            <button onclick="printPage()">Imprimer</button>
+        </div>
+    </div>
+</body>
+</html>

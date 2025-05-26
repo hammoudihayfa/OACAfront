@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une Panne</title>
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .logout {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #0c4da2;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            transition: transform 0.2s;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        table:hover {
+            transform: scale(1.01);
+        }
+        table, th, td {
+            border: 1px solid #ced4da;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Ajouter une Panne</h1>
+        <button class="logout" onclick="logout()">Déconnexion</button>
+    </header>
+
+   <!-- Section pour ajouter une panne -->
+   <section>
+        <h2><i class="fas fa-tools icon"></i>Ajouter une Panne</h2>
+        <form id="add-incident-form" onsubmit="addIncident(event)">
+            <label for="incident-date">Date :</label>
+            <input type="date" id="incident-date" required>
+            
+            <label for="incident-equipment-id">ID Équipement :</label>
+            <input type="text" id="incident-equipment-id" required>
+            
+            <label for="incident-description">Description :</label>
+            <textarea id="incident-description" rows="4" required></textarea>
+            
+            <button type="submit">Ajouter Panne</button>
+        </form>
+    </section>
+
+    <!-- Tableau pour afficher les pannes -->
+    <section>
+        <h2><i class="fas fa-list icon"></i>Liste des Pannes</h2>
+        <table id="fault-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>ID Équipement</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les lignes seront ajoutées ici dynamiquement -->
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        function addIncident(event) {
+            event.preventDefault();
+            const date = document.getElementById('incident-date').value;
+            const equipmentId = document.getElementById('incident-equipment-id').value;
+            const description = document.getElementById('incident-description').value;
+
+            // Ajouter une nouvelle ligne au tableau
+            const table = document.getElementById('fault-table').querySelector('tbody');
+            const newRow = table.insertRow();
+            newRow.innerHTML = `
+                <td>${date}</td>
+                <td>${equipmentId}</td>
+                <td>${description}</td>
+            `;
+
+            // Réinitialiser le formulaire
+            document.getElementById('add-incident-form').reset();
+        }
+    </script>
+</body>
+</html>

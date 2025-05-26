@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Équipements Transférés</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center; /* Centre le titre par défaut */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative; /* Nécessaire pour positionner absolument le conteneur du bouton */
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .form-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            flex: 2;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        h2 {color: #0c4da2;}
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button.edit-btn {
+            background-color: #28a745;
+            margin-right: 5px;
+        }
+        button.delete-btn {
+            background-color: #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .actions button {
+            width: auto;
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .search-container input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body> 
+    <header>
+        <h1>Gestion des Équipements Transférés</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-tools icon"></i>Ajouter/Modifier un Transfert d'Équipement</h2>
+            <form id="transfert-form" onsubmit="saveTransfert(event)">
+                <label for="equipementId">Numéro de patrimoine:</label>
+                <input type="text" id="equipementId" required placeholder="Entrez l'ID de l'équipement existant">
+
+                <label for="matricule">Matricule:</label>
+                <input type="text" id="matricule" required>
+
+                <label for="ancienProprietaire">Ancien Propriétaire:</label>
+                <input type="text" id="ancienProprietaire" required>
+
+                <label for="dateTransfert">Date de Transfert:</label>
+                <input type="date" id="dateTransfert" required>
+
+                <label for="commentaires">Commentaires:</label>
+                <input type="text" id="commentaires">
+
+                <input type="hidden" id="idEquipementTransfere">
+                <button type="submit" id="form-submit-button">Ajouter</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2><i class="fas fa-list icon"></i>Liste des Équipements Transférés</h2>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Rechercher Par Matricule...." onkeyup="searchTransferts()">
+            </div>
+            <table id="transfert-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Matricule</th>
+                        <th>Ancien Propriétaire</th>
+                        <th>Date de Transfert</th>
+                        <th>Commentaires</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8081/equipements-transferts';
+        const EQUIPEMENTS_URL = 'http://localhost:8081/equipements';
+        let editingId = null;
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        async function fetchTransferts() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const transferts = await response.json();
+                populateTable(transferts);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des transferts:', error);
+                alert('Erreur lors de la récupération des transferts.');
+            }
+        }
+
+  function populateTable(transferts) {
+    const tbody = document.querySelector('#transfert-table tbody');
+    tbody.innerHTML = '';
+    transferts.forEach(transfert => {
+        const row = tbody.insertRow();
+        row.insertCell().textContent = transfert.idEquipementTransfere;
+        row.insertCell().textContent = transfert.matricule;
+        row.insertCell().textContent = transfert.ancienProprietaire;
+
+        // Conversion du timestamp en date lisible
+        const dateObj = new Date(transfert.dateTransfert);
+        const formattedDate = dateObj.toLocaleDateString('fr-FR'); 
+        row.insertCell().textContent = formattedDate;
+
+        row.insertCell().textContent = transfert.commentaires;
+
+        const actionsCell = row.insertCell();
+        actionsCell.className = 'action-icons'; 
+        actionsCell.innerHTML = `
+            <div class="action-icon edit" title="Modifier" onclick="editTransfert(${JSON.stringify(transfert).replace(/"/g, '&quot;')})"><i class="fas fa-edit"></i></div>
+            <div class="action-icon delete" title="Supprimer" onclick="deleteTransfert(${transfert.idEquipementTransfere})"><i class="fas fa-trash"></i></div>
+        `;
+    });
+}
+
+        function searchTransferts() {
+            const input = document.getElementById('search-input');
+            const filter = input.value.toUpperCase();
+            const rows = document.querySelectorAll('#transfert-table tbody tr');
+
+            rows.forEach(row => {
+                let found = false;
+                for (let i = 0; i < row.cells.length - 1; i++) { // Ignore actions column
+                    const text = row.cells[i].textContent || row.cells[i].innerText;
+                    if (text.toUpperCase().includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
+                row.style.display = found ? '' : 'none';
+            });
+        }
+
+        async function saveTransfert(event) {
+            event.preventDefault();
+
+            const id = document.getElementById('idEquipementTransfere').value;
+            const equipementId = document.getElementById('equipementId').value;
+            const matricule = document.getElementById('matricule').value;
+            const ancienProprietaire = document.getElementById('ancienProprietaire').value;
+            const dateTransfert = document.getElementById('dateTransfert').value;
+            const commentaires = document.getElementById('commentaires').value;
+
+            const data = {
+                equipement: { idEquipement: equipementId },
+                matricule,
+                ancienProprietaire,
+                dateTransfert,
+                commentaires
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                fetchTransferts();
+                document.getElementById('transfert-form').reset();
+                editingId = null;
+            } else {
+                alert("Erreur lors de l'enregistrement.");
+            }
+        }
+
+        function editTransfert(transfert) {
+            editingId = transfert.idEquipementTransfere;
+            document.getElementById('idEquipementTransfere').value = transfert.idEquipementTransfere;
+            document.getElementById('equipementId').value = transfert.equipement?.idEquipement || '';
+            document.getElementById('matricule').value = transfert.matricule;
+            document.getElementById('ancienProprietaire').value = transfert.ancienProprietaire;
+            document.getElementById('dateTransfert').value = transfert.dateTransfert;
+            document.getElementById('commentaires').value = transfert.commentaires;
+            document.getElementById('form-submit-button').textContent = 'Mettre à jour';
+        }
+
+        async function deleteTransfert(id) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce transfert ?")) {
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    fetchTransferts();
+                } else {
+                    alert("Erreur lors de la suppression.");
+                }
+            }
+        }
+
+        window.onload = fetchTransferts;
+    </script>
+</body>
+
+
+</html>

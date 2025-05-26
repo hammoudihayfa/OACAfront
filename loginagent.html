@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Gestion Parc Informatique OACA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Styles inchangés */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #0c4da2; /* Bleu aviation */
+            --secondary-color: #2c82c9;
+            --accent-color: #f39c12; /* Orange pour les accents */
+            --text-color: #333;
+            --light-color: #f5f7fa;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0c4da2, #2c82c9);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .auth-container {
+            width: 400px;
+            max-width: 90%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 26px;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #f7f7f7;
+            border: 1px solid #e1e1e1;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Inscription</h1>
+        <p>Créez un compte pour le système de gestion</p>
+        
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="idUser">ID Utilisateur</label>
+                <input type="text" id="idUser" placeholder="Entrez votre ID utilisateur" required />
+            </div>
+            <div class="form-group">
+                <label for="name">Nom complet</label>
+                <input type="text" id="name" placeholder="Entrez votre nom complet" required />
+            </div>
+            <div class="form-group">
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" placeholder="Entrez votre prénom" required />
+            </div>
+            <div class="form-group">
+                <label for="age">Âge</label>
+                <input type="number" id="age" placeholder="Votre âge" required min="0" />
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email professionnel</label>
+                <input type="email" id="signupEmail" placeholder="nom.prenom@oaca.tn" required />
+            </div>
+            <div class="form-group">
+                <label for="aeroport">Aéroport</label>
+                <input type="text" id="aeroport" placeholder="Votre aéroport" required />
+            </div>
+            <div class="form-group">
+                <label for="role">Rôle</label>
+                <input type="text" id="role" placeholder="Votre rôle" required />
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Mot de passe</label>
+                <input type="password" id="signupPassword" placeholder="Créez un mot de passe sécurisé" required />
+            </div>
+            <button type="submit" id="signupButton">Créer un compte</button>
+        </form>
+    </div>
+
+    <script>
+        // Gestion du formulaire d'inscription
+        const signupForm = document.getElementById('signupForm');
+        const signupButton = document.getElementById('signupButton');
+
+        signupForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Simuler une inscription avec délai
+            setTimeout(() => {
+                alert('Compte créé avec succès!');
+                // Redirection après inscription réussie
+                window.location.href = 'index.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

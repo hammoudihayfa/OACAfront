@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Gestion du Parc Informatique</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles essentiels pour la page Mon Profil */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #343a40;
+        }
+
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-form {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='4' viewBox='0 0 8 4'%3E%3Cpath fill='%23343a40' d='M0 0l4 4 4-4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 8px 4px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0c4da2;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .info-cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex: 1 1 calc(33.333% - 40px);
+            min-width: 250px;
+        }
+
+        .info-card-icon {
+            font-size: 24px;
+            color: #0c4da2;
+            margin-bottom: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion du Parc Informatique - Mon Profil</h1>
+    </header>
+    <div class="main-content">
+        <section id="profile" class="section active">
+            <div class="section-header">
+                <h2 class="section-title">Mon profil</h2>
+                <button class="action-button" id="edit-profile-btn">
+                    <i class="fas fa-edit"></i> Modifier
+                </button>
+            </div>
+            <div class="info-cards" id="profile-info-cards">
+                <div class="info-card">
+                    <div class="info-card-icon"><i class="fas fa-user"></i></div>
+                    <h3 id="profile-name-display">Sourour Boughrib</h3>
+                    <p><span id="profile-prenom-display"></span></p>
+                    <p>ID: <span id="profile-id-display">XXX_XXX_XXX</span></p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon"><i class="fas fa-envelope"></i></div>
+                    <p>Email: <span id="profile-email-display">sourour.boughrib@aviation.gov</span></p>
+                    <p>Aéroport: <span id="profile-aeroport-display">Casablanca</span></p>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon"><i class="fas fa-tag"></i></div>
+                    <p>Role: <span id="profile-role-display">User</span></p>
+                </div>
+            </div>
+            <div class="profile-form" id="profile-form" style="display: none;">
+                <form id="edit-profile-form">
+                    <div class="profile-avatar-container">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwNzhkNCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5pam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xOSAyMUg1YTIgMiAwIDAgMS0yLTJWNWEyIDIgMCAwIDEgMi0yaDE0YTIgMiAwIDAgMSAyIDJ2MTRhMiAyIDAgMCAxLTIgMnoiPjwvcGF0aD48Y2lyY2xlIGN4PSIxMiIgY3k9IjgiIHI9IjQiPjwvY2lyY2xlPjxwYXRoIGQ9Ik0xOCAyMXYtMmE0IDQgMCAwIDAtNC00SDEwYTQgNCAwIDAgMC00IDR2MiI+PC9wYXRoPjwvc3ZnPg==" alt="Avatar" class="profile-avatar" id="profile-avatar">
+                        <div class="avatar-edit-icon" id="avatar-edit-icon"><i class="fas fa-camera"></i></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profile-name" class="form-label">Nom</label>
+                            <input type="text" id="profile-name" class="form-control" value="Sourour" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-prenom" class="form-label">Prénom</label>
+                            <input type="text" id="profile-prenom" class="form-control" value="Boughrib" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-email" class="form-label">Email</label>
+                        <input type="email" id="profile-email" class="form-control" value="sourour.boughrib@aviation.gov" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile-aeroport" class="form-label">Aéroport</label>
+                        <input type="text" id="profile-aeroport" class="form-control" value="Casablanca" required>
+                    </div>
+                    <div class="form-group" style="display: none;">
+                        <label for="profile-role" class="form-label">Role</label>
+                        <input type="text" id="profile-role" class="form-control" value="User" readonly>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-profile-edit">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="toast-content">Opération réussie</div>
+        <div class="toast-close">&times;</div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const editProfileBtn = document.getElementById('edit-profile-btn');
+        const profileForm = document.getElementById('profile-form');
+        const profileInfoCards = document.getElementById('profile-info-cards');
+        const cancelProfileEditBtn = document.getElementById('cancel-profile-edit');
+        const editProfileForm = document.getElementById('edit-profile-form');
+        const toast = document.getElementById('toast');
+        const toastClose = document.querySelector('.toast-close');
+
+        // Show Edit Profile Form
+        editProfileBtn.addEventListener('click', () => {
+            profileForm.style.display = 'block';
+            profileInfoCards.style.display = 'none';
+        });
+
+        // Cancel Edit Profile
+        cancelProfileEditBtn.addEventListener('click', () => {
+            profileForm.style.display = 'none';
+            profileInfoCards.style.display = 'flex';
+        });
+
+        // Submit Edit Profile Form
+        editProfileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Prepare user data for backend
+            const user = {
+                name: document.getElementById('profile-name').value,
+                prenom: document.getElementById('profile-prenom').value,
+                email: document.getElementById('profile-email').value,
+                aeroport: document.getElementById('profile-aeroport').value,
+                role: document.getElementById('profile-role').value,
+                password: "" // In production, make sure to handle passwords securely
+            };
+
+            // Send data to backend (POST request for signup as per your backend)
+            fetch('http://localhost:8088/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    showToast('Profil mis à jour avec succès');
+                    profileForm.style.display = 'none';
+                    profileInfoCards.style.display = 'flex';
+
+                    // Update profile info cards with new data
+                    document.getElementById('profile-name-display').textContent = user.name;
+                    document.getElementById('profile-prenom-display').textContent = user.prenom;
+                    document.getElementById('profile-email-display').textContent = user.email;
+                    document.getElementById('profile-aeroport-display').textContent = user.aeroport;
+                    document.getElementById('profile-role-display').textContent = user.role;
+                    // Note: idUser from backend is not displayed here in this version
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Erreur lors de la mise à jour du profil: ' + error, 'error');
+            });
+        });
+
+        // Show Toast Function
+        function showToast(message, type = 'success') {
+            const toastContent = document.querySelector('.toast-content');
+            const toastIcon = document.querySelector('.toast-icon i');
+            toastContent.textContent = message;
+            if (type === 'success') {
+                toast.style.background = '#28a745';
+                toastIcon.className = 'fas fa-check-circle';
+            } else if (type === 'warning') {
+                toast.style.background = '#ffc107';
+                toastIcon.className = 'fas fa-exclamation-triangle';
+            } else if (type === 'error') {
+                toast.style.background = '#dc3545';
+                toastIcon.className = 'fas fa-times-circle';
+            }
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close Toast
+        toastClose.addEventListener('click', () => {
+            toast.classList.remove('show');
+        });
+    </script>
+</body>
+</html>

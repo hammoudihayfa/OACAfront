@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiques du Parc Informatique</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+  <style>
+    /* Style global */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    /* Barre de navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #0c4da2;
+      color: white;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .logout-btn:hover {
+      color: #ffc107;
+    }
+
+    /* Message Flash */
+    .flash-message {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    /* Conteneur principal */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Section Statistiques */
+    .stats-container {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      width: 100%;
+    }
+
+    .stat-item {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      width: 150px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-icon {
+      font-size: 48px;
+      color: #0c4da2;
+      margin-bottom: 10px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: bold;
+      color: #0d6efd;
+      margin: 0;
+    }
+
+    .stat-label {
+      font-size: 16px;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    /* Graphiques */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px 0;
+    }
+
+    .chart-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .chart-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .chart-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+      text-align: center;
+    }
+
+    /* Filtres */
+    .filters-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin: 20px 0;
+      width: 100%;
+      max-width: 1200px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-group label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .filter-btn:hover {
+      background-color: #0b5ed7;
+    }
+
+    /* Formulaire Ajout Equipement */
+    .add-equipment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+      text-align: center;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-group label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f8f9fa;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+    }
+
+    .form-submit {
+      padding: 12px 20px;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .form-submit:hover {
+      background: #0b5ed7;
+    }
+
+    /* Liste des Equipements */
+    .equipment-list-container {
+      width: 100%;
+      max-width: 1200px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 30px;
+    }
+
+    .equipment-list-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .equipment-list-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin: 0;
+    }
+
+    .equipment-search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8f9fa;
+      padding: 8px 15px;
+      border-radius: 20px;
+      border: 1px solid #ddd;
+    }
+
+    .equipment-search input {
+      border: none;
+      background: transparent;
+      outline: none;
+      padding: 5px;
+      width: 200px;
+    }
+
+    .equipment-search i {
+      color: #6c757d;
+    }
+
+    .equipment-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .equipment-table th,
+    .equipment-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .equipment-table th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .equipment-table tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .status-active {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-maintenance {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .status-inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+
+    .edit-btn {
+      color: #0d6efd;
+    }
+
+    .edit-btn:hover {
+      color: #0a58ca;
+    }
+
+    .delete-btn {
+      color: #dc3545;
+    }
+
+    .delete-btn:hover {
+      color: #b02a37;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .pagination button:hover,
+    .pagination button.active {
+      background-color: #0d6efd;
+      color: white;
+      border-color: #0d6efd;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+
+      .equipment-list-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .equipment-search {
+        width: 100%;
+      }
+
+      .equipment-search input {
+        width: 100%;
+      }
+
+      .equipment-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h2><i class="fas fa-laptop"></i> Gestion Parc Informatique OACA</h2>
+    <button class="logout-btn" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> Déconnexion
+    </button>
+  </div>
+
+  <div id="flash-message" class="flash-message">Redirection vers login.html...</div>
+
+  <div class="container">
+    <h1><i class="fas fa-chart-line"></i> Tableau de Bord Statistique</h1>
+
+    <div class="stats-container">
+        <div class="stat-item">
+            <i class="fas fa-desktop stat-icon"></i>
+            <p class="stat-number" id="total-equipment">Chargement...</p>
+            <p class="stat-label">Total Équipements</p>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-check-circle stat-icon"></i>
+            <p class="stat-number" id="active-equipment">Chargement...</p>
+            <p class="stat-label">Actifs</p>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-tools stat-icon"></i>
+            <p class="stat-number" id="maintenance-equipment">Chargement...</p>
+            <p class="stat-label">En Maintenance</p>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-times-circle stat-icon"></i>
+            <p class="stat-number" id="inactive-equipment">Chargement...</p>
+            <p class="stat-label">Hors Service</p>
+        </div>
+        <div class="stat-item">
+            <i class="fas fa-exclamation-triangle stat-icon"></i>
+            <p class="stat-number" id="failure-rate">Chargement...</p>
+            <p class="stat-label">Taux de Panne</p>
+        </div>
+    </div>
+
+   <!--  <div class="filters-container">
+        <div class="filter-group">
+            <label for="filter-year">Année:</label>
+            <select id="filter-year" onchange="applyFilters()">
+                <option value="all">Toutes les années</option>
+                <option value="2025">2025</option>
+                <option value="2024" selected>2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-location">Localisation:</label>
+            <select id="filter-location" onchange="applyFilters()">
+                <option value="all">Tous les sites</option>
+                <option value="AITC">Aéroport de Tunis Carthage</option>
+                <option value="DNA">Direction de Navigation Aérienne</option>
+                <option value="AIEH">Aéroport de Enfidha-Hammamet</option>
+                <option value="AIMHB">Aéroport de Monastir</option>
+                <option value="AIDZ">Aéroport de Djerba-Zarzis</option>
+                <option value="AIST">Aéroport de Sfax-Thyna</option>
+                <option value="DNA">DNA</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label for="filter-type">Type:</label>
+            <select id="filter-type" onchange="applyFilters()">
+                <option value="all">Tous les types</option>
+                <option value="PC">PC</option>
+                <option value="Imprimante">Imprimante</option>
+                <option value="Scanner">Scanner</option>
+                <option value="Switch">Switch</option>
+                <option value="Serveur">Serveur</option>
+            </select>
+        </div>
+        <button class="filter-btn" onclick="applyFilters()">
+            <i class="fas fa-filter"></i> Appliquer
+        </button>
+    </div> -->
+
+    <div class="charts-grid">
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-chart-line"></i> Évolution mensuelle par statut
+            </div>
+    <canvas id="statusChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-chart-pie"></i> Répartition par type d'équipement
+            </div>
+            <canvas id="equipmentTypeChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-exclamation-triangle"></i> Taux de panne par marque
+            </div>
+    <canvas id="failureRateChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-map-marker-alt"></i> Répartition par localisation
+            </div>
+    <canvas id="locationChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-calendar-alt"></i> Âge moyen des équipements (mois)
+            </div>
+    <canvas id="ageChart"></canvas>
+        </div>
+
+        <!-- <div class="chart-container">
+            <div class="chart-title">
+                <i class="fas fa-shopping-cart"></i> Tendance d'acquisition
+            </div>
+    <canvas id="acquisitionChart"></canvas>
+        </div> -->
+    </div>
+
+</div>
+
+<script>
+    
+const API_BASE_URL = 'http://localhost:8081/equipements';
+    // Initialisation des graphiques (la structure reste la même, mais les données seront dynamiques)
+    let monthlyStatusChart, equipmentTypeChart, failureRateChart, locationChart, equipmentAgeChart, acquisitionTrendChart;
+
+    function initializeCharts() {
+         
+    }
+    
+window.onload = function () {
+  loadMonthlyStatus(2024);
+  loadFailureRateByBrand();
+  loadLocationDistribution();
+  loadAverageAge();
+  loadAcquisitionTrend(2024);
+  loadEquipmentTypeDistribution(); 
+
+};
+
+// 1. Évolution mensuelle par statut
+async function loadMonthlyStatus(year) {
+  const res = await fetch(`${API_BASE_URL}/stats/monthly-status/${year}`);
+  const data = await res.json();
+
+  const months = Object.keys(data);
+  const statuses = [...new Set(months.flatMap(month => Object.keys(data[month])))];
+
+  const datasets = statuses.map(status => ({
+    label: status,
+    data: months.map(month => data[month][status] || 0),
+    backgroundColor: randomColor(),
+    fill: false
+  }));
+
+  new Chart(document.getElementById('statusChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: datasets
+    },
+    options: {
+      responsive: true,
+      plugins: { title: { display: true, text: 'Évolution mensuelle par statut' } }
+    }
+  });
+}
+
+
+// 2. Taux de panne par marque
+async function loadFailureRateByBrand() {
+  const res = await fetch(`http://localhost:8081/equipements-en-panne/failure-rate`);
+  const failureRate = await res.json();
+
+  new Chart(document.getElementById('failureRateChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Taux global'],
+      datasets: [{
+        label: 'Taux de panne (%)',
+        data: [failureRate * 100],
+        backgroundColor: 'orange'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { title: { display: true, text: 'Taux de panne global' } }
+    }
+  });
+}
+
+// 3. Répartition par localisation
+async function loadLocationDistribution() {
+  const res = await fetch(`${API_BASE_URL}/stats/count-by-location`);
+  const data = await res.json();
+
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+
+  new Chart(document.getElementById('locationChart'), {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: labels.map(() => randomColor())
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { title: { display: true, text: 'Répartition des équipements par localisation' } }
+    }
+  });
+}
+
+// 4. Âge moyen des équipements
+async function loadAverageAge() {
+  const res = await fetch(`${API_BASE_URL}/stats/average-age-by-type`);
+  const data = await res.json();
+
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+
+  new Chart(document.getElementById('ageChart'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Âge moyen (mois)',
+        data: values,
+        backgroundColor: 'teal'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { title: { display: true, text: 'Âge moyen par type d’équipement' } }
+    }
+  });
+}
+
+
+// 5. Tendance d’acquisition
+async function loadAcquisitionTrend(year) {
+  const res = await fetch(`${API_BASE_URL}/stats/acquisition-trend/${year}`);
+  const data = await res.json();
+
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+
+  new Chart(document.getElementById('acquisitionChart'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Nombre d’équipements acquis',
+        data: values,
+        borderColor: 'blue',
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { title: { display: true, text: 'Tendance d’acquisition' } }
+    }
+  });
+}
+// 6. Répartition par type d'équipement
+async function loadEquipmentTypeDistribution() {
+  const res = await fetch(`${API_BASE_URL}/stats/count-by-type`);
+  const data = await res.json();
+
+  const labels = Object.keys(data);
+  const values = Object.values(data);
+
+  new Chart(document.getElementById('equipmentTypeChart'), {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: labels.map(() => randomColor())
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Répartition par type d'équipement"
+        }
+      }
+    }
+  });
+}
+
+
+// 🎨 Générateur de couleurs aléatoires
+function randomColor() {
+  return `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+}
+
+
+    // Fonction pour mettre à jour tous les graphiques (appelle les fonctions de récupération de données)
+    async function updateCharts(yearFilter) {
+        await updateMonthlyStatusChart(yearFilter);
+        await updateEquipmentTypeChart();
+        await updateFailureRateChart();
+        await updateLocationChart();
+        await updateEquipmentAgeChart();
+        await updateAcquisitionTrendChart(yearFilter);
+    }
+
+    async function fetchJson(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error(`Erreur lors de la récupération de ${url}:`, error);
+            return null;
+        }
+    }
+
+    // Fonction pour mettre à jour le graphique d'évolution mensuelle par statut
+    async function updateMonthlyStatusChart(year) {
+        const data = await fetchJson(`${API_BASE_URL}/stats/monthly-status/${year}`);
+        if (data) {
+            monthlyStatusChart.data.datasets[0].data = Object.values(data.Actif || {});
+            monthlyStatusChart.data.datasets[1].data = Object.values(data.Maintenance || {});
+            monthlyStatusChart.data.datasets[2].data = Object.values(data['Hors Service'] || {});
+            monthlyStatusChart.update();
+        }
+    }
+
+    // Fonction pour mettre à jour le graphique de répartition par type d'équipement
+    async function updateEquipmentTypeChart() {
+        const data = await fetchJson(`${API_BASE_URL}/stats/count-by-type`);
+        if (data) {
+            equipmentTypeChart.data.labels = Object.keys(data);
+            equipmentTypeChart.data.datasets[0].data = Object.values(data);
+            equipmentTypeChart.update();
+        }
+    }
+
+    // Fonction pour mettre à jour le graphique de taux de panne par marque
+    async function updateFailureRateChart() {
+        const data = await fetchJson(`${API_BASE_URL}/stats/failure-rate-by-brand`);
+        if (data) {
+            failureRateChart.data.labels = Object.keys(data);
+            failureRateChart.data.datasets[0].data = Object.values(data);
+            // Générer des couleurs dynamiquement (vous pouvez personnaliser cela)
+            failureRateChart.data.datasets[0].backgroundColor = Object.keys(data).map(() => 'rgba(78, 115, 223, 0.7)');
+            failureRateChart.update();
+        }
+    }
+
+    // Fonction pour mettre à jour le graphique de répartition par localisation
+    async function updateLocationChart() {
+        const data = await fetchJson(`${API_BASE_URL}/stats/count-by-location`);
+        if (data) {
+            locationlocationChart.data.labels = Object.keys(data);
+            locationChart.data.datasets[0].data = Object.values(data);
+            locationChart.update();
+        }
+    }
+
+    // Fonction pour mettre à jour le graphique d'âge moyen des équipements
+    async function updateEquipmentAgeChart() {
+        const data = await fetchJson(`${API_BASE_URL}/stats/average-age-by-type`);
+        if (data) {
+            equipmentAgeChart.data.labels = Object.keys(data);
+            equipmentAgeChart.data.datasets[0].data = Object.values(data).map(age => age ? age.toFixed(1) : 0);
+            equipmentAgeChart.update();
+        }
+    }
+
+    // Fonction pour mettre à jour le graphique de tendance d'acquisition
+    async function updateAcquisitionTrendChart(year) {
+        const data = await fetchJson(`${API_BASE_URL}/stats/acquisition-trend/${year}`);
+        if (data) {
+            const acquisitionData = Array(12).fill(0);
+            for (const month in data) {
+                const monthIndex = parseInt(month) - 1; // Les mois côté serveur sont probablement 1-12
+                if (monthIndex >= 0 && monthIndex < 12) {
+                    acquisitionData[monthIndex] = data[month];
+                }
+            }
+            acquisitionTrendChart.data.datasets[0].data = acquisitionData;
+            acquisitionTrendChart.update();
+        }
+    }
+
+    // Fonction pour mettre à jour les statistiques générales
+    async function updateStats() {
+        const total = await fetchJson(`${API_BASE_URL}/total-equipment`);
+        const active = await fetchJson(`${API_BASE_URL}/active-equipment`);
+        const maintenance = await fetchJson(`${API_BASE_URL}/maintenance-equipment`);
+        const inactive = await fetchJson(`${API_BASE_URL}/inactive-equipment`);
+        const failureRate = await fetchJson(`http://localhost:8081/equipements-en-panne/failure-rate`);
+
+        document.getElementById("total-equipment").textContent = total !== null ? total : 'Erreur';
+        document.getElementById("active-equipment").textContent = active !== null ? active : 'Erreur';
+        document.getElementById("maintenance-equipment").textContent = maintenance !== null ? maintenance : 'Erreur';
+        document.getElementById("inactive-equipment").textContent = inactive !== null ? inactive : 'Erreur';
+        document.getElementById("failure-rate").textContent = failureRate !== null ? `${failureRate.toFixed(1)}%` : 'Erreur';
+    }
+
+    let currentPage = 1;
+    const itemsPerPage = 5;
+    let allEquipmentData = []; // Stocker toutes les données d'équipement récupérées
+    let filteredEquipment = [];
+
+
+
+    function applyFilters() {
+        const year = document.getElementById("filter-year").value;
+    const location = document.getElementById("filter-location").value;
+    const type = document.getElementById("filter-type").value;
+
+    let queryParams = [];
+
+    if (year !== "all") queryParams.push(`year=${year}`);
+    if (location !== "all") queryParams.push(`location=${location}`);
+    if (type !== "all") queryParams.push(`type=${type}`);
+
+    const queryString = queryParams.length > 0 ? "?" + queryParams.join("&") : "";
+
+    fetch(`http://localhost:8081/equipements/filtered${queryString}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Affiche les résultats
+            // TODO: afficher dynamiquement les résultats dans le DOM
+        })
+        .catch(error => console.error("Erreur lors du filtrage:", error));
+
+        filteredEquipment = allEquipmentData.filter(equipment => {
+            const equipmentYear = new Date(equipment.dateAjout).getFullYear().toString();
+            const matchesYear = yearFilter === 'all' || equipmentYear === yearFilter;
+            const matchesLocation = locationFilter === 'all' || equipment.localisation === locationFilter;
+            const matchesType = typeFilter === 'all' || equipment.type === typeFilter;
+            return matchesYear && matchesLocation && matchesType;
+        });
+
+        currentPage = 1;
+        renderEquipmentList();
+        renderPagination();
+        const currentYear = document.getElementById('filter-year').value === 'all' ? new Date().getFullYear() : document.getElementById('filter-year').value;
+        updateCharts(currentYear);
+    }
+
+   
+
+    function logout() {
+        document.getElementById('flash-message').style.display = 'block';
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 1500);
+    }
+
+    function renderEquipmentList() {
+        const tbody = document.getElementById('equipment-table-body');
+        tbody.innerHTML = '';
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const currentEquipmentPage = filteredEquipment.slice(startIndex, endIndex);
+
+        currentEquipmentPage.forEach(equipment => {
+            const row = tbody.insertRow();
+            row.insertCell().textContent = equipment.numeroPatrimoine || 'N/A';
+            row.insertCell().textContent = equipment.type;
+            row.insertCell().textContent = equipment.marque;
+            row.insertCell().textContent = equipment.modele;
+            row.insertCell().textContent = equipment.nSerie || 'N/A';
+            row.insertCell().textContent = new Date(equipment.dateAjout).toLocaleDateString();
+            const statusCell = row.insertCell();
+            const statusBadge = document.createElement('span');
+            statusBadge.classList.add('status-badge');
+            statusBadge.classList.add(`status-${equipment.statutEquipement.toLowerCase()}`);
+            statusBadge.textContent = equipment.statutEquipement.charAt(0).toUpperCase() + equipment.statutEquipement.slice(1);
+            statusCell.appendChild(statusBadge);
+            row.insertCell().textContent = equipment.localisation;
+            row.insertCell().textContent = equipment.departement || 'N/A';
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `<button class="action-btn edit-btn"><i class="fas fa-edit"></i></button> <button class="action-btn delete-btn"><i class="fas fa-trash-alt"></i></button>`;
+        });
+    }
+
+    function renderPagination() {
+        const paginationControls = document.getElementById('pagination-controls');
+        paginationControls.innerHTML = '';
+        const totalPages = Math.ceil(filteredEquipment.length / itemsPerPage);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            if (i === currentPage) {
+                button.classList.add('active');
+            }
+            button.addEventListener('click', () => {
+                currentPage = i;
+                renderEquipmentList();
+                renderPagination();
+            });
+            paginationControls.appendChild(button);
+        }
+    }
+
+    function searchEquipment() {
+        const searchTerm = document.getElementById('search-equipment').value.toLowerCase();
+        filteredEquipment = allEquipmentData.filter(equipment =>
+            (equipment.type && equipment.type.toLowerCase().includes(searchTerm)) ||
+            (equipment.marque && equipment.marque.toLowerCase().includes(searchTerm)) ||
+            (equipment.modele && equipment.modele.toLowerCase().includes(searchTerm)) ||
+            (equipment.nSerie && equipment.nSerie.toLowerCase().includes(searchTerm)) ||
+            (equipment.localisation && equipment.localisation.toLowerCase().includes(searchTerm)) ||
+            (equipment.departement && equipment.departement.toLowerCase().includes(searchTerm))
+        );
+        currentPage = 1;
+        renderEquipmentList();
+        renderPagination();
+    }
+
+    // Initialisation
+    initializeCharts();
+    updateStats();
+    fetchEquipmentData(); // Récupérer les données initiales des équipements
+    const initialYear = document.getElementById('filter-year').value;
+    updateCharts(initialYear);
+</script>
+</body>
+</html>

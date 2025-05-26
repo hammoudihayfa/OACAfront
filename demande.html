@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaires Multiples et OCR</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page {
+            width: 900px;
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #000;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-top: 10px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .top-section div {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .top-section div:first-child {
+            text-align: left;
+        }
+
+        .top-section div:last-child {
+            text-align: right;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bottom-section div {
+            flex: 1;
+            padding: 5px;
+        }
+
+        /* OCR Styles */
+        .ocr-container {
+            margin-top: 40px;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .ocr-container h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        input[type="file"] {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .loading {
+            color: #007BFF;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            resize: vertical;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function printPage() {
+            window.print();
+        }
+
+        // Scroll to OCR section
+        function scrollToOCR() {
+            document.getElementById("ocr-section").scrollIntoView({ behavior: "smooth" });
+        }
+
+        // OCR File Upload and Processing
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const result = document.getElementById('result');
+            const loading = document.getElementById('loading');
+
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Veuillez sélectionner un fichier image.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            loading.style.display = "block";
+            result.value = "";
+
+            fetch("http://localhost:8080/ocr/extract-text", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur HTTP " + response.status);
+                }
+                return response.text();
+            })
+            .then(text => {
+                loading.style.display = "none";
+                result.value = text;
+            })
+            .catch(error => {
+                loading.style.display = "none";
+                result.value = "Erreur : " + error.message;
+            });
+        }
+    </script>
+</head>
+<body>
+    <!-- Page Demande -->
+    <div class="page">
+        <div class="top-section">
+            <div>OACA Patrimoine</div>
+            <div>BON de SORTIE d'IMMOBILISATIONS (OU BON de MISE en SERVICE)</div>
+            <div>
+                N° <input type="text" id="bon-number" value="6801" />
+            </div>
+        </div>
+        <div class="section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code Immo</th>
+                        <th>Désignation - Réf. (Marque - Type - Immatriculation - ...)</th>
+                        <th>N° Série</th>
+                        <th>Réception N°</th>
+                        <th>Réception Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="date" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="date" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="date" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="date" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="date" /></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="text" /></td>
+                        <td><input type="date" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="bottom-section">
+            <div class="section">
+                <strong>MACAM LIVREUR</strong>
+                <input type="text" placeholder="Nom du Livreur" />
+                <input type="text" placeholder="Visa" />
+            </div>
+            <div class="section">
+                <strong>Sce DEMANDEUR - INTERMEDIAIRE</strong>
+                <input type="text" placeholder="Direction / Sce / Unit" />
+                <input type="text" placeholder="Confier à" />
+            </div>
+            <div class="section">
+                <strong>AFFECTATION (EXPLOITANT)</strong>
+                <input type="text" placeholder="Direction / Sce / Unit" />
+                <input type="text" placeholder="CODE" />
+            </div>
+            <div class="section">
+                <strong>PATRIMOINE</strong>
+                <input type="text" />
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="printPage()">Imprimer</button>
+        </div>
+        <!-- Button to scroll to OCR -->
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="scrollToOCR()">Aller à l'OCR</button>
+        </div>
+    </div>
+
+    <!-- OCR Section -->
+    <div id="ocr-section" class="ocr-container">
+        <h2>Extraction de texte depuis une image</h2>
+        <input type="file" id="fileInput" accept="image/*,.pdf" />
+        <button onclick="uploadFile()">Analyser le fichier</button>
+
+        <div id="loading" class="loading" style="display: none;">Traitement en cours...</div>
+        <textarea id="result" placeholder="Le texte extrait s'affichera ici..."></textarea>
+    </div>
+</body>
+</html>

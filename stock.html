@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion du Stock d'Équipements</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e9ecef;
+            color: #343a40;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+            position: relative;
+            box-sizing: border-box;
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-container {
+            position: absolute; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+       
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+         h2 {
+            color: #0c4da2;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        table, th, td {
+            border: 1px solid #ced4da;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            width: auto;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .search-icon {
+            font-size: 1.2em;
+            vertical-align: middle;
+        }
+        .alert-icon {
+            color: red;
+            margin-left: 5px;
+            display: inline-block;
+        }
+         .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion du Stock d'Équipements</h1>
+       <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>  
+    </header>
+
+    <div class="search-container">
+        <label for="search-input" class="search-icon">🔍</label>
+        <input type="text" id="search-input" placeholder="Rechercher par type d'équipement..." oninput="searchStockByType()">
+    </div>
+
+    <div class="content">
+        <h2><i class="fas fa-tools icon"></i>Ajouter un Équipement au Stock</h2>
+        <form id="add-stock-form" onsubmit="addStock(event)">
+            <label for="stock-type">Type d'Équipement :</label>
+            <select id="stock-type" required>
+                <option value="">Sélectionnez un type d'équipement</option>
+                <option value="pc">PC</option>
+                <option value="ordinateur">Ordinateur</option>
+                <option value="imprimante">Imprimante</option>
+                <option value="scanner">Scanner</option>
+                <option value="camera">Caméra</option>
+            </select>
+
+            <label for="stock-quantity">Quantité :</label>
+            <input type="number" id="stock-quantity" required min="1" oninput="validateQuantity()" />
+
+            <label for="stock-alert">Alerte de Stock :</label>
+            <input type="number" id="stock-alert" placeholder="Quantité pour alerte" required min="1" oninput="validateAlert()"/>
+
+            <button type="submit">Ajouter au Stock</button>
+        </form>
+
+        <h2><i class="fas fa-list icon"></i>Liste du Stock d'Équipements</h2>
+        <table id="stock-table">
+            <thead>
+                <tr>
+                    <th>ID de Stock</th>
+                    <th>Type d'Équipement</th>
+                    <th>Quantité</th>
+                    <th>Alerte de Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const apiUrl = 'http://localhost:8081/equipements-en-stock';
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        async function fetchStock() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const stockList = await response.json();
+                populateTable(stockList);
+            } catch (error) {
+                console.error("Erreur lors de la récupération du stock:", error);
+                alert("Erreur lors du chargement du stock d'équipements.");
+            }
+        }
+
+        function populateTable(stockList) {
+            const tableBody = document.getElementById('stock-table').querySelector('tbody');
+            tableBody.innerHTML = '';
+            stockList.forEach(stock => {
+                const row = tableBody.insertRow();
+                row.dataset.stockId = stock.idStock;
+                row.innerHTML = `
+                    <td>${stock.idStock}</td>
+                    <td>${stock.typeEquipement}</td>
+                    <td>${stock.quantite}</td>
+                    <td>${stock.alerteStock} ${stock.quantite < stock.alerteStock ? '<i class="fas fa-exclamation-circle alert-icon"></i>' : ''}</td>
+                     <td class="action-icons">
+                        <div class="action-icon edit" title="Modifier" onclick="editStockForm(${stock.idStock})"><i class="fas fa-edit"></i></div>
+                        <div class="action-icon delete" title="Supprimer" onclick="deleteStock(${stock.idStock})"><i class="fas fa-trash"></i></div>
+                    </td>
+                `;
+            });
+        }
+
+        async function addStock(event) {
+            event.preventDefault();
+            const typeEquipement = document.getElementById('stock-type').value;
+            const quantite = parseInt(document.getElementById('stock-quantity').value);
+            const alerteStock = parseInt(document.getElementById('stock-alert').value);
+
+            if (quantite <= 0 || alerteStock <= 0) {
+                alert('La quantité et l\'alerte de stock doivent être supérieures à zéro.');
+                return;
+            }
+
+            const newStock = {
+                typeEquipement: typeEquipement,
+                quantite: quantite,
+                alerteStock: alerteStock
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newStock),
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                await response.json();
+                fetchStock();
+                document.getElementById('add-stock-form').reset();
+                alert(`Équipement ajouté au stock avec succès.`);
+            } catch (error) {
+                console.error("Erreur lors de l'ajout au stock:", error);
+                alert("Erreur lors de l'ajout de l'équipement au stock.");
+            }
+        }
+
+        async function deleteStock(idStock) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer l'équipement avec l'ID ${idStock} ?`)) {
+                try {
+                    const response = await fetch(`${apiUrl}/${idStock}`, { method: 'DELETE' });
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    fetchStock();
+                    alert(`Équipement avec l'ID ${idStock} supprimé avec succès.`);
+                } catch (error) {
+                    console.error(`Erreur lors de la suppression de l'équipement avec l'ID ${idStock}:`, error);
+                    alert(`Erreur lors de la suppression de l'équipement.`);
+                }
+            }
+        }
+
+        function editStockForm(idStock) {
+            const row = document.querySelector(`#stock-table tbody tr[data-stock-id="${idStock}"]`);
+            if (!row) return;
+
+            const cells = row.querySelectorAll('td');
+            const typeEquipementValue = cells[1].textContent;
+            const quantiteValue = parseInt(cells[2].textContent);
+            const alerteStockValue = parseInt(cells[3].textContent);
+
+            document.getElementById('stock-type').value = typeEquipementValue;
+            document.getElementById('stock-quantity').value = quantiteValue;
+            document.getElementById('stock-alert').value = alerteStockValue;
+
+            const submitButton = document.querySelector('#add-stock-form button[type="submit"]');
+            submitButton.textContent = 'Modifier le Stock';
+            submitButton.onclick = (event) => updateStock(event, idStock);
+        }
+
+        async function updateStock(event, idStock) {
+            event.preventDefault();
+            const typeEquipement = document.getElementById('stock-type').value;
+            const quantite = parseInt(document.getElementById('stock-quantity').value);
+            const alerteStock = parseInt(document.getElementById('stock-alert').value);
+
+            if (quantite <= 0 || alerteStock <= 0) {
+                alert('La quantité et l\'alerte de stock doivent être supérieures à zéro.');
+                return;
+            }
+
+            const updatedStock = {
+                idStock: idStock,
+                typeEquipement: typeEquipement,
+                quantite: quantite,
+                alerteStock: alerteStock
+            };
+
+            try {
+                const response = await fetch(`${apiUrl}/${idStock}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedStock),
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                await response.json();
+                fetchStock();
+                document.getElementById('add-stock-form').reset();
+                const submitButton = document.querySelector('#add-stock-form button[type="submit"]');
+                submitButton.textContent = 'Ajouter au Stock';
+                submitButton.onclick = (e) => addStock(e);
+                alert(`Équipement mis à jour avec succès.`);
+            } catch (error) {
+                console.error(`Erreur lors de la mise à jour de l'équipement avec l'ID ${idStock}:`, error);
+                alert(`Erreur lors de la mise à jour de l'équipement.`);
+            }
+        }
+
+        function searchStockByType() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#stock-table tbody tr');
+
+            rows.forEach(row => {
+                const typeCell = row.cells[1].textContent.toLowerCase();
+                row.style.display = typeCell.includes(searchInput) ? '' : 'none';
+            });
+        }
+
+        function validateQuantity() {
+            const quantity = document.getElementById('stock-quantity').value;
+            if (quantity < 1) {
+                alert("La quantité doit être supérieure à zéro.");
+                document.getElementById('stock-quantity').value = 1;
+            }
+        }
+
+        function validateAlert() {
+            const alert = document.getElementById('stock-alert').value;
+            if (alert < 1) {
+                alert("L'alerte de stock doit être supérieure à zéro.");
+                document.getElementById('stock-alert').value = 1;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchStock);
+    </script>
+</body>
+</html>

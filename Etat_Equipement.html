@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des États d'Équipements</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #0c4da2;
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border-radius: 5px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .form-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .table-container {
+            flex: 2;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #0c4da2;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button.edit-btn {
+            background-color: #28a745;
+            margin-right: 5px;
+        }
+        button.delete-btn {
+            background-color: #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .actions button {
+            width: auto;
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .search-container input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion des États d'Équipements</h1>
+        <button class="logout-btn" onclick="logout()">Déconnexion</button>
+    </header>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-tools icon"></i>Ajouter/Modifier un État d'Équipement</h2>
+            <form id="etat-equipement-form" onsubmit="saveEtatEquipement(event)">
+                <label for="equipementId">Numéro de patrimoine:</label>
+                <input type="number" id="equipementId" required>
+
+                <label for="etatEquipementValue">État de l'Équipement:</label>
+                <input type="text" id="etatEquipementValue" required>
+
+                <label for="dateEtat">Date de l'État:</label>
+                <input type="date" id="dateEtat" required>
+
+                <label for="matriculeProprietaire">Matricule du Propriétaire:</label>
+                <input type="number" id="matriculeProprietaire" required>
+
+                <label for="proprietaire">Nom du Propriétaire:</label>
+                <input type="text" id="proprietaire" required>
+
+                <input type="hidden" id="idEtatEquipement">
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2><i class="fas fa-list icon"></i>Liste des États d'Équipements</h2>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Rechercher par État..." onkeyup="searchEtatEquipement()">
+            </div>
+            <table id="etat-equipement-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>État</th>
+                        <th>Date État</th>
+                        <th>Matricule</th>
+                        <th>Propriétaire</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8081/etat-equipement';
+        let editingEtatId = null; // Variable pour stocker l'ID de l'état en cours d'édition
+
+        document.getElementById('etat-equipement-form').addEventListener('submit', saveEtatEquipement);
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        async function fetchEtatsEquipement() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const etats = await response.json();
+                populateTable(etats);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des états d\'équipement:', error);
+                alert('Erreur lors de la récupération des états d\'équipement.');
+            }
+        }
+
+        function populateTable(etats) {
+            const tbody = document.getElementById('etat-equipement-table').querySelector('tbody');
+            tbody.innerHTML = '';
+            etats.forEach(etat => {
+                const row = tbody.insertRow();
+                row.insertCell().textContent = etat.idEtatEquipement;
+                row.insertCell().textContent = etat.etatEquipementValue;
+                row.insertCell().textContent = new Date(etat.dateEtat).toLocaleDateString();
+                row.insertCell().textContent = etat.matriculeProprietaire;
+                row.insertCell().textContent = etat.proprietaire;
+
+                const actionsCell = row.insertCell();
+                actionsCell.classList.add('actions');
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Modifier';
+                editButton.classList.add('edit-btn');
+                editButton.onclick = () => editEtatEquipement(etat);
+                actionsCell.appendChild(editButton);
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Supprimer';
+                deleteButton.classList.add('delete-btn');
+                deleteButton.onclick = () => deleteEtatEquipement(etat.idEtatEquipement);
+                actionsCell.appendChild(deleteButton);
+            });
+        }
+
+        async function saveEtatEquipement(event) {
+            event.preventDefault();
+            const equipementId = document.getElementById('equipementId').value;
+            const etatEquipementValue = document.getElementById('etatEquipementValue').value;
+            const dateEtat = document.getElementById('dateEtat').value;
+            const matriculeProprietaire = document.getElementById('matriculeProprietaire').value;
+            const proprietaire = document.getElementById('proprietaire').value;
+            const idEtatEquipement = document.getElementById('idEtatEquipement').value;
+
+            const method = editingEtatId !== null ? 'PUT' : 'POST';
+            const url = editingEtatId !== null ? `${API_URL}/${editingEtatId}` : API_URL;
+
+            const etatEquipementData = {
+                etatEquipementValue,
+                dateEtat,
+                matriculeProprietaire: parseInt(matriculeProprietaire),
+                proprietaire,
+                equipement: { idEquipement: parseInt(equipementId) }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(etatEquipementData),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(`Erreur lors de l'enregistrement de l'état: ${response.status} - ${error.message || 'Erreur inconnue.'}`);
+                }
+
+                await fetchEtatsEquipement();
+                resetForm();
+                alert(`État d'équipement ${editingEtatId !== null ? 'modifié' : 'ajouté'} avec succès.`);
+                editingEtatId = null; // Réinitialiser l'ID d'édition après la sauvegarde
+                document.querySelector('#etat-equipement-form button[type="submit"]').textContent = 'Ajouter'; // Réinitialiser le texte du bouton
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(error.message || 'Erreur lors de l\'enregistrement.');
+            }
+        }
+
+        function editEtatEquipement(etat) {
+            editingEtatId = etat.idEtatEquipement;
+            document.getElementById('idEtatEquipement').value = etat.idEtatEquipement;
+            document.getElementById('equipementId').value = etat.equipement?.idEquipement || '';
+            document.getElementById('etatEquipementValue').value = etat.etatEquipementValue;
+            document.getElementById('dateEtat').value = etat.dateEtat;
+            document.getElementById('matriculeProprietaire').value = etat.matriculeProprietaire;
+            document.getElementById('proprietaire').value = etat.proprietaire;
+            document.querySelector('#etat-equipement-form button[type="submit"]').textContent = 'Modifier';
+        }
+
+        function resetForm() {
+            document.getElementById('etat-equipement-form').reset();
+            document.getElementById('idEtatEquipement').value = '';
+            editingEtatId = null; // S'assurer que l'ID d'édition est réinitialisé
+            document.querySelector('#etat-equipement-form button[type="submit"]').textContent = 'Ajouter';
+        }
+
+        async function deleteEtatEquipement(id) {
+            if (!confirm("Voulez-vous vraiment supprimer cet état ?")) return;
+
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error("Erreur lors de la suppression.");
+                await fetchEtatsEquipement();
+                alert("État supprimé avec succès.");
+            } catch (error) {
+                console.error(error);
+                alert("Erreur lors de la suppression.");
+            }
+        }
+
+        function searchEtatEquipement() {
+            const input = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#etat-equipement-table tbody tr');
+
+            rows.forEach(row => {
+                const etat = row.cells[1].textContent.toLowerCase();
+                row.style.display = etat.includes(input) ? '' : 'none';
+            });
+        }
+
+        window.onload = fetchEtatsEquipement;
+    </script>
+</body>
+
+</html>

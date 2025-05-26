@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Équipements</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #0c4da2;
+            color: white;
+            padding: 1em 2em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5em 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .container {
+            padding: 20px;
+            flex-grow: 1;
+        }
+        h2 {
+            color: #0c4da2;
+            margin-bottom: 1em;
+        }
+        form {
+            background-color: white;
+            padding: 1em;
+            border-radius: 8px;
+            margin-bottom: 1em;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            color: #555;
+        }
+        input[type="text"], input[type="number"], input[type="date"], select {
+            width: 100%;
+            padding: 0.7em;
+            margin-bottom: 1em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #0c4da2;
+            color: white;
+            padding: 0.7em 1.5em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0c4da2;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1em;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: white;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.8em;
+            text-align: left;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .actions button {
+            background-color: #28a745;
+            margin-right: 0.5em;
+        }
+        .actions button:hover {
+            background-color: #1e7e34;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .alert {
+            padding: 1em;
+            margin-bottom: 1em;
+            border-radius: 5px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .qr-code-section {
+            margin-top: 2em;
+            background-color: white;
+            padding: 1em;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .qr-code-section label {
+            margin-bottom: 0.5em;
+            display: block;
+        }
+        .qr-code-section button {
+            margin-top: 1em;
+        }
+        .qr-code-image {
+            margin-top: 1em;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Équipements</h1>
+        <button class="logout-btn" onclick="logout()">Déconnexion</button>
+    </header>
+    <div class="container">
+        <h2>Ajouter un Équipement</h2>
+        <form id="add-equipement-form" onsubmit="addEquipement(event)">
+            <label for="matricule">Matricule:</label>
+            <input type="number" id="matricule" required>
+
+            <label for="typeEquipement">Type d'Équipement:</label>
+            <input type="text" id="typeEquipement" required>
+
+            <label for="marqueEquipement">Marque:</label>
+            <input type="text" id="marqueEquipement" required>
+
+            <label for="modeleEquipement">Modèle:</label>
+            <input type="text" id="modeleEquipement" required>
+
+            <label for="numeroSerie">Numéro de Série:</label>
+            <input type="text" id="numeroSerie" required>
+
+            <label for="dateMiseEnService">Date de Mise en Service:</label>
+            <input type="date" id="dateMiseEnService" required>
+
+            <button type="submit"><i class="fas fa-plus"></i> Ajouter Équipement</button>
+        </form>
+
+        <h2>Liste des Équipements</h2>
+        <div id="alert-container"></div>
+        <table id="equipement-table">
+            <thead>
+                <tr>
+                    <th>Numéro Patrimoine</th>
+                    <th>Matricule</th>
+                    <th>Type</th>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>Numéro Série</th>
+                    <th>Date Mise en Service</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <div class="qr-code-section">
+            <h2>Générer un QR Code</h2>
+            <label for="qr-matricule">Entrez le Matricule pour générer le QR Code:</label>
+            <input type="number" id="qr-matricule" required>
+            <button onclick="generateQRCode()">Générer QR Code</button>
+            <div id="qr-code-display">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8081/equipements';
+        const alertContainer = document.getElementById('alert-container');
+        const equipementTableBody = document.getElementById('equipement-table').querySelector('tbody');
+        const qrCodeDisplay = document.getElementById('qr-code-display');
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            // Rediriger vers la page de connexion
+        }
+
+        function displayAlert(message, isSuccess) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${isSuccess ? 'alert-success' : 'alert-danger'}`;
+            alertDiv.textContent = message;
+            alertContainer.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        async function fetchEquipements() {
+            try {
+                const response = await fetch(API_BASE_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const equipements = await response.json();
+                populateEquipementTable(equipements);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des équipements:', error);
+                displayAlert('Erreur lors du chargement des équipements.', false);
+            }
+        }
+
+        function populateEquipementTable(equipements) {
+            equipementTableBody.innerHTML = '';
+            equipements.forEach(equipement => {
+                const row = equipementTableBody.insertRow();
+                row.insertCell().textContent = equipement.numeroPatrimoine;
+                row.insertCell().textContent = equipement.matricule;
+                row.insertCell().textContent = equipement.typeEquipement;
+                row.insertCell().textContent = equipement.marqueEquipement;
+                row.insertCell().textContent = equipement.modeleEquipement;
+                row.insertCell().textContent = equipement.numeroSerie;
+                row.insertCell().textContent = new Date(equipement.dateMiseEnService).toLocaleDateString();
+                const actionsCell = row.insertCell();
+                actionsCell.classList.add('actions');
+
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-btn';
+                deleteButton.innerHTML = '<i class="fas fa-trash"></i> Supprimer';
+                deleteButton.onclick = () => deleteEquipement(equipement.numeroPatrimoine);
+                actionsCell.appendChild(deleteButton);
+            });
+        }
+
+        async function addEquipement(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const equipementData = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch(API_BASE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(equipementData),
+                });
+
+                const responseData = await response.json();
+
+                if (response.ok) {
+                    displayAlert(responseData.message || 'Équipement ajouté avec succès!', true);
+                    document.getElementById('add-equipement-form').reset();
+                    fetchEquipements();
+                } else {
+                    displayAlert(responseData.error || 'Erreur lors de l\'ajout de l\'équipement.', false);
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'ajout de l\'équipement:', error);
+                displayAlert('Erreur réseau lors de l\'ajout de l\'équipement.', false);
+            }
+        }
+
+        async function deleteEquipement(numeroPatrimoine) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer l'équipement avec le numéro de patrimoine ${numeroPatrimoine} ?`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/${numeroPatrimoine}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.status === 204) {
+                        displayAlert('Équipement supprimé avec succès !', true);
+                        fetchEquipements();
+                    } else {
+                        const errorDetails = await response.json();
+                        console.error(`Erreur lors de la suppression de l'équipement ${numeroPatrimoine}:`, errorDetails);
+                        displayAlert('Erreur lors de la suppression de l\'équipement.', false);
+                    }
+                } catch (error) {
+                    console.error('Erreur réseau lors de la suppression de l\'équipement:', error);
+                    displayAlert('Erreur réseau lors de la suppression de l\'équipement.', false);
+                }
+            }
+        }
+
+        async function generateQRCode() {
+            const matricule = document.getElementById('qr-matricule').value;
+            if (!matricule) {
+                displayAlert('Veuillez entrer un matricule.', false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${matricule}/qr-code`);
+                if (!response.ok) {
+                    const errorDetails = await response.json();
+                    console.error('Erreur lors de la génération du QR Code:', errorDetails);
+                    displayAlert('Erreur lors de la génération du QR Code.', false);
+                    return;
+                }
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+                qrCodeDisplay.innerHTML = `<img src="${imageUrl}" alt="QR Code" class="qr-code-image">`;
+            } catch (error) {
+                console.error('Erreur réseau lors de la génération du QR Code:', error);
+                displayAlert('Erreur réseau lors de la génération du QR Code.', false);
+            }
+        }
+
+        // Charger les équipements au chargement de la page
+        fetchEquipements();
+    </script>
+</body>
+</html>

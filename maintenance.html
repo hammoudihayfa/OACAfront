@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programmes de Maintenance</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+
+    <style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #e9ecef;
+    color: #343a40;
+    line-height: 1.5;
+}
+
+h1, h2 {
+    margin: 0 0 15px 0;
+
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    color: #0c4da2;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+h2 i {
+    color: #0c4da2;
+}
+
+
+/* ========== Header ========== */
+header {
+    background-color: #0c4da2;
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-radius: 0 0 8px 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.logout-container {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.logout {
+    background-color: #1ecbe1;
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.logout:hover {
+    background-color: #17b0c9;
+}
+
+/* ========== Calendar ========== */
+#calendar {
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 15px;
+}
+
+/* ========== Search Bar ========== */
+.search-container {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-container input {
+    flex-grow: 1;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: #0c4da2;
+}
+
+.search-icon {
+    font-size: 1.2rem;
+    color: #0c4da2;
+}
+
+/* ========== Form Styles ========== */
+form {
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+}
+
+form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #495057;
+}
+
+form input[type="text"],
+form input[type="date"],
+form input[type="number"],
+form textarea,
+form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="number"]:focus,
+form textarea:focus,
+form select:focus {
+    outline: none;
+    border-color: #0c4da2;
+}
+
+form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+form button[type="submit"] {
+    background-color: #1ecbe1;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+form button[type="submit"]:hover {
+    background-color: #17b0c9;
+}
+
+/* ========== Table Styles ========== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+table:hover {
+    transform: scale(1.01);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+th {
+    background-color: #0c4da2;
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    user-select: none;
+}
+
+td {
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+}
+
+/* ========== Action Buttons in Table ========== */
+.action-icons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-icon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    user-select: none;
+}
+
+.action-icon.edit {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.action-icon.edit:hover {
+    background-color: rgba(255, 193, 7, 0.3);
+    transform: translateY(-3px);
+}
+
+.action-icon.delete {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.action-icon.delete:hover {
+    background-color: rgba(220, 53, 69, 0.3);
+    transform: translateY(-3px);
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 1024px) {
+    #calendar,
+    form,
+    table {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    .search-container {
+        max-width: 100%;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    form label,
+    th, td {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+
+    form button[type="submit"] {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .action-icons {
+        justify-content: flex-start;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Programmes de Maintenance</h1>
+        <div class="logout-container">
+            <button class="logout" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <section>
+        <center><h2><i class="fas fa-calendar-alt icon"></i> Calendrier des Maintenances</h2></center>
+        <div id="calendar"></div>
+    </section>
+
+    <div class="search-container">
+        <label for="search-input" class="search-icon">🔍</label>
+        <input type="text" id="search-input" placeholder="Rechercher Par Responsable..." oninput="searchProgrammes()">
+    </div>
+
+    <section>
+       <center> <h2><i class="fas fa-tools icon"></i>Ajouter un Programme de Maintenance</h2></center>
+        <form id="add-maintenance-form" onsubmit="addMaintenance(event)">
+            <label for="planAction">Plan d'Action :</label>
+            <input type="text" id="planAction" required pattern=".{3,}" title="Le Plan d'Action doit comporter au moins 3 caractères.">
+
+            <label for="procedureMaintenance">Procédure de Maintenance :</label>
+            <input type="text" id="procedureMaintenance" required pattern=".{3,}" title="La Procédure de Maintenance doit comporter au moins 3 caractères.">
+
+            <label for="actionCorrective">Action Corrective :</label>
+            <input type="text" id="actionCorrective" required pattern=".{3,}" title="L'Action Corrective doit comporter au moins 3 caractères.">
+
+            <label for="observation">Observation :</label>
+            <textarea id="observation" rows="4" required minlength="10" title="L'Observation doit comporter au moins 10 caractères."></textarea>
+
+            <label for="responsable">Responsable :</label>
+            <input type="text" id="responsable" required pattern=".{3,}" title="Le nom du Responsable doit comporter au moins 3 caractères.">
+
+            <label for="etudeSecurite">Étude de Sécurité :</label>
+            <input type="text" id="etudeSecurite" required pattern=".{3,}" title="L'Étude de Sécurité doit comporter au moins 3 caractères.">
+
+            <label for="startDate">Date de Début :</label>
+            <input type="date" id="startDate" required>
+
+            <label for="frequencyType">Fréquence :</label>
+            <select id="frequencyType" required>
+                <option value="">Sélectionner une fréquence</option>
+                <option value="DAILY">Journalier</option>
+                <option value="WEEKLY">Hebdomadaire</option>
+                <option value="MONTHLY">Mensuel</option>
+                <option value="QUARTERLY">Trimestriel</option>
+                <option value="YEARLY">Annuel</option>
+                <option value="ONE_TIME">Une seule fois</option>
+            </select>
+
+            <label for="estimatedDurationDays">Durée Estimée (jours) :</label>
+            <input type="number" id="estimatedDurationDays" min="1" required>
+
+            <button type="submit"><i class="fas fa-plus icon"></i>Ajouter</button>
+        </form>
+
+        <h2><i class="fas fa-list icon"></i>Liste des Programmes de Maintenance</h2>
+        <table id="maintenance-table">
+            <thead>
+                <tr>
+                    <th>Plan d'Action</th>
+                    <th>Procédure de Maintenance</th>
+                    <th>Action Corrective</th>
+                    <th>Observation</th>
+                    <th>Responsable</th>
+                    <th>Étude de Sécurité</th>
+                    <th>Date de Début</th>
+                    <th>Fréquence</th>
+                    <th>Durée Estimée (jours)</th>
+                    <th>Prochaine Échéance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+   <script>
+    const apiUrl = 'http://localhost:8083/programme-maintenance';
+
+    function logout() {
+        alert("Déconnexion réussie !");
+        window.location.href = 'login.html';
+    }
+
+   
+
+    async function fetchCalendarEvents() {
+        try {
+            const response = await fetch(`${apiUrl}/calendar`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const events = await response.json();
+            renderCalendar(events); 
+        } catch (error) {
+            console.error("Erreur lors du chargement du calendrier:", error);
+            
+        }
+    }
+
+    function renderCalendar(events) {
+        const calendarEl = document.getElementById('calendar');
+        let calendarInstance = calendarEl.calendar; 
+
+        if (!calendarInstance) {
+            calendarInstance = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                events: events.map(event => ({
+                    id: event.id,
+                    title: event.title,
+                    start: event.start,
+                    end: event.end,
+                    color: '#378006',
+                    allDay: true
+                }))
+            });
+            calendarInstance.render();
+            calendarEl.calendar = calendarInstance; 
+        } else {
+            calendarInstance.removeAllEvents(); 
+            calendarInstance.addEventSource(events.map(event => ({ 
+                id: event.id,
+                title: event.title,
+                start: event.start,
+                end: event.end,
+                color: '#378006',
+                allDay: true
+            })));
+            calendarInstance.refetchEvents();
+        }
+    }
+
+
+    async function fetchProgrammes() {
+        try {
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const programmes = await response.json();
+            populateTable(programmes);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des programmes:", error);
+            alert("Erreur lors du chargement des programmes de maintenance.");
+        }
+    }
+
+    function populateTable(programmes) {
+        const tableBody = document.getElementById('maintenance-table').querySelector('tbody');
+        tableBody.innerHTML = '';
+
+        programmes.forEach(programme => {
+            const row = tableBody.insertRow();
+            row.dataset.programmeId = programme.idProgrammeMaintenance;
+            row.innerHTML = `
+                <td>${programme.planAction}</td>
+                <td>${programme.procedureMaintenance}</td>
+                <td>${programme.actionCorrective}</td>
+                <td>${programme.observation}</td>
+                <td>${programme.responsable}</td>
+                <td>${programme.etudeSecurite}</td>
+                <td>${programme.startDate ? new Date(programme.startDate).toLocaleDateString() : 'N/A'}</td>
+                <td>${programme.frequencyType || 'N/A'}</td>
+                <td>${programme.estimatedDurationDays ?? 'N/A'}</td>
+                <td>${programme.nextDueDate ? new Date(programme.nextDueDate).toLocaleDateString() : 'Non calculée'}</td>
+                <td class="action-icons">
+                    <div class="action-icon edit" title="Modifier" onclick="editProgrammeForm(${programme.idProgrammeMaintenance})"><i class="fas fa-edit"></i></div>
+                    <div class="action-icon delete" title="Supprimer" onclick="deleteProgramme(${programme.idProgrammeMaintenance})"><i class="fas fa-trash"></i></div>
+                </td>
+            `;
+        });
+    }
+
+    async function addMaintenance(event) {
+        event.preventDefault();
+        const planAction = document.getElementById('planAction').value;
+        const procedureMaintenance = document.getElementById('procedureMaintenance').value;
+        const actionCorrective = document.getElementById('actionCorrective').value;
+        const observation = document.getElementById('observation').value;
+        const responsable = document.getElementById('responsable').value;
+        const etudeSecurite = document.getElementById('etudeSecurite').value;
+        const startDate = document.getElementById('startDate').value;
+        const frequencyType = document.getElementById('frequencyType').value;
+        const estimatedDurationDays = parseInt(document.getElementById('estimatedDurationDays').value);
+
+        const newProgramme = {
+            planAction: planAction,
+            procedureMaintenance: procedureMaintenance,
+            actionCorrective: actionCorrective,
+            observation: observation,
+            responsable: responsable,
+            etudeSecurite: etudeSecurite,
+            startDate: startDate,
+            frequencyType: frequencyType,
+            estimatedDurationDays: estimatedDurationDays
+        };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newProgramme),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+                throw new Error(`Erreur: ${errorData.message || response.statusText}`);
+            }
+
+            const createdProgramme = await response.json();
+            fetchProgrammes(); 
+            document.getElementById('add-maintenance-form').reset();
+            alert(`Programme de maintenance ajouté avec succès.`);
+            fetchCalendarEvents(); 
+        } catch (error) {
+            console.error("Erreur lors de l'ajout du programme:", error);
+            alert("Erreur lors de l'ajout du programme de maintenance: " + error.message);
+        }
+    }
+
+    async function deleteProgramme(id) {
+        if (confirm(`Êtes-vous sûr de vouloir supprimer le programme avec l'ID ${id} ?`)) {
+            try {
+                const response = await fetch(`${apiUrl}/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                fetchProgrammes(); 
+                alert(`Programme de maintenance avec l'ID ${id} supprimé avec succès.`);
+                fetchCalendarEvents(); 
+            } catch (error) {
+                console.error(`Erreur lors de la suppression du programme avec l'ID ${id}:`, error);
+                alert(`Erreur lors de la suppression du programme de maintenance.`);
+            }
+        }
+    }
+
+    function editProgrammeForm(id) {
+        const row = document.querySelector(`#maintenance-table tbody tr[data-programme-id="${id}"]`);
+        if (!row) return;
+
+        const cells = row.querySelectorAll('td');
+        document.getElementById('planAction').value = cells[0].textContent;
+        document.getElementById('procedureMaintenance').value = cells[1].textContent;
+        document.getElementById('actionCorrective').value = cells[2].textContent;
+        document.getElementById('observation').value = cells[3].textContent;
+        document.getElementById('responsable').value = cells[4].textContent;
+        document.getElementById('etudeSecurite').value = cells[5].textContent;
+
+        const startDateText = cells[6].textContent;
+        if (startDateText !== 'N/A' && startDateText !== 'Non calculée') {
+            const parts = startDateText.split('/');
+            document.getElementById('startDate').value = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        } else {
+            document.getElementById('startDate').value = '';
+        }
+
+        const frequencyMap = {
+            'Journalier': 'DAILY',
+            'Hebdomadaire': 'WEEKLY',
+            'Mensuel': 'MONTHLY',
+            'Trimestriel': 'QUARTERLY',
+            'Annuel': 'YEARLY',
+            'Une seule fois': 'ONE_TIME'
+        };
+        document.getElementById('frequencyType').value = frequencyMap[cells[7].textContent] || '';
+
+        document.getElementById('estimatedDurationDays').value = cells[8].textContent !== 'N/A' ? cells[8].textContent : '';
+
+        const submitButton = document.querySelector('#add-maintenance-form button[type="submit"]');
+        submitButton.textContent = 'Modifier';
+        submitButton.onclick = (event) => updateProgramme(event, id);
+    }
+
+    async function updateProgramme(event, id) {
+        event.preventDefault();
+        const updatedProgramme = {
+            idProgrammeMaintenance: id,
+            planAction: document.getElementById('planAction').value,
+            procedureMaintenance: document.getElementById('procedureMaintenance').value,
+            actionCorrective: document.getElementById('actionCorrective').value,
+            observation: document.getElementById('observation').value,
+            responsable: document.getElementById('responsable').value,
+            etudeSecurite: document.getElementById('etudeSecurite').value,
+            startDate: document.getElementById('startDate').value,
+            frequencyType: document.getElementById('frequencyType').value,
+            estimatedDurationDays: parseInt(document.getElementById('estimatedDurationDays').value)
+        };
+
+        try {
+            const response = await fetch(`${apiUrl}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedProgramme),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+                throw new Error(`Erreur: ${errorData.message || response.statusText}`);
+            }
+
+            const updatedData = await response.json(); 
+            fetchProgrammes(); 
+            document.getElementById('add-maintenance-form').reset();
+            const submitButton = document.querySelector('#add-maintenance-form button[type="submit"]');
+            submitButton.textContent = 'Ajouter';
+            submitButton.onclick = (e) => addMaintenance(e);
+            alert(`Programme de maintenance mis à jour avec succès.`);
+            fetchCalendarEvents(); 
+        } catch (error) {
+            console.error(`Erreur lors de la mise à jour du programme avec l'ID ${id}:`, error);
+            alert(`Erreur lors de la mise à jour du programme de maintenance: ` + error.message);
+        }
+    }
+
+    function searchProgrammes() {
+        const searchInput = document.getElementById('search-input').value.toLowerCase();
+        const table = document.getElementById('maintenance-table').querySelector('tbody');
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            let rowVisible = false;
+            if (row.cells[4].textContent.toLowerCase().includes(searchInput)) {
+                rowVisible = true;
+            }
+            row.style.display = rowVisible ? '' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchProgrammes();
+        fetchCalendarEvents();
+    });
+</script>
+</body>
+</html>

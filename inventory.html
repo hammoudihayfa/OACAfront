@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaire des Équipements</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles CSS ici */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e9ecef;
+            color: #343a40;
+        }
+        header {
+            background: #0c4da2;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        h2 {
+            color: #0c4da2;
+        }
+        .logout {
+            background: #1ecbe1;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .search-container input {
+            width: 80%;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        .search-container input:focus {
+            border-color: #0c4da2;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            font-size: 18px;
+            color: #007bff;
+        }
+        .highlight {
+            background-color: #ffeb3b; /* Couleur de surbrillance */
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .map-container {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .map {
+            width: 100%; /* Largeur de la carte */
+            height: 400px; /* Hauteur de la carte */
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .form-container {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #1ecbe1;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+        }
+        td button {
+            width: auto;
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+        .table-container {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        table:hover {
+            transform: scale(1.01);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ced4da;
+        }
+        th {
+            background-color: #0c4da2;
+            color: white;
+        }
+        td {
+            border-bottom: 1px solid #ced4da;
+        }
+    .action-icons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-icon {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-icon.view {
+        background: rgba(0, 123, 255, 0.1);
+        color: #0c4da2;
+    }
+
+    .action-icon.edit {
+        background: rgba(255, 193, 7, 0.1);
+        color: #3ca878;
+    }
+
+    .action-icon.delete {
+        background: rgba(220, 53, 69, 0.1);
+        color: #f49b42;
+    }
+
+    .action-icon:hover {
+        transform: translateY(-2px);
+    }
+
+    .action-icon.view:hover {
+        background: rgba(0, 123, 255, 0.2);
+    }
+
+    .action-icon.edit:hover {
+        background: rgba(255, 193, 7, 0.2);
+    }
+
+    .action-icon.delete:hover {
+        background: rgba(220, 53, 69, 0.2);
+    }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Inventaire des Équipements</h1>
+        <button class="logout" onclick="logout()">Déconnexion</button>
+    </header>
+
+    <div class="map-container">
+        <h2>Plan de Site de la Tunisie</h2>
+        <div class="map">
+            <iframe id="map-frame"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3311.199259312538!2d10.16579!3d33.88691799999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12e4a3f1c6c5e3c3%3A0x1c3b0c5f10e8c2e7!2sTunis%2C%20Tunisie!5e0!3m2!1sfr!2sfr!4v1613429348410!5m2!1sfr!2sfr"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy">
+            </iframe>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher par modèle..." onkeyup="searchByModel()">
+    </div>
+
+    <div class="form-container">
+        <h2><i class="fas fa-tools icon"></i>Ajouter un Équipement</h2>
+        <form id="add-material-form" onsubmit="addMaterial(event)">
+            <label for="typeEquipement">Type :</label>
+            <select id="typeEquipement" name="typeEquipement" onchange="setCharacteristics()" required>
+                <option value="">Sélectionnez un type d'équipement</option>
+                <option value="pc">PC</option>
+                <option value="ordinateur">Ordinateur</option>
+                <option value="imprimante">Imprimante</option>
+                <option value="scanner">Scanner</option>
+                <option value="camera">Caméra</option>
+                <option value="ecran">Ecran</option>
+                <option value="unitecentrale">Unite Centrale</option>
+            </select>
+
+            <label for="numeroSerie">Numéro de Série :</label>
+            <input type="text" id="numeroSerie" name="numeroSerie">
+
+            <label for="marqueEquipement">Marque :</label>
+            <input type="text" id="marqueEquipement" name="marqueEquipement" required>
+
+            <label for="modeleEquipement">Modèle :</label>
+            <input type="text" id="modeleEquipement" name="modeleEquipement" required>
+
+            <label for="dateMiseEnService">Date d'Achat :</label>
+            <input type="date" id="dateMiseEnService" name="dateMiseEnService" required>
+
+            <label for="etat">État :</label>
+            <select id="etat" name="etat" required>
+                <option value="En service">En service</option>
+                <option value="En maintenance">En maintenance</option>
+                <option value="Hors service">Hors service</option>
+            </select>
+
+            <label for="localisation">Localisation :</label>
+            <select id="localisation" name="localisation" required>
+                <option value="">Sélectionnez une localisation</option>
+                <option value="AITC">Aéroport International de Tunis Carthage (AITC)</option>
+                <option value="AIEH">Aéroport International de Enfidha - Hammamet (AIEH)</option>
+                <option value="AITA">Aéroport International de Tabarka - Ain Draham (AITA)</option>
+                <option value="AIMHB">Aéroport International de Monastir–Habib Bourguiba (AIMHB)</option>
+                <option value="AIGK">Aéroport international de Gafsa-Ksar (AIGK)</option>
+                <option value="AIGM">Aéroport International de Gabés - Matmata (AIGM)</option>
+                <option value="AIDZ">Aéroport international de Djerba-Zarzis (AIDZ)</option>
+                <option value="AIST">Aéroport International de Sfax–Thyna (AIST)</option>
+                <option value="AITN">Aéroport International de Tozeur–Nefta (AITN)</option>
+                <option value="ABEA">Borj El Amri Airport (ABEA)</option>
+                <option value="DNA">DNA</option>
+                
+            </select>
+
+            <button type="submit">Ajouter</button>
+            <button type="button" onclick="resetForm()">Réinitialiser le formulaire</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2><i class="fas fa-list icon"></i>Liste des Équipements</h2>
+        <table id="inventory-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Numéro de Série</th>
+                    <th>Type</th>
+                    <th>Marque</th>
+                    <th>Modèle</th>
+                    <th>Date d'Achat</th>
+                    <th>État</th>
+                    <th>Localisation</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="materialTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="qr-code-section">
+        <h2>Générer un QR Code</h2>
+        <label for="qr-numeroSerie">Entrez le Numéro de Série pour générer le QR Code:</label>
+        <input type="text" id="qr-numeroSerie" required>
+        <button onclick="generateQRCode()">Générer QR Code</button>
+        <div id="qr-code-display">
+        </div>
+    </div>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script>
+        const apiUrl = "http://localhost:8081/equipements";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadMaterials();
+        });
+
+        function logout() {
+            alert("Déconnexion réussie !");
+            window.location.href = 'login.html';
+        }
+
+        function setCharacteristics() {
+            const materialType = document.getElementById('typeEquipement').value;
+            const materialBrand = document.getElementById('marqueEquipement');
+            const materialModel = document.getElementById('modeleEquipement');
+
+            if (materialType === "pc") {
+                materialBrand.value = "Dell";
+                materialModel.value = "XPS 15";
+            } else if (materialType === "ordinateur") {
+                materialBrand.value = "HP";
+                materialModel.value = "Pavilion 15";
+            } else if (materialType === "imprimante") {
+                materialBrand.value = "Canon";
+                materialModel.value = "PIXMA G3020";
+            } else if (materialType === "scanner") {
+                materialBrand.value = "Epson";
+                materialModel.value = "Perfection V600";
+            } else if (materialType === "camera") {
+                materialBrand.value = "Nikon";
+                materialModel.value = "D3500";
+            } else {
+                materialBrand.value = "";
+                materialModel.value = "";
+            }
+        }
+
+        let searchTimeout;
+        function searchByModel() {
+            const modele = document.getElementById('searchInput').value;
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (modele.trim() === "") {
+                    loadMaterials();
+                    return;
+                }
+
+                fetch(`${apiUrl}/modele/${encodeURIComponent(modele)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erreur lors de la récupération des équipements: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Résultats de la recherche :", data);
+                        displayEquipements(data);
+                    })
+                    .catch(error => {
+                        console.error("Erreur lors de la recherche des équipements:", error);
+                        alert("Erreur lors de la recherche des équipements");
+                    });
+            }, 300); // Délai de 300ms
+        }
+
+        function displayEquipements(equipements) {
+            const tableBody = document.getElementById('inventory-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ""; // Clear the current table body
+
+            if (!equipements || equipements.length === 0) {
+                const row = tableBody.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 9;
+                cell.textContent = "Aucun équipement trouvé.";
+                cell.style.textAlign = "center";
+                return;
+            }
+
+            const results = Array.isArray(equipements) ? equipements : [equipements];
+
+            results.forEach(equipement => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${equipement.idEquipement || ''}</td>
+                    <td>${equipement.numeroSerie || ''}</td>
+                    <td>${equipement.typeEquipement || ''}</td>
+                    <td>${equipement.marqueEquipement || ''}</td>
+                    <td>${equipement.modeleEquipement || ''}</td>
+                    <td>${equipement.dateMiseEnService ? new Date(equipement.dateMiseEnService).toLocaleDateString() : ''}</td>
+                    <td>${equipement.etat || ''}</td>
+                    <td>${equipement.localisation || ''}</td>
+                    <td class="action-icons">
+                        <div class="action-icon edit" title="Modifier" onclick="editMaterial(${equipement.idEquipement})"><i class="fas fa-edit"></i></div>
+                        <div class="action-icon delete" title="Supprimer" onclick="deleteMaterial(${equipement.idEquipement})"><i class="fas fa-trash"></i></div>
+                    </td>
+                `;
+            });
+        }
+
+        function loadMaterials() {
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayEquipements(data);
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des équipements:', error);
+                    alert('Erreur lors du chargement des équipements');
+                });
+        }
+
+        function addMaterial(event) {
+            event.preventDefault();
+
+            const newMaterial = {
+                numeroSerie: document.getElementById("numeroSerie").value,
+                typeEquipement: document.getElementById("typeEquipement").value,
+                marqueEquipement: document.getElementById("marqueEquipement").value,
+                modeleEquipement: document.getElementById("modeleEquipement").value,
+                dateMiseEnService: document.getElementById("dateMiseEnService").value,
+                etat: document.getElementById("etat").value,
+                localisation: document.getElementById("localisation").value
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json' // Ensure this is present
+                },
+                body: JSON.stringify(newMaterial) // Ensure you are stringifying the JavaScript object
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(`Erreur HTTP ${response.status}: ${text}`); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Équipement ajouté avec succès !");
+                loadMaterials(); // Recharger les équipements après ajout
+                document.getElementById('add-material-form').reset();
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'ajout de l\'équipement:', error);
+                alert('Erreur lors de l\'ajout de l\'équipement');
+            });
+        }
+
+        function editMaterial(id) {
+            fetch(`${apiUrl}/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(`Erreur HTTP ${response.status}: ${text}`); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('typeEquipement').value = data.typeEquipement;
+                    document.getElementById('numeroSerie').value = data.numeroSerie;
+                    document.getElementById('marqueEquipement').value = data.marqueEquipement;
+                    document.getElementById('modeleEquipement').value = data.modeleEquipement;
+                    document.getElementById('dateMiseEnService').value = new Date(data.dateMiseEnService).toISOString().split('T')[0];
+                    document.getElementById('etat').value = data.etat;
+                    document.getElementById('localisation').value = data.localisation;
+
+                    // Change the submit function to update instead of add
+                    document.getElementById('add-material-form').onsubmit = function(event) {
+                        event.preventDefault();
+                        updateMaterial(event, id); // Pass the 'event' object
+                    };
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération de l\'équipement:', error);
+                    alert('Erreur lors de la récupération de l\'équipement');
+                });
+        }
+
+        function updateMaterial(event, id) {
+            event.preventDefault();
+
+            const updatedMaterial = {
+                numeroSerie: document.getElementById("numeroSerie").value,
+                typeEquipement: document.getElementById("typeEquipement").value,
+                marqueEquipement: document.getElementById("marqueEquipement").value,
+                modeleEquipement: document.getElementById("modeleEquipement").value,
+                dateMiseEnService: document.getElementById("dateMiseEnService").value,
+                etat: document.getElementById("etat").value,
+                localisation: document.getElementById("localisation").value
+            };
+
+            fetch(`${apiUrl}/update/${id}`, { // Use the update endpoint with the ID
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedMaterial) // Sérialisez l'objet en JSON
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(`Erreur HTTP ${response.status}: ${text}`); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert("Équipement mis à jour avec succès !");
+                loadMaterials();
+                document.getElementById('add-material-form').reset();
+                // Reset the submit function back to addMaterial
+                document.getElementById('add-material-form').onsubmit = function(newEvent) {
+                    newEvent.preventDefault();
+                    addMaterial(newEvent);
+                };
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour de l\'équipement:', error);
+                alert('Erreur lors de la mise à jour de l\'équipement');
+            });
+        }
+
+
+        function deleteMaterial(id) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer cet équipement ?")) {
+                fetch(`${apiUrl}/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(`Erreur HTTP ${response.status}: ${text}`); });
+                    }
+                    if (response.status === 204) {
+                        alert("Équipement supprimé avec succès !");
+                        loadMaterials(); // Recharger les équipements après suppression
+                    } else {
+                        alert("Erreur lors de la suppression de l'équipement");
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la suppression de l\'équipement:', error);
+                    alert('Erreur lors de la suppression de l\'équipement');
+                });
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('add-material-form').reset();
+            // Reset the submit function back to addMaterial
+            document.getElementById('add-material-form').onsubmit = function(event) {
+                event.preventDefault();
+                addMaterial(event);
+            };
+        }
+
+        function generateQRCode() {
+    const numeroSerie = document.getElementById("qr-numeroSerie").value;
+    const qrCodeDisplay = document.getElementById("qr-code-display");
+
+    if (!numeroSerie) {
+        alert("Veuillez entrer un numéro de série.");
+        return;
+    }
+
+    fetch(`${apiUrl}/${numeroSerie}/qr-code`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Erreur lors de la génération du QR code.");
+            }
+            return response.blob(); // on récupère l'image sous forme de blob
+        })
+        .then(blob => {
+            const imageUrl = URL.createObjectURL(blob);
+            qrCodeDisplay.innerHTML = `<img src="${imageUrl}" alt="QR Code" style="width:200px;height:200px;" />`;
+        })
+        .catch(error => {
+            console.error("Erreur:", error);
+            alert("Impossible de générer le QR code.");
+        });
+}
+
+    </script>
+</body>
+
+</html>

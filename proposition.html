@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaires Multiples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .page {
+            width: 900px;
+            background: #fff;
+            padding: 20px;
+            border: 2px solid #000;
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-top: 10px;
+            border: 1px solid #000;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .top-section div {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .top-section div:first-child {
+            text-align: left;
+        }
+
+        .top-section div:last-child {
+            text-align: right;
+        }
+
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bottom-section div {
+            flex: 1;
+            padding: 5px;
+        }
+
+        .decharge {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .decharge h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .decharge p {
+            margin-bottom: 10px;
+        }
+
+        .decharge input[type="text"] {
+            border: none;
+            border-bottom: 1px solid #ccc;
+            width: 80%;
+            padding: 5px;
+        }
+
+        .decharge input[type="text"]:focus {
+            outline: none;
+            border-bottom: 2px solid #0c4da2;
+        }
+
+        .decharge .signature {
+            text-align: right;
+            margin-top: 30px;
+        }
+    </style>
+    <script>
+        function printPage() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <div class="page">
+        <div class="header">PROPOSITION DE RÉFORME D'IMMOBILISATION (≤ 5000)</div>
+        <div class="section">
+            <table>
+                <tr>
+                    <td><strong>CODE IMMO:</strong></td>
+                    <td><input type="text" id="code_immo" name="code_immo" required></td>
+                    <td><strong>S/H/N:</strong></td>
+                    <td><input type="text" id="shn" name="shn" required></td>
+                    <td><strong>Ordre:</strong></td>
+                    <td><input type="text" id="ordre" name="ordre" required></td>
+                </tr>
+                <tr>
+                    <td><strong>Désignation:</strong></td>
+                    <td><input type="text" id="designation" name="designation" required></td>
+                    <td><strong>N° de Série:</strong></td>
+                    <td><input type="text" id="numero_serie" name="numero_serie" required></td>
+                    <td><strong>Date de 1ère Mise en Service:</strong></td>
+                    <td><input type="date" id="date_mise_service" name="date_mise_service" required></td>
+                </tr>
+                <tr>
+                    <td><strong>Valeur d'Acquisition:</strong></td>
+                    <td><input type="number" id="valeur_acquisition" name="valeur_acquisition" step="0.01" min="0" max="5000" required></td>
+                    <td colspan="3"><strong>Justifications:</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Exploitation:</strong></td>
+                    <td colspan="5"><textarea id="justification_exploitation" name="justification_exploitation" rows="2" required></textarea></td>
+                </tr>
+                <tr>
+                    <td><strong>Maintenance:</strong></td>
+                    <td colspan="5"><textarea id="justification_maintenance" name="justification_maintenance" rows="2" required></textarea></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <strong>Observations:</strong>
+            <textarea id="observations" name="observations" rows="4"></textarea>
+        </div>
+        <div class="section">
+            <strong>Signatures:</strong>
+            <table>
+                <tr>
+                    <td><strong>Exploitation:</strong></td>
+                    <td><input type="text" id="signature_exploitation" name="signature_exploitation" required></td>
+                </tr>
+                <tr>
+                    <td><strong>Maintenance:</strong></td>
+                    <td><input type="text" id="signature_maintenance" name="signature_maintenance" required></td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <strong>Patrimoine:</strong>
+            <input type="text" id="patrimoine" name="patrimoine" required>
+        </div>
+        <div class="footer">
+            <button onclick="printPage()">Imprimer</button>
+        </div>
+    </div>
+  
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Demande de sortie - Consommables</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+    
+            .container {
+                width: 80vw;
+                max-width: 1000px;
+                margin: 20px auto;
+                padding: 30px;
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                overflow: auto;
+            }
+    
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+    
+            .header img {
+                height: 80px;
+            }
+    
+            h1, h2 {
+                text-align: center;
+                color: #333;
+                font-size: 24px;
+            }
+    
+            .input-group {
+                margin-bottom: 15px;
+            }
+    
+            .input-group label {
+                display: block;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+    
+            .input-group input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+    
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+    
+            th, td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: center;
+                font-size: 16px;
+            }
+    
+            th {
+                background-color: #e0e0e0;
+            }
+    
+            button {
+                display: block;
+                width: 100%;
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 18px;
+                margin-top: 20px;
+            }
+    
+            button:hover {
+                background-color: #45a049;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div>
+                    <img src="logo_oaca.png" alt="Logo OACA">
+                    <p>Direction de l'approvisionnement et de la gestion des stocks</p>
+                </div>
+                <div>
+                    <p>N°: <span id="numero"></span></p>
+                    <p>DATE: <input type="date" id="dateInput"></p>
+                </div>
+            </div>
+    
+            <h1>DEMANDE DE SORTIE</h1>
+            <h2>CONSOMMABLES</h2>
+    
+            <form>
+                <div class="input-group">
+                    <label for="direction">DIRECTION:</label>
+                    <input type="text" id="direction" required>
+                </div>
+                <div class="input-group">
+                    <label for="demandeur">DEMANDEUR:</label>
+                    <input type="text" id="demandeur" required>
+                </div>
+                <div class="input-group">
+                    <label for="code">CODE:</label>
+                    <input type="text" id="code" required>
+                </div>
+                <div class="input-group">
+                    <label for="nom_demandeur">NOM DU DEMANDEUR:</label>
+                    <input type="text" id="nom_demandeur" required>
+                </div>
+                <div class="input-group">
+                    <label for="code_projet">CODE PROJET:</label>
+                    <input type="text" id="code_projet" required>
+                </div>
+                
+                <h2>Tableau de Saisie</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>UNITE</th>
+                            <th>DESIGNATION</th>
+                            <th>AFFECTATION</th>
+                            <th>QUANTITÉ DEMANDÉE</th>
+                            <th>CODE</th>
+                            <th>NOMENCLATURE</th>
+                            <th>QUANTITÉ LIVRÉE</th>
+                            <th>CODE ANALYTIQUE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <script>
+                            for (let i = 0; i < 10; i++) {
+                                document.write('<tr>');
+                                for (let j = 0; j < 8; j++) {
+                                    document.write('<td><input type="text"></td>');
+                                }
+                                document.write('</tr>');
+                            }
+                        </script>
+                    </tbody>
+                </table>
+    
+                <h2>Le Chef du service demandeur</h2>
+                <table>
+                    <tr>
+                        <th>Nom et Prénom</th>
+                        <td><input type="text" id="chef_service_demandeur_nom" required></td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td><input type="date" id="chef_service_demandeur_date" required></td>
+                    </tr>
+                    <tr>
+                        <th>Signature</th>
+                        <td><input type="text" id="chef_service_demandeur_signature" required></td>
+                    </tr>
+                </table>
+                <h2>Marchandise enlevée par</h2>
+                <table>
+                    <tr>
+                        <th>Nom et Prénom</th>
+                        <td><input type="text" id="chef_service_demandeur_nom" required></td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td><input type="date" id="chef_service_demandeur_date" required></td>
+                    </tr>
+                    <tr>
+                        <th>Signature</th>
+                        <td><input type="text" id="chef_service_demandeur_signature" required></td>
+                    </tr>
+                </table>
+                <h2>Magasinier livreur</h2>
+                <table>
+                    <tr>
+                        <th>Nom et Prénom</th>
+                        <td><input type="text" id="magasinier_nom" required></td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td><input type="date" id="magasinier_date" required></td>
+                    </tr>
+                    <tr>
+                        <th>Signature</th>
+                        <td><input type="text" id="magasinier_signature" required></td>
+                    </tr>
+                </table>
+    
+                <h2>L'Unité de Contrôle</h2>
+                <table>
+                    <tr>
+                        <th>Nom et Prénom</th>
+                        <td><input type="text" id="unite_controle_nom" required></td>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <td><input type="date" id="unite_controle_date" required></td>
+                    </tr>
+                    <tr>
+                        <th>Signature</th>
+                        <td><input type="text" id="unite_controle_signature" required></td>
+                    </tr>
+                </table>
+    
+                <button type="submit">Soumettre</button>
+            </form>
+        </div>
+    
+        <script>
+            document.getElementById('numero').textContent = Math.floor(Math.random() * 1000) + 1;
+            document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+        </script>
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Formulaire de Demande d'Achats</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              text-align: center;
+              margin: 20px;
+              background-color: #f8f8f8;
+            }
+            .container {
+              width: 90%;
+              max-width: 800px;
+              margin: 20px auto;
+              border: 2px solid black;
+              padding: 10px;
+              background-color: white;
+              border-radius: 8px;
+              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .header-top {
+              
+              padding: 10px;
+              margin-bottom: 10px;
+            }
+            .header-top table {
+              width: 100%;
+            }
+            .oaca {
+              font-size: 1.5em;
+              font-weight: bold;
+              border: 1px solid black;
+              padding: 10px;
+              margin-bottom: 10px;
+              display: inline-block;
+            }
+            .demande {
+              font-size: 1.5em;
+              font-weight: bold;
+              margin: 10px 0;
+            }
+            .table-top table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+            .table-top th, .table-top td {
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            th, td {
+              border: 1px solid black;
+              padding: 8px;
+              text-align: center;
+            }
+            th {
+              background-color: lightgray;
+              font-weight: bold;
+            }
+            input[type="text"], input[type="date"], input[type="number"] {
+              width: 90%;
+              padding: 5px;
+              margin-top: 5px;
+              text-align: center;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              font-size: 14px;
+              transition: border-color 0.3s;
+            }
+            input:focus {
+              border-color: #007BFF;
+              outline: none;
+            }
+            .table-demandeur {
+              margin-bottom: 20px;
+            }
+            .header {
+              text-align: center;
+              font-weight: bold;
+              border-bottom: 2px solid black;
+              padding: 5px;
+              margin-bottom: 10px;
+            }
+            .section {
+              display: flex;
+              justify-content: space-between;
+              padding: 10px;
+              border-bottom: 1px solid black;
+            }
+            .section div {
+              width: 48%;
+            }
+            .observations {
+              padding: 10px;
+              height: 120px;
+              border-bottom: 2px solid black;
+            }
+            .textarea-field {
+              width: 100%;
+              height: 80px;
+              border: 1px solid black;
+              padding: 5px;
+              font-size: 16px;
+            }
+            .print-box {
+              text-align: center;
+              margin-top: 20px;
+              padding: 10px;
+              border: 1px solid black;
+              width: 200px;
+              margin-left: auto;
+              margin-right: auto;
+              background-color: #f1f1f1;
+            }
+            .btn {
+              padding: 8px 12px;
+              font-size: 16px;
+              border: none;
+              cursor: pointer;
+              background-color: black;
+              color: white;
+              margin: 5px;
+            }
+          </style>
+          <script>
+            function updateNumero() {
+              const numeroInput = document.getElementById('numeroInput').value;
+              document.getElementById('numeroAffiche').innerText = numeroInput;
+            }
+            function downloadPDF() {
+              window.print();
+            }
+          </script>
+          <div class="container">
+            <div class="header-top">
+              <table>
+                <tr>
+                  <td class="oaca">
+                    O.A.C.A<br>
+                    DIVISION  APPROVISIONNEMENT  ET<br> GESTION  DES STOCKS
+                  </td>
+                  <td>
+                    <h2 class="demande">DEMANDE D'ACHATS</h2>
+                  </td>
+                  <td>
+                    N° <input type="text" id="numeroInput" oninput="updateNumero()" placeholder="Entrez le numéro"><br>
+                    du <input type="date">
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="table-top">
+              <table>
+                <tr>
+                  <th>RUBRIQUE BUDGÉTAIRE</th>
+                  <th>SERVICE DEMANDEUR</th>
+                </tr>
+                <tr>
+                  <td><input type="text" placeholder="Entrez la rubrique budgétaire"></td>
+                  <td><input type="text" placeholder="Entrez le service demandeur"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="container">
+            <h2>DEMANDEUR</h2>
+            <div class="table-demandeur">
+              <table>
+                <tr>
+                  <th>CODES</th>
+                  <th>DESIGNATIONS</th>
+                  <th>REFERENCES</th>
+                  <th>AFFECTATIONS MACHINES</th>
+                  <th>Unités</th>
+                  <th>Quantités demandées</th>
+                  <th colspan="2">Stocks à prévoir</th>
+                </tr>
+                <tr>
+                  <th colspan="6"></th>
+                  <th>Min</th>
+                  <th>MAX</th>
+                </tr>
+                <tr>
+                  <td><input type="text" name="code1"></td>
+                  <td><input type="text" name="designation1"></td>
+                  <td><input type="text" name="reference1"></td>
+                  <td><input type="text" name="affectation1"></td>
+                  <td><input type="text" name="unite1"></td>
+                  <td><input type="number" name="quantite1"></td>
+                  <td><input type="number" name="stock_min1"></td>
+                  <td><input type="number" name="stock_max1"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" name="code2"></td>
+                  <td><input type="text" name="designation2"></td>
+                  <td><input type="text" name="reference2"></td>
+                  <td><input type="text" name="affectation2"></td>
+                  <td><input type="text" name="unite2"></td>
+                  <td><input type="number" name="quantite2"></td>
+                  <td><input type="number" name="stock_min2"></td>
+                  <td><input type="number" name="stock_max2"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" name="code3"></td>
+                  <td><input type="text" name="designation3"></td>
+                  <td><input type="text" name="reference3"></td>
+                  <td><input type="text" name="affectation3"></td>
+                  <td><input type="text" name="unite3"></td>
+                  <td><input type="number" name="quantite3"></td>
+                  <td><input type="number" name="stock_min3"></td>
+                  <td><input type="number" name="stock_max3"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" name="code4"></td>
+                  <td><input type="text" name="designation4"></td>
+                  <td><input type="text" name="reference4"></td>
+                  <td><input type="text" name="affectation4"></td>
+                  <td><input type="text" name="unite4"></td>
+                  <td><input type="number" name="quantite4"></td>
+                  <td><input type="number" name="stock_min4"></td>
+                  <td><input type="number" name="stock_max4"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" name="code5"></td>
+                  <td><input type="text" name="designation5"></td>
+                  <td><input type="text" name="reference5"></td>
+                  <td><input type="text" name="affectation5"></td>
+                  <td><input type="text" name="unite5"></td>
+                  <td><input type="number" name="quantite5"></td>
+                  <td><input type="number" name="stock_min5"></td>
+                  <td><input type="number" name="stock_max5"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="container" id="formContainer">
+            <div class="header">DEMANDEUR</div>
+            <div class="section">
+              <div>
+                <strong>DEMANDE D'ACHATS (ÉTABLIE) :</strong><br>
+                Le : <input type="date" class="input-field"><br>
+                Par (+ visa) : <input type="text" class="input-field"><br>
+              </div>
+              <div>
+                <strong>RESPONSABLE :</strong><br>
+                Le : <input type="date" class="input-field"><br>
+                Visa : <input type="text" class="input-field">
+              </div>
+            </div>
+            <div class="observations">
+              <strong>OBSERVATIONS (fournitures, modèles...)</strong><br>
+              <textarea class="textarea-field"></textarea>
+            </div>
+          </div>
+          <div class="print-box">
+            <button class="btn" onclick="window.print()">🖨️ Imprimer</button>
+            <button class="btn" onclick="downloadPDF()">📄 Télécharger PDF</button>
+          </div>
+</body>
+</html>
