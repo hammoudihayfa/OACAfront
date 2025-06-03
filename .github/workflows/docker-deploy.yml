@@ -1,0 +1,44 @@
+name: Build, Push Docker image and Deploy
+
+on:
+  push:
+    branches: [main, master]
+
+env:
+  IMAGE_NAME: hammoudihayfa/oaca-front:latest  # Change selon ton Docker Hub
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t $IMAGE_NAME .
+        docker push $IMAGE_NAME
+
+    # Optionnel: déploiement sur un serveur via SSH (exemple)
+    - name: Deploy on server (via SSH)
+      if: ${{ secrets.SSH_HOST && secrets.SSH_USERNAME && secrets.SSH_PRIVATE_KEY }}
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          docker pull $IMAGE_NAME
+          docker stop oaca-front || true
+          docker rm oaca-front || true
+          docker run -d --name oaca-front -p 80:80 $IMAGE_NAME
