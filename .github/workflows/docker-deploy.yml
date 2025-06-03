@@ -31,7 +31,7 @@ jobs:
 
     # Optionnel: déploiement sur un serveur via SSH (exemple)
     - name: Deploy on server (via SSH)
-      if: ${{ secrets.SSH_HOST && secrets.SSH_USERNAME && secrets.SSH_PRIVATE_KEY }}
+      if: ${{ secrets.SSH_HOST }}
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ secrets.SSH_HOST }}
